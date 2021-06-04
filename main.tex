@@ -1,0 +1,81 @@
+\documentclass[12pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+
+\graphicspath{ {images/} }
+\title{
+  {Thesis Title}\\
+  {\large Institution Name}\\
+  {\includegraphics{university.jpg}}
+}
+\author{Author Name}
+\date{Day Month Year}
+
+\begin{document}
+
+% \chapter*{Abstract}
+% Abstract goes here
+
+% \chapter*{Dedication}
+% To mum and dad
+
+% \chapter*{Declaration}
+% I declare that..
+
+% \chapter*{Acknowledgements}
+% I want to thank...
+
+\tableofcontents
+
+\chapter{Introduction}
+\section{Probabilistic models}
+\subsection{Identifiability}
+\subsection{Maximum likelihood}
+\section{Optimization}
+\subsection{Gradient descent, Newton, Quasi-Newton}
+\subsection{EM and generalized EM}
+\section{Independent component analysis}
+\subsection{non-Gaussian ICA}
+\subsubsection{Identifiability}
+\subsubsection{Robustness to density missmatch}
+\subsubsection{Stability (extended infomax)}
+\subsection{non-stationary ICA}
+\subsubsection{Identifiability}
+\subsubsection{Joint diagonalization objective}
+\section{Analyzing fMRI data of multiple subjects}
+\subsection{The controlled setting: the general linear model}
+\subsection{A deep approach for modeling complex stimuli}
+\chapter{Component Analysis in multi-view settings}
+\section{GroupICA}
+\subsection{CanICA}
+\subsection{ConcatICA}
+\subsection{PermICA}
+\section{IVA}
+\subsection{Identifiability}
+\subsection{IVA-L}
+\subsection{IVA-G}
+\section{Shared response modeling}
+\subsection{Hyperalignment}
+\subsection{SRM}
+\section{Multiset CCA}
+\chapter{ICA for shared response modeling}
+\section{Classical approach to shared response modeling}
+\subsection{GLM model}
+\subsection{Deep methods}
+\section{MultiViewICA (MVICA)}
+\subsection{Probabilistic model}
+\subsection{Optimization}
+\subsection{Identifiability}
+\subsection{Robustness to density missmatch}
+\subsection{Stability criterions}
+\section{Shared ICA (ShICA)}
+\subsection{General identifiability results}
+\subsection{ShICA-J: Fast estimation via Multiset CCA and Joint diagonalization}
+\subsection{ShICA-L: A maximum-likelihood solution via generalized EM}
+
+\chapter{Conclusion}
+
+\appendix
+\chapter{Appendix Title}
+
+\end{document}
