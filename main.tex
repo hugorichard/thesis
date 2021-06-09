@@ -1,6 +1,16 @@
 \documentclass[12pt]{report}
 \usepackage[utf8]{inputenc}
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{amsfonts}       % blackboard math symbols
 \usepackage{graphicx}
+\usepackage{hyperref}       % hyperlinks
+\usepackage[symbols,nogroupskip,sort=none]{glossaries-extra}
+\usepackage{kky}
+
+\newcommand{\notation}[3]{\glsxtrnewsymbol[description={#1}]{#2}{\ensuremath{#3}}}
+
 
 \graphicspath{ {images/} }
 \title{
@@ -11,7 +21,23 @@
 \author{Author Name}
 \date{Day Month Year}
 
+
 \begin{document}
+
+\notation{Number of views}{m}{m \in \NN}
+\notation{Number of components}{p}{p \in \NN}
+\notation{Number of samples}{n}{n \in \NN}
+\notation{Data of view $i$}{xbi}{\xb_i \in \RR^{p}}
+\notation{Shared components}{sbb}{\sbb \in \RR^{p}}
+\notation{$j$-th entry of $\sbb$}{sj}{s_j \in \RR}
+\notation{Mixing matrix of view $i$}{Ai}{A_i \in \RR^{p \times p}}
+\notation{Unmixing matrix of view $i$}{Wi}{W_i \in \RR^{p \times p}}
+\notation{Absolute value of the determinant of $W_i$}{detWi}{|W_i|}
+\notation{Noise of view $i$}{ni}{\nb_i \in \RR^{p}}
+\notation{Covariance of $\nb_i$}{Sigmai}{\Sigma_i \in \RR^{p \times p}}
+\notation{$j, j$ entry of $\Sigma_i$}{Sigmaij}{\Sigma_{ij} \in \RR}
+\notation{For a scalar valued function $f$ and a vector $\sbb$, $f(\sbb) = \sum_{j=1}^kf(s_j)$}{fs}{f(\sbb)}
+\notation{Gradient of $\xb \rightarrow f(\xb)$ at $\sbb$}{gf}{f'(\sbb)}
 
 % \chapter*{Abstract}
 % Abstract goes here
@@ -26,6 +52,18 @@
 % I want to thank...
 
 \tableofcontents
+\printunsrtglossary[type=symbols,style=long, title=Notations]
+
+
+% \paragraph{Notations} We write vectors in bold letter $\vb$ and scalars in lower case $a$. Upper case letters $M$ are used to denote
+% matrices. We denote $|W|$ the absolute value of the determinant of $W$. $\xb \sim \Ncal(\mub, \Sigma)$ means that $\xb \in \mathbb{R}^k$ follows
+% a multivariate normal distribution of mean $\mub \in \mathbb{R}^k$ and
+% covariance $\Sigma \in \mathbb{R}^{k \times k}$. The $j, j$ entry of a diagonal matrix $\Sigma_i$ is denoted $\Sigma_{ij}$, the $j$ entry of $\yb_i$ is denoted $y_{ij}$. Lastly, $\delta$ is the Kronecker delta.
+% \textbf{Notation} The absolute value of the determinant of a matrix $W$ is $|W|$.
+% % 
+% The $\ell_2$ norm of a vector $\sbb$ is $\|\sbb\|$.
+% % 
+% For a scalar valued function $f$ and a vector $\sbb \in \bbR^k$, we write $f(\sbb) = \sum_{j=1}^kf(s_j)$ and denote $f'$ the gradient of $f$.
 
 \chapter{Introduction}
 \section{Probabilistic models}
@@ -35,7 +73,7 @@
 \subsection{Gradient descent, Newton, Quasi-Newton}
 \subsection{EM and generalized EM}
 \section{Independent component analysis}
-\subsection{non-Gaussian ICA}
+\subsection{Non Gaussian ICA}
 \subsubsection{Identifiability}
 \subsubsection{Robustness to density missmatch}
 \subsubsection{Stability (extended infomax)}
@@ -45,30 +83,232 @@
 \section{Analyzing fMRI data of multiple subjects}
 \subsection{The controlled setting: the general linear model}
 \subsection{A deep approach for modeling complex stimuli}
+
 \chapter{Component Analysis in multi-view settings}
 \section{GroupICA}
 \subsection{CanICA}
 \subsection{ConcatICA}
 \subsection{PermICA}
 \section{IVA}
-\subsection{Identifiability}
 \subsection{IVA-L}
 \subsection{IVA-G}
 \section{Shared response modeling}
 \subsection{Hyperalignment}
 \subsection{SRM}
 \section{Multiset CCA}
+
 \chapter{ICA for shared response modeling}
+\section{Dimension Reduction}
+% So far, we have assumed that the dimensionality of each view (subject) and that of the sources is the same. This reflects the standard practice in ICA of having equal number of observations and sources. 
+% % 
+% In practice, however, we might want to estimate fewer sources than there are observations per view; the original dimensionality of the data %(number of voxels, sensors) 
+% might in practice not be computationally tractable.
+% % 
+% The problem of how to perform subject-wise dimensionality reduction in group studies 
+% % of data for each of the individuals while still considering them jointly and preserving the signal shared across them
+% is an interesting one \emph{per se}, and out of the main scope of this work. For our purposes, it can be considered as a preprocessing step for which well-known various solutions can be applied. 
+
 \section{MultiViewICA (MVICA)}
-\subsection{Probabilistic model}
+% \subsection{Model, likelihood and approximation}
+% %
+% Given $m$ subjects, we model the data $\xb^i\in\bbR^k$ of subject $i$ as
+% \begin{equation}
+% \label{eq:ica_model}
+% \boxed{
+%     \xb^i = A^i(\sbb + \nb^i), \enspace i=1,\dots, m
+%     }
+% \end{equation}
+% %\bt{Matrices as bold letters ?} \pa{I find it understandable to have nothing but matrices in uppercase}
+% where $\sbb = [s_1, \dots, s_k]^{\top} \in \bbR^k$ are the shared independent sources, $\nb^i \in \bbR^k$ is individual noise, $A^i \in \bbR^{k\times k}$ are the individual mixing matrices, assumed to be full-rank.
+% %
+% We assume that samples are observed i.i.d. For simplicity, we assume that the sources share the same density $d$, so that the independence assumption is $p(\sbb) = \prod_{j=1}^k d(s_j)$. Finally, we assume that the noise is Gaussian decorrelated of variance $\sigma^2$, $\nb^i \sim \mathcal{N}(0, \sigma^2I_k)$, and that the noise is independent across subjects and independent from the sources.
+% The assumption of additive white noise on the sources models individual deviations from the shared sources $\sbb$.
+% It is equivalent to having noise on the sensors with covariance $\sigma^2 A^i \left(A^i\right)^{\top}$, i.e. a scaled version of the data covariance without noise.
+
+% Since the sources are shared by the subjects, there are many more observed variables than sources in the model: there are $k$ sources, while there are $k \times m$ observations.
+% %
+% Therefore, model~\eqref{eq:ica_model} can be seen as an instance of \emph{undercomplete} ICA.
+% %
+% The goal of multiview ICA is to recover the mixing matrices $A^i$ from observations of the $\xb^i$.
+% %
+% The following proposition extends the standard idenfitiability theory of ICA~\citep{comon1994independent} to multiview ICA, and shows that recovering the sources/mixing matrices is a well-posed problem up to scale and permutation.
+% %
+% \begin{proposition}[Identifiability of MultiView ICA]
+% \label{prop:identifiability}
+% Consider $\xb^i, \enspace i=1\dots m,$ generated from~\eqref{eq:ica_model}. Assume that $\xb^i = A'^i(\sbb' + \nb'^i)$ for some invertible matrices $A'^i\in \bbR^{k\times k}$, independent non-Gaussian sources $\sbb'\in \bbR^k$ and Gaussian noise $\nb'^i$. Then, there exists a scale and permutation matrix $P\in \bbR^{k\times k}$ such that for all $i$, $A'^i = A^i P$.
+% \end{proposition}
+% %
+% %
+% %A simple method to solve~\eqref{eq:ica_model} is to perform an individual ICA of each subject, therefore obtaining the individual mixing matrices $A^i$ and the sources corrupted with noise $\sbb + \nb^i$.
+% %
+% %The first problem with this approach is that there is an inherent scale and permutation ambiguity in ICA, which means that the recovered sources can be swapped across subjects. 
+% %
+% %The sources should therefore be matched.
+% %
+% %Second, using the data from one subject at a time instead of all the available data to estimate the mixing matrices leads to a loss in statistical power: one would need more samples to estimate properly the mixing matrices using an individual ICA than by using all datasets. 
+% %
+% %This problem is illustrated in the experiments.
+% %
+% We propose a maximum-likelihood approach to estimate the mixing matrices. 
+% We denote by $W^i = (A^i)^{-1}$ the unmixing matrices, and view the likelihood as a function of $W^i$ rather than $A^i$. As shown in Appendix~\ref{sec:appendix:likelihood_transform}, the negative log-likelihood can be written by integrating over the sources
+% \begin{equation} 
+%     \label{eq:likelihood}
+%     \loss(W^1, \dots, W^m) = -\sum_{i=1}^m\log|W^i| - \log\left(\int_{\sbb}\exp\left(-\frac1{2\sigma^2}\sum_{i=1}^m\|W^i\xb^i - \sbb\|^2\right)p(\sbb)d\sbb\right),
+% \end{equation}
+% up to additive constants.
+% %\hr{I think there is a missing term here: I think $log|W_i|$ should actually be $log|\frac{W_i}{\sigma}|$ does not change the optimization though}\pa{yes we should be clearer that we omit everything not depending on W}
+% %where $f$ is the mapping $f(\sbb) = -\sum_{j=1}^k \log(d(s_j))$.
+% %
+% Since this integral factorizes, i.e.\ the integrand is a product of functions of $s_j$, we can perform the integration as shown in Appendix~\ref{sec:appendix:integration}. We define a smoothened version of the logarithm of the source density $d$ by convolution with a Gaussian kernel as
+% $
+%     f(s)= \log \left(\int \exp(-\frac{m}{2\sigma^2} z^2) d(s-z) dz\right)
+% $
+% %\bt{For clarity, mention that f is a log density, that  of the sources convolved with a gaussian kernel ?}
+% %In order to obtain an approximation, we use Laplace's method \cite{erdelyi1956asymptotic}, which states that when the noise level is small, we have $$ \log\left(\int_{\sbb}\exp\left(-\frac1{2\sigma^2}\sum_{i=1}^m\|W^i\xb^i - \sbb\|^2 - f(\sbb)\right)d\sbb\right) \simeq-\frac1{2\sigma^2}\sum_{i=1}^m\|W^i\xb^i - \tilde{\sbb}\|^2 - f(\tilde{\sbb}) +  \text{Cst.}, $$
+% and $\tilde{\sbb} = \frac1m\sum_{i=1}^m W^i\xb^i$ the source estimate.
+% The negative log-likelihood becomes
+% \begin{equation}
+%     \label{eq:cost_function}
+%     \loss(W^1, \dots, W^m) = -\sum_{i=1}^m \log|W^i| + \frac1{2\sigma^2}\sum_{i=1}^m\|W^i\xb^i - \tilde{\sbb}\|^2 + f(\tilde{\sbb}).
+% \end{equation}
+% Multiview ICA is then performed by minimizing $\loss$, and the estimated shared sources are $\tilde{\sbb}$.
+% The negative log-likelihood $\loss$ is quite simple, and importantly, can be computed easily given the parameters of the model and the data; it does not involve any intractable integral.
+% %
+
+% For one subject ($m=1$), $\loss(W^1)$ simplifies to the negative log-likelihood of ICA and we recover Infomax~\cite{bell1995information,cardoso1997infomax}, where the source log-pdf is replaced with the smoothened $f$.
+% %\ag{you have no noise in Infomax. I am confused.}\pa{In the one subject case (usual ica), if you assume gaussian noise on the sources, you recover the same cost function as usual infomax, but with a different non-linearity}
+% %
+% \subsection{Alternate quasi-Newton method for MultiView ICA}
+% %
+% The parameters of the model are estimated by minimizing $\loss$.
+% %
+% We propose a combination of quasi-Newton method and alternate minimization for this task.
+% %
+% First, $\mathcal{L}$ is non-convex: it is only defined when the $W^i$ are invertible, which is a non-convex set.
+% %
+% Therefore, we only look for local minima as usual in ICA.
+% %
+% We propose an alternate minimization scheme, where $\loss$ is alternatively diminished with respect to each $W^i$. 
+% %
+% When all matrices $W^1, \dots, W^m$ are fixed but one, $W^i$, $\loss$ can be rewritten, up to an additive constant 
+% \begin{equation}
+%     \label{eq:indiv_loss}
+%     \loss^i(W^i) = -\log|W^i| + \frac{1 - 1/m}{2\sigma^2}\|W^i\xb^i - \frac{m}{m-1}\tilde{\sbb}^{-i}\|^2 + f(\frac1m W^i \xb^i +\tilde{\sbb}^{-i}), 
+% \end{equation}
+% with $\tilde{\sbb}^{-i} = \frac1m \sum_{j \neq i}W^j \xb^j$.
+% %
+% This function has the same structure as the usual maximum-likelihood ICA cost function: it is written $\loss^i(W^i) = -\log|W^i| + g(W^i\xb^i)$, where $g(\yb) = \sum_{j=1}^kf(\frac{y_j}{m} + \tilde{\sbb}^{-i}_j) + \frac{1 - 1/m}{2\sigma^2}(y_j - \frac{m}{m-1}\tilde{\sbb}^{-i}_j)^2$.
+% %
+% Fast quasi-Newton algorithms ~\cite{zibulevsky2003blind, ablin2018faster} have been proposed for minimizing such functions.
+% %
+% We employ a similar technique as~\cite{zibulevsky2003blind}, which we now describe.
+
+% Quasi-Newton methods are based on approximations of the Hessian of $\loss^i$.
+% %
+% The relative gradient (resp. Hessian)~\cite{amari1996new, cardoso1996equivariant} of $\loss^i$ is defined as the matrix $G^i\in \bbR^{k \times k}$ (resp. tensor $\mathcal{H}^i \in \bbR^{k\times k\times k\times k}$) such that as the matrix $E\in\bbR^{k\times k}$ goes to $0$, we have $\loss^i((I_k + E)W^i) \simeq \loss^i(W^i) + \langle G^i, W^i\rangle + \frac12\langle E, \mathcal{H}^iE\rangle$. Standard manipulations yield:
+% \begin{equation}
+%     \label{eq:gradient}
+%     G^i = \frac1mf'(\tilde{\sbb})(\yb^i)^{\top} + \frac{1 - 1 /m}{\sigma^2}(\yb^i - \frac{m}{m-1}\tilde{\sbb}^{-i})(\yb^i)^{\top} - I_k, \text{ where } \yb^i= W^i\xb^i
+% \end{equation}
+% \begin{equation}
+%     \label{eq:hessian}
+%     \mathcal{H}^i_{abcd} = \delta_{ad}\delta_{bc} + \delta_{ac}\left(\frac{1}{m^2}f''(\tilde{\sbb}_a) + \frac{1 - 1/m}{\sigma^2}\right)\yb^i_{b}\yb^i_d,\enspace \text{for }a, b, c, d =1\dots k
+% \end{equation}
+
+% Newton's direction is then $-\left(\mathcal{H}^i\right)^{-1}G^i$. However, this Hessian is costly to compute (it has $\simeq k^3$ non-zero coefficients) and invert (it can be seen as a big $k ^2\times k^2$ matrix). Furthermore, to enforce that Newton's direction is a descent direction, the Hessian matrix should be regularized in order to eliminate its negative eigenvalues~\cite{nocedal2006numerical}, and $\mathcal{H}^i$ is not guaranteed to be positive definite.
+% %
+% These obstacles render the computation of Newton's direction impractical.
+% %
+% Luckily, if we assume that the signals in $\yb^i$ are independent, severall coefficients cancel, and the Hessian simplifies to the approximation
+% %\bt{IIUC if the sources are independent this is not an approximation} \pa{It is an approximation because even if the sources are independent, you have $y^i = s^i$ only when $W^i$ is the true unmixing matrix, i.e. when the algo has converged}
+% \begin{equation}
+%     \label{eq:hessian_approx}
+%     H^i_{abcd} = \delta_{ad}\delta_{bc} + \delta_{ac}\delta_{bd}\Gamma^i_{ab}\enspace \text{with  }\Gamma^i_{ab} = \left(\frac{1}{m^2}f''(\tilde{\sbb}_a) + \frac{1 - 1/m}{\sigma^2}\right)\left(\yb^i_{b}\right)^2.
+% \end{equation}
+% This approximation is sparse: it only has $k(2k -1)$ non-zero coefficients.
+% %
+% In order to better understand the structure of the approximation, we can compute the matrix $\left(H^iM\right)$ for $M\in \bbR^{k\times k}$. 
+% %
+% We find $\left(H^iM\right)_{ab} = \Gamma^i_{ab}M_{ab} + M_{ba}$: $H^iM_{ab}$ only depends on $M_{ab}$ and $M_{ba}$, indicating a simple block diagonal structure of $H^i$.
+% %
+% The tensor $H^i$ is therefore easily regularized and inverted:
+% $\left((H^i)^{-1}M\right)_{ab} = \frac{\Gamma^i_{ba}M_{ab} - M_{ba}}{\Gamma^i_{ab}\Gamma^i_{ba} - 1}$.
+% %
+% Finally, since this approximation is obtained by assuming that the $\yb^i$ are independent, the direction $-\left(H^i\right)^{-1}G^i$ is close to Newton's direction when the $\yb^i$ are close to independence, leading to fast convergence.
+% %
+% Algorithm~\ref{algo:mv_ica} alternates one step of the quasi-Newton method for each subject until convergence.
+% %
+% A backtracking line-search is used to ensure that each iteration leads to a decrease of $\loss^i$.
+% %
+% The algorithm is stopped when maximum norm of the gradients over one pass on each subject is below some tolerance level, indicating that the algorithm is close to a stationary point.
+
+% \begin{algorithm}[H]
+% \label{algo:mv_ica}
+% \SetAlgoLined
+% \KwIn{Dataset $(\xb^i)_{i=1}^m$, initial unmixing matrices $W^i$, noise parameter $\sigma$, function $f$,  tolerance $\varepsilon$}
+% Set tol$=+\infty$, $\tilde{\sbb} = \frac1m\sum_{i=1}^kW^i\xb^i$\\
+%  \While{\text{tol}$>\varepsilon$}{
+%  tol = 0 \\
+%   \For{$i=1\dots m$}{
+%   Compute $\yb^i = W^i \xb^i$, $\tilde{\sbb}^{-i} = \tilde{\sbb} - \frac1m\yb^i$, gradient $G^i$ (eq.~\eqref{eq:gradient}) and Hessian $H^i$ (eq.~\eqref{eq:hessian_approx})\\
+%   Compute the search direction $D = -\left(H^i\right)^{-1}G^i$\\
+%   Find a step size $\rho$ such that $\loss^i((I_k + \rho D)W^i) < \loss^i(W^i)$ with line search\\
+%   Update $\tilde{\sbb} = \tilde{\sbb} + \frac{\rho}{m} DW^i \xb^i$, $W^i = (I_k + \rho D)W^i$, tol$=\max($tol$,\|G^i\|)$\\
+%   }
+%  }
+%  \Return{Estimated unmixing matrices $W^i$, estimated shared sources $\tilde{\sbb}$}
+%  \caption{Alternate quasi-Newton method for MultiView ICA}
+% \end{algorithm}
+% %
+% %
+% %
+% %
+% \subsection{Robustness to model misspecification}
+% Algorithm~\ref{algo:mv_ica} has two hyperparameters: $\sigma$ and the function $f$.
+% %
+% The latter is usual for an ICA algorithm, but the former is not.
+% %
+% We study the impact of these parameters on the separation capacity of the algorithm, when these parameters do not correspond to those of the generative model~\eqref{eq:ica_model}.
+% %
+% \begin{proposition}
+% \label{prop:robust}
+% We consider the cost function $\loss$ in eq.~\eqref{eq:cost_function} with noise parameters $\sigma$ and function $f$.
+% %
+% Assume sub-linear growth on $f'$: $|f'(x)|\leq c|x|^{\alpha} + d$ for some $c, d > 0$ and $0<\alpha<1$.
+% %
+% Assume that $\xb^i$ is generated following model~\eqref{eq:ica_model}, with noise parameter $\sigma'$ and density of the source $d'$ which need not be related to $\sigma$ and $f$.
+% %
+% Then, there exists a diagonal matrix $\Lambda$ such that $(\Lambda (A^1)^{-1}, \dots, \Lambda (A^m)^{-1})$ is a stationary point of $\loss$, that is $G^1,\dots, G^m =0$ at this point.
+% \end{proposition}
+% %
+% The sub-linear growth of $f'$ is a customary hypothesis in ICA which implies that $d$ has heavier-tails than a Gaussian, and in appendix~\ref{ref:robust} we provide other conditions for the result to hold.
+% %
+% In this setting, the shared sources estimated by the algorithm are $\tilde{\sbb} = \Lambda (\sbb + \frac1m \sum_{i=1}^m \nb^i)$, which is a scaled version of the best estimate of the shared sources under the Gaussian noise hypothesis.
+
+% This proposition shows that, up to scale, the true unmixing matrices are a stationary point for Algorithm~\ref{algo:mv_ica}: if the algorithm starts at this point it will not move.
+% %
+% The question of stability is also interesting: if the algorithm is initialized ~\emph{close} to the true unmixing matrices, will it converge to the true unmixing matrix?
+% %
+% In the appendix~\ref{sec:stability}, we provide an analysis similar to~\cite{cardoso1998blind}, and derive sufficient numerical conditions for the unmixing matrices to be local minima of $\mathcal{L}$.
+% %
+% We also study the practical impact of changing the hyperparameter $\sigma$ on the accuracy of a machine learning pipeline based on MultiviewICA on real fMRI data in the appendix Sec.~\ref{sec:app_sigma_impact}.
+% %
+% As expected from the theoretical study, the performance of the algorithm is barely affected by $\sigma$.
 \subsection{Optimization}
-\subsection{Identifiability}
-\subsection{Robustness to density missmatch}
-\subsection{Stability criterions}
+\subsection{Properties}
+\subsubsection{Identifiability}
+\subsubsection{Robustness to density missmatch}
+\subsubsection{A stability criterion}
 \section{Shared ICA (ShICA)}
-\subsection{General identifiability results}
+\subsection{Probabilistic model and identifiability}
 \subsection{ShICA-J: Fast estimation via Multiset CCA and Joint diagonalization}
+\subsubsection{Conditions for solving ShiCA-J with MCCA}
+\subsubsection{Correcting rotations due to sampling noise with Joint diagonalization}
+\subsubsection{Noise estimates}
+\subsubsection{Inference of shared components}
 \subsection{ShICA-L: A maximum-likelihood solution via generalized EM}
+\subsubsection{Optimization}
+\subsubsection{Inference of shared components}
 
 \chapter{Conclusion}
 
