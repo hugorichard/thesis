@@ -1,4 +1,33 @@
+When exposed to naturalistic stimuli (e.g. movie watching or simulated driving), subjects' experience is closer to their every-day life than with classical
+psychological experiments.
+% 
+This makes naturalistic paradigms an attractive class of
+stimulation protocols for brain imaging.
+%
+However, such stimulations are difficult to quantify, therefore the statistical analysis of the data using supervised regression-based approaches is challenging.
+This has motivated the use of unsupervised learning methods that do not make
+assumptions about what triggers brain activations in the stimuli.
+
+In this chapter, we first present \emph{independent component analysis} (ICA), a widely used
+unsupervised method for neuro-imaging studies routinely applied on individual
+subject electroencephalography (EEG)~\cite{makeig1996independent},
+magnetoencephalography (MEG)~\cite{vigario1998independent} or functional MRI
+(fMRI)~\cite{mckeown1998independent} data, then we review \emph{multiview} unsupervised 
+techniques that leverage the availability of data from multiple subjects
+performing the same experiments. 
+
 \section{Independent component analysis}
+ICA models a set of signals as the product of a \emph{mixing matrix} and a
+\emph{component} matrix containing independent components. As will be seen in this
+section, the required assumptions on the independent components to guarantee
+identifiability are rather weak making ICA a method of choice to analyze the
+data of subjects exposed to a stimuli that is difficult to quantify.
+
+ICA is applied in fMRI data to analyze resting state
+data~\cite{beckmann2005investigations} or when subjects are
+exposed to natural~\cite{malinen2007towards}~\cite{bartels2005brain} or complex stimuli~\cite{calhoun2002different}. 
+In M/EEG processing, it is widely used to isolate acquisitions artifacts from neural signal~\cite{jung1998extended}, and to identify brain components of interest~\cite{vigario2000independent, delorme2012independent}.
+
 \subsection{Non Gaussian ICA}
 \subsubsection{Identifiability}
 \subsubsection{Robustness to density missmatch}
@@ -35,24 +64,56 @@ that our formulation of PCA does not include whitening of the signals.
 % first $k$ rows of $DV^{\top}$, and it does not hold in general that
 % $YY^{\top}=I_k$: in this thesis, what we cann PCA does not include whitening of the signals.
 \section{Analysis of MultiView data}
-Many methods for data-driven multivariate analysis of neuroimaging group studies have been proposed. We summarize the characteristics of some of the most commonly used ones. A more thorough description of these methods can be found in appendix~\ref{sec:app_rel_work}.
+The number of massive neuroimaging datasets, containing data from hundreds of
+participants has increased over the
+years~\cite{taylor2017cambridge,van2013wu,sudlow2015uk}.
+Large scale datasets provide an unprecedented opportunity to assess the generality and validity of neuroscientific findings across subjects, with the potential of offering novel insights on human brain function and useful medical biomarkers.
+In this section, we present multiview unsupervised techniques suited to
+analyze the data of multiple subjects exposed to the same complex stimuli. Such
+techniques assume some similarity between the data of different subjects. This
+assumption can be justified by the findings of
+\cite{hasson2004intersubject} showing that brains exposed to the same natural stimuli exhibit synchronous activity.
+
+Many methods for data-driven multivariate analysis of neuroimaging group studies have been proposed. We summarize the characteristics of some of the most commonly used ones.
+
 \subsection{Group independent component analysis}
+Given the success of ICA in analyzing the data of one subject. It is natural to
+look for extensions of ICA in a multiview setting.
+However, unlike with univariate methods like the GLM model, statistical inference about multiple subjects using ICA is not straightforward: so-called group-ICA is the topic of various studies~\cite{hyvarinen2013independent}.
+
+Several works assume that the subjects share a common mixing matrix, but with different components~\cite{pfister2019robustifying}~\cite{svensen2002ica}.
+% 
+Instead, we focus on models where the subjects share a common components matrix, but have different mixing matrices.
+When the subjects are exposed to the same stimuli, the common component matrix corresponds to the group \emph{shared responses}.
+
 \subsubsection{Likelihood based method}
 One can consider the more general model $\xb_i = A_i\sbb^i + \nb_i$, where the noise covariance can be learned from the data~\cite{guo2008unified}.
 % 
 Having the simpler model~\eqref{eq:mvica:model} leads to a closed-form likelihood, that can then be optimized by more efficient means than the EM algorithm.
 In model~\eqref{eq:mvica:model}, the noise can be interpreted as individual variability rather than sensor noise. %It offers a way to capture more structured noise as is often the case in brain signals.
 % It offers a way to capture more structured noise, which is often present in neuroimaging recordings~\cite{engemann2015automated}.
-In appendix~\ref{app:complex_cov}, we generate data following model $\xb_i = A_i\sbb^i + \nb_i$ and report the reconstruction error. The difference in performance between algorithms is small. 
-\subsubsection{CanICA}
-\cite{varoquaux2009canica}
+\subsubsection{CanICA and ConcatICA}
 
-\subsubsection{ConcatICA}
+Most methods proposed in this framework proceed in two steps~\cite{calhoun2009review, huster2015group}.
+% 
+First, the data of individual subjects are aggregated into a single dataset, often resorting to dimension reduction techniques like Principal Component Analysis (PCA).
+% 
+Then, off-the-shelf ICA is applied on the aggregated dataset.
+% 
+This popular method has the advantage of being simple and
+straightforward to implement since it resorts to customary single-subject
+ICA method.
+
+% 
+\cite{varoquaux2009canica}
 When datasets are high-dimensional, a three steps procedure is often used: first dimensionality reduction is performed on data of each subject  separately; then the reduced data are merged into a common representation; finally, an ICA algorithm is applied for shared components extraction. The merging of the reduced data is often done by PCA \cite{calhoun2001method} or multi set CCA \cite{varoquaux2009canica}.
-%Note that even with large datasets, it can still be computationally feasible to do group level reduction in one step (see \cite{chen2015reduced} or \cite{smith2014group}).
+
+% Note that even with large datasets, it can still be computationally feasible to do group level reduction in one step (see \cite{chen2015reduced} or \cite{smith2014group}).
 This is a popular method for fMRI~\cite{calhoun2009review} and EEG~\cite{eichele2011eegift} group studies.
 These methods directly recover only group level, shared components; when individual components are needed, additional steps are required (back-projection \cite{calhoun2001method} or dual-regression \cite{beckmann2009group}).
-%
+% 
+
+\subsubsection{ConcatICA}
 In contrast, MultiView ICA finds individual and shared independent components in a single step.
 %
 %
@@ -105,7 +166,9 @@ The negative log-likelihood $\loss$ is optimized by performing alternate minimiz
 and $\sbb$. Note that the hyper-parameter $\sigma$ does not have an influence on
 the loss and can therefore be safely ignored.
 
-The gradient with respect to $\sbb$ is given by $ \sum_i A_i^{\top}(A_i \sbb - \xb_i)$
+The gradient with respect to $\sbb$ is given by $ \sum_i A_i^{\top}(A_i \sbb -
+\xb_i) = \sum_i (\sbb -
+A_i^{\top} \xb_i)$
 yielding the closed form updates:
 \begin{equation}
   \sbb \leftarrow  \frac1m \sum_i (A_i^{\top} \xb_i)
@@ -123,12 +186,23 @@ where $\Pcal$ is the projection on the Stiefel manifold: $\Pcal(M) = M
 (M^{\top}M)^{-\frac12}$. In practice $\Pcal(M)$ is computed by performing an SVD
 of $M$, $M = U_M D_M V_M^{\top} $ so that $\Pcal(M) = U_M V_M^{\top}$.
 
+The complexity of Deterministic SRM is in $\bigO(\mathrm{n_{iter}} mpvn)$ where
+$n$ is the number of samples and $\mathrm{n_{iter}}$ the number of iterations.
+We monitor the convergence by looking at the $\ell_{infty}$ norm of the
+gradient. We can monitor the gradient without any increase in complexity.
+Indeed, after the updates with respect to each mixing matrix have been
+carried, only the gradient with respect to $\sbb$ remains: $\sum_i
+(\sbb - A_i^{\top}\xb_i)$. The algorithm is stopped when the
+gradient is below a chosen tolerance.
+
 \subsubsection{Probabilistic SRM}
+\label{sec:probabilisticsrm}
 In Probabilistic SRM , $\Sigma_i=\sigma_i^2 I_v$ and the shared
 components are assumed to be Gaussian $\sbb \sim \Ncal(0, \Sigma_s)$.
-As will be seen in the next section, the model is identifiable only if
-$\Sigma_s$ is diagonal with different diagonal values so we now assume
-$\Sigma_s$ follows these two requirements.
+In~\cite{chen2015reduced}, $\Sigma_s$ is only assumed to be definite positive. However,
+as will be seen in the FastSRM chapter, enforcing a diagonal $\Sigma_s$ ensures
+identifiability (provided the diagonal values are different). So we assume for
+now on, that $\Sigma_s$ is diagonal.
 
 The model is optimized via the expectation maximization algorithm.
 Denoting $\VV[\sbb | \xb] = (\sum_i \frac1{\sigma_i^2} I +
@@ -136,10 +210,12 @@ Denoting $\VV[\sbb | \xb] = (\sum_i \frac1{\sigma_i^2} I +
 A_i^{\top}\xb_i$, we have
 \begin{align}
   p(\xb, \sbb) &= \prod_i \frac{\exp(-\frac{\|\xb_i - A_i \sbb \|^2}{2 \sigma_i^2})}{(2 \pi \sigma_i^{2v})^{\frac12}} \frac{\exp(-\frac12 \langle \sbb , \Sigma_s^{-1} \sbb \rangle )}{(2 \pi | \Sigma_s|)^{\frac12}} \\
-               &= c_1 \exp(-\frac12 \left( \sum_i \frac1{\sigma_i^2}\|\xb_i\|^2 - 2  \langle \sum_i \frac1{\sigma_i^2} A_i^{\top}\xb_i, \sbb \rangle + \sum_i \frac1{\sigma_i^2} \| \sbb \|^2 + \langle \sbb, \Sigma_s^{-1} \sbb \rangle  \right)) \\
-               &= c_2 \exp(-\frac12 \left( \langle  \sbb - \EE[\sbb | \xb], \VV[\sbb | \xb]^{-1} ( \sbb - \EE[\sbb | \xb])  \rangle \right)) \\
+               &= c_1 \exp(-\frac12 \left( \sum_i \frac1{\sigma_i^2}\|\xb_i\|^2 - 2  \langle \sum_i \frac1{\sigma_i^2} A_i^{\top}\xb_i, \sbb \rangle \right. \\& \left.+ \sum_i \frac1{\sigma_i^2} \| \sbb \|^2 + \langle \sbb, \Sigma_s^{-1} \sbb \rangle  \right)) \\
+               &= c_2 \exp(-\frac12 \left( \langle  \sbb - \EE[\sbb | \xb], \VV[\sbb | \xb]^{-1} ( \sbb - \EE[\sbb | \xb])  \rangle \right)) \label{probsrmcompleted}
 \end{align}
-where $c_1, c_2$ are independent of $\sbb$.
+where $c_1 = \frac1{(2 \pi \sigma_i^{2v})^{\frac12}}\frac1{(2 \pi |
+  \Sigma_s|)^{\frac12}}$ and $c_2 = c_1 \exp(-\frac12( \sum_i
+\frac1{\sigma_i^2}\|\xb_i\|^2 - \langle  \EE[\sbb | \xb], \VV[\sbb | \xb]^{-1} \EE[\sbb | \xb] \rangle))$ are independent of $\sbb$.
 Therefore $\sbb| \xb \sim \Ncal(\EE[\sbb | \xb], \VV[\sbb, \xb])$
 
 The negative completed log-likelihood is given by
@@ -154,9 +230,26 @@ updates are therefore given by:
     \label{eq:srm:Aiupdate}
 \end{align}
 
-The complexity of Probabilistic SRM or Deterministic SRM is in $\bigO(\mathrm{n_{iter}} mpvn)$ where
-$n$ is the number of samples and $\mathrm{n_{iter}}$ the number of iterations
-performed until convergence is reached while the storage requirements are in $\bigO(mvn)$.
+It is useful to access the log-likelihood to check the implementation of the
+algorithm and monitor the convergence. From equation~\eqref{probsrmcompleted},
+the likelihood is given by:
+\begin{align}
+  p(\xb) &= c_2 \int_{\sbb} \exp(-\frac12 \left( \langle  \sbb - \EE[\sbb | \xb], \VV[\sbb | \xb]^{-1} ( \sbb - \EE[\sbb | \xb])  \rangle \right)) d\sbb \\
+         &= c_2 (2 \pi |\VV[\sbb | \xb]|)^{\frac12}
+\end{align}
+and so up to constants the negative log-likelihood is given by:
+\begin{align}
+  -\log(p(\xb)) = &\sum_i \frac{v}{2} \log(\sigma_i^2) + \frac12 \log(|\Sigma_s|) - \frac12 \log(|\VV[\sbb | \xb]|) \\ &+ \sum_i
+  \frac12 \frac1{\sigma_i^2}\|\xb_i\|^2 - \frac12 \langle  \EE[\sbb | \xb], \VV[\sbb | \xb]^{-1} \EE[\sbb | \xb] \rangle
+\end{align}
+
+The complexity of Probabilistic SRM is $\bigO(\mathrm{n_{iter}} mpvn)$, the same as in
+Deterministic SRM.
+We can monitor the convergence by looking at the log-likelihood decrease at each iteration
+and stop the algorithm when the magnitude of the decrease is below some
+tolerance.
+The storage requirements of Deterministic or Probabilistic SRM are in
+$\bigO(mvn)$ which simply means that the dataset needs to hold in memory.
 
 % \section{Related Work}
 % \label{sec:rel_work}

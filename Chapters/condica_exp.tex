@@ -31,10 +31,10 @@ augmentation methods: \emph{ICA}, \emph{Covariance}, \emph{ICA + Covariance}, \e
 When no augmentation method is applied we use the label \emph{Original}.
 
 The \emph{ICA} covariance method applies ICA to $X^{task}$ to generate unmixing matrices $W^{task}$ and
-sources $S^{task}=  W^{task} X^{task}$.
+components $S^{task}=  W^{task} X^{task}$.
 %
 To generate a sample $\tilde{\xb}_c$ from class $c$, we sample
-independently from each source restricted to the samples of class $c$ yielding $\tilde{\sbb}^{task}_c$ and mix the data: $\tilde{\xb}_c = (W^{task})^{\dagger}
+independently from each component restricted to the samples of class $c$ yielding $\tilde{\sbb}^{task}_c$ and mix the data: $\tilde{\xb}_c = (W^{task})^{\dagger}
 \tilde{\sbb}^{task}_c$.
 %
 

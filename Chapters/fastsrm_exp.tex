@@ -1,7 +1,19 @@
 \section{Experiments}
-\subsection{Comparing memory usage, fitting time and performance of FastSRM and
+\subsection{Comparing Fitting time and performance of FastSRM and
   SRM on synthetic data}
-We generate
+We generate data $\xb_i$ according to the model of Probabilistic SRM. We sample the value of the subject specific noise level from a normal
+distribution: $\sigma_i \sim \Ncal(0, 0.1)$. The coefficients of the mixing matrices $A_i$
+are obtained by sampling their coefficient from a standardized normal distribution.
+Lastly, the covariance of the shared response $\Sigma_s$ is diagonal and the
+diagonal values are obtained by sampling from a Dirichlet distribution with
+parameter $(1 \dots 1)$.
+
+As the deterministic SRM algorithm is only identifiable up to an arbitrary
+rotation we measure the distance between the true component $S \in \RR^{p, n}$ and
+the predicted component $\hat{S} \in \RR^{p, n}$ by the quantity:
+$min_{A \in \RR^{p, p}} \|A \hat{S} - S \|^2_F =  \|S \hat{S}^{\dagger}\hat{S} - S \|^2_F$.
+
+
 
 
 

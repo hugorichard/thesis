@@ -110,7 +110,7 @@ Moreover, we consider a model that subsumes the distribution of any type of
 fMRI data (task or rest): a linear mixture of $k \leq p$ independent temporal signals.
 %
 We therefore use temporal ICA to learn a dimension reduction and unmixing matrix
-$W^{rest} \in \mathbb{R}^{k, p}$ such that the $k$ sources i.e the $k$ components of
+$W^{rest} \in \mathbb{R}^{k, p}$ such that the $k$ components i.e the $k$ components of
 $S^{rest} = W^{rest} X^{rest}$ are as
 independent as possible.
 %
@@ -118,10 +118,10 @@ independent as possible.
 %
 
 A straightforward method to generate new rest data would be to
-independently sample them from the distribution of the sources.
+independently sample them from the distribution of the components.
 %
 This is easy because such distribution has supposedly independent marginals.
-We apply an invertible quantile transform $q^{rest}$ to the sources $S^{rest}$ so that
+We apply an invertible quantile transform $q^{rest}$ to the components $S^{rest}$ so that
 the distribution of $\zb^{rest} =
 q^{rest}(\sbb^{rest})$ has standardized Gaussian marginals. Since the distribution of
 $\zb^{rest}$ has independent marginals, it is given by $\mathcal{N}(\zero_k, I_k)$
@@ -131,7 +131,7 @@ from actual rest data.
 %
 
 We hypothesize that this is because independence does not hold, and
-thus a latent structure among the marginals of the source distribution has to be taken into account. Therefore we assume that the distribution of $\zb^{rest}$ is given
+thus a latent structure among the marginals of the component distribution has to be taken into account. Therefore we assume that the distribution of $\zb^{rest}$ is given
 by $\mathcal{N}(\zero_k, \Lambda^{rest})$ where $\Lambda^{rest}$ is a definite positive matrix.
 
 $\Lambda^{rest}$ can easily be learned from a standard shrunk covariance
@@ -168,9 +168,9 @@ An overview of our generative method is shown in Fig.~\ref{Fig11}.
 \caption{\textbf{Conditional ICA approach in depth.} 
 The approach proceeds by learning a temporal ICA of rest data $X^{rest} \in
 \mathbb{R}^{p, n}$ , resulting in
-independent sources and unmixing matrix $W^{rest} \in \mathbb{R}^{k, p}$.
+independent components and unmixing matrix $W^{rest} \in \mathbb{R}^{k, p}$.
 %
-Applying the unmixing matrix to the task data, we obtain samples in the source
+Applying the unmixing matrix to the task data, we obtain samples in the component
 space $S^{task} \in \mathbb{R}^{k, n}$.
 %
 Afterwards, we map $S^{task}$ to a normal distribution, yielding $Z^{task} \in

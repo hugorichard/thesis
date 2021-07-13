@@ -1,3 +1,4 @@
+In this section, we empirically verify through extensive experiments on fMRI and MEG data that it improves component identification with respect to competing methods, suggesting that the expressiveness and robustness of our model make it a useful tool for multivariate neural signal analysis.
 
 \section{Experiments}
 \label{sec:expts}
@@ -40,21 +41,21 @@ These two approaches correspond to transposed versions of~\cite{calhoun2001fmri}
 \textbf{Synthetic experiment}
 We validate our method on synthetic data generated according to the model in equation~\eqref{eq:ica_model}.
 %
-The sources are generated i.i.d. from a Laplace density $d(x)=\frac12\exp(-|x|)$.
+The components are generated i.i.d. from a Laplace density $d(x)=\frac12\exp(-|x|)$.
 %
 The mixing matrices $A^1,\cdots, A^m$ are generated with i.i.d. entries following a normal law.
 Each compared algorithm returns a sequence of estimated unmixing matrices $W^1, \dots, W^m$.
 %
-The performance of an algorithm is measured by the reconstruction error between the estimated sources and the true sources.
+The performance of an algorithm is measured by the reconstruction error between the estimated components and the true components.
 %$\frac1M\sum_{i=1}^Md(W^iA^i)$, where $d(P)=\sum_{i=1}^n \left(\sum_{j=1}^n\frac{|p_{ij}|}{\max_{k} |p_{ik}|} - 1\right) + \sum_{j=1}^n \left(\sum_{i=1}^n\frac{|p_{ij}|}{\max_{k} |p_{kj}|} - 1\right)$.
 %
 %This quantity cancels if and only if $P$ is a scale and permutation matrix.
 %
-We use $m=10$ datasets, $k=15$ sources and $n=1000$ samples. Each experiment is repeated with $100$ random seeds.
+We use $m=10$ datasets, $k=15$ components and $n=1000$ samples. Each experiment is repeated with $100$ random seeds.
 %
 We vary the noise level in the data generation from $10^{-2}$ to $10$.
 
-Multiview ICA has uniformly better performance than the other algorithms, which illustrates the strength of maximum-likelihood based methods. In accordance with results of section~\ref{sec:mvica}, it is able to separate the sources even with misspecified noise parameter and source density.
+Multiview ICA has uniformly better performance than the other algorithms, which illustrates the strength of maximum-likelihood based methods. In accordance with results of section~\ref{sec:mvica}, it is able to separate the components even with misspecified noise parameter and component density.
 %
 %\subsection{fMRI experiments}
 %\label{sec:experiments}
@@ -90,7 +91,7 @@ The left-out runs  of the remaining $20\%$ subjects form the validation set.
 %
 The compared algorithms are run on the training set and evaluated using the testing and validation sets.
 %
-After an algorithm is run on training data, it defines for each subject a \emph{forward operator} that maps individual data to the source space and a \emph{backward operator} that maps the source space to individual data. For instance in ICA the forward operator is the product of the dimensionality reduction projection and unmixing matrix.
+After an algorithm is run on training data, it defines for each subject a \emph{forward operator} that maps individual data to the component space and a \emph{backward operator} that maps the component space to individual data. For instance in ICA the forward operator is the product of the dimensionality reduction projection and unmixing matrix.
 %
 We estimate the shared responses on the testing set by applying the forward operators on the testing data and averaging. Finally, we reconstruct the individual data from subjects in the validation set by applying the backward operators to the shared responses. We measure the difference between the true signal and the reconstructed one using voxel-wise $R^2$ score. The $R^2$ score between two series $\xb \in \bbR^n$ and $\yb \in \bbR^n$ is defined as
 $R^2(\xb, \yb) = 1 - \frac1{n\Var(\yb)}\sum_{t=1}^n (x_t - y_t)^2$, where $\Var(\yb) = \frac1n\sum_{t=1}^n (y_t - \frac1n \sum_{t'=1}^n y_{t'})^2$ is the empirical variance of $\yb$.
@@ -127,7 +128,7 @@ This demonstrates its ability to capture inter-subject variability, making it a 
 \textbf{Between subjects time-segment matching} 
 We reproduce the time-segment matching experiment of
 \cite{chen2015reduced}. 
-We split the runs into a train and test set. After fitting the model on the training set, we apply the forward operator of each subject on the test set yielding individual sources matrices. We estimate the shared responses by averaging the individual sources of each subjects but one.  We select a target time-segment (9 consecutive timeframes) in the shared responses and try to localize the corresponding time segment in the sources of the left-out subject using a maximum-correlation classifier.
+We split the runs into a train and test set. After fitting the model on the training set, we apply the forward operator of each subject on the test set yielding individual components matrices. We estimate the shared responses by averaging the individual components of each subjects but one.  We select a target time-segment (9 consecutive timeframes) in the shared responses and try to localize the corresponding time segment in the components of the left-out subject using a maximum-correlation classifier.
 This is a standard evaluation of SRM-like methods also used in  \cite{chen2015reduced}, \cite{guntupalli2018computational}, \cite{Nastase741975} or
 \cite{zhang2016searchlight}.
 %
@@ -143,7 +144,7 @@ MultiView ICA yields a consistent and substantial improvement in accuracy compar
 %
 In appendix~\ref{sec:app_sigma_impact}, we compute the accuracy of MultiviewICA on the sherlock dataset with 10 components when the noise parameter varies. MultiviewICA performs consistently well for a wide range of noise parameter values, and only breaks at very high values. It supports the theoretical claim of Prop~\ref{prop:robust} that the noise parameter is of little importance.
 
-In appendix~\ref{app_spatialmaps}, we present a variation of this experiment.  We measure the ability of each algorithm to extract meaningful shared sources that correlate more when they correspond to the same stimulus than when they correspond to distinct stimuli and show the improved performance of MultiView ICA. 
+In appendix~\ref{app_spatialmaps}, we present a variation of this experiment.  We measure the ability of each algorithm to extract meaningful shared components that correlate more when they correspond to the same stimulus than when they correspond to distinct stimuli and show the improved performance of MultiView ICA. 
 %
 In appendix~\ref{sec:spatial_maps}, we plot the average forward operator across subjects of MultiView ICA and GroupICA with 5 components on the forrest, sherlock, raiders and clips datasets.
 
@@ -151,7 +152,7 @@ In appendix~\ref{sec:spatial_maps}, we plot the average forward operator across 
 \textbf{Phantom MEG data}
 We demonstrate the usefulness of our approach on MEG data.
 %
-The first experiment uses data collected with a realistic head phantom, which is a plastic device mimicking real electrical brain sources.
+The first experiment uses data collected with a realistic head phantom, which is a plastic device mimicking real electrical brain components.
 %
 Eight current dipoles positioned at different locations can be switched on or off.
 %
@@ -167,13 +168,13 @@ We have access to $100$ epochs per dipole.
 %
 For each dipole, we chose $N_e=2, \dots, 16$ epochs at random among our set of 100 epochs and concatenate them in the temporal dimension.
 %
-We then apply algorithms on these data to extract $k=20$ shared sources.
+We then apply algorithms on these data to extract $k=20$ shared components.
 %
-As we know the true source (the timecourse of the dipole), we can compute the reconstruction error of each source as the squared norm of the difference between the estimated source and the true source, after normalization to unit variance and fixing the sign.
+As we know the true component (the timecourse of the dipole), we can compute the reconstruction error of each component as the squared norm of the difference between the estimated component and the true component, after normalization to unit variance and fixing the sign.
 %
-We only retain the source of minimal error.
+We only retain the component of minimal error.
 %
-We also estimate for each forward operator the localization of the source by performing dipole fitting using its column corresponding to the source of minimal error.
+We also estimate for each forward operator the localization of the component by performing dipole fitting using its column corresponding to the component of minimal error.
 %
 We then compute the distance of the estimated dipole to the true dipole.
 %
@@ -183,7 +184,7 @@ We also compare our method to the Bayesian Canonical Correlation Analysis (BCorr
 %
 On this task, BCorrCA is outperformed by ICA methods.
 %
-MultiView ICA requires fewer epochs to correctly reconstruct and localize the true source.
+MultiView ICA requires fewer epochs to correctly reconstruct and localize the true component.
 %
 
 \textbf{Experiment on Cam-CAN dataset}
@@ -193,20 +194,20 @@ Each subject is repeatedly presented an audio-visual stimulus.
 %
 The MEG signal corresponding to these trials are then time-averaged to isolate the evoked response, yielding individual data.
 %
-The MultiView ICA algorithm is then applied to extract $20$ shared sources.
+The MultiView ICA algorithm is then applied to extract $20$ shared components.
 %
-$9$ sources were found to correspond to noise by visual inspection, and the $11$ remaining are displayed in figure~\ref{fig:meg}.
+$9$ components were found to correspond to noise by visual inspection, and the $11$ remaining are displayed in figure~\ref{fig:meg}.
 %
 We observe that MultiView ICA recovers a very clean sequence of evoked potentials with sharp peaks
 for early components and slower responses for late components.
 %
-In order to visualize their localization, we perform source localization for each subject by solving the inverse problem using sLORETA~\cite{pascual2002standardized}, providing a source estimate for each source.
+In order to visualize their localization, we perform component localization for each subject by solving the inverse problem using sLORETA~\cite{pascual2002standardized}, providing a component estimate for each component.
 %
-Then, we register each source estimate to a common reference brain.
+Then, we register each component estimate to a common reference brain.
 %
-Finally, the source estimates are averaged, and thresholded maps are displayed in figure~\ref{fig:meg}.
+Finally, the component estimates are averaged, and thresholded maps are displayed in figure~\ref{fig:meg}.
 %
-Individual maps corresponding to each source are displayed in appendix~\ref{sec:app_montages}.
+Individual maps corresponding to each component are displayed in appendix~\ref{sec:app_montages}.
 The figure highlights both early auditory and visual cortices, also suggesting a propagation
 of the activity towards the ventral regions and higher level visual areas.
 
@@ -216,7 +217,7 @@ of the activity towards the ventral regions and higher level visual areas.
           \includegraphics[width=0.4\linewidth]{figures/mvica/phantom_new.pdf}
           \includegraphics[width=0.4\textwidth]{figures/mvica/camcan_sources.pdf}
           \includegraphics[width=0.4\textwidth]{figures/mvica/montage_all.png}
-    \caption{\emph{Left:} \textbf{Experiment on MEG Phantom data}. Reconstruction error is the norm of the difference between the estimated and true source. Localization error is the distance between the estimated and true dipole. \emph{Right:} \textbf{Experiment on 200 subjects from the CAM-can dataset} \emph{Top:} Time course of $11$ shared sources (one color per source). We recover clean evoked potentials. \emph{Bottom:} Associated brain maps, obtained by averaging source estimates registered to a common reference.}
+    \caption{\emph{Left:} \textbf{Experiment on MEG Phantom data}. Reconstruction error is the norm of the difference between the estimated and true component. Localization error is the distance between the estimated and true dipole. \emph{Right:} \textbf{Experiment on 200 subjects from the CAM-can dataset} \emph{Top:} Time course of $11$ shared components (one color per component). We recover clean evoked potentials. \emph{Bottom:} Associated brain maps, obtained by averaging component estimates registered to a common reference.}
     \label{fig:meg}
 \end{figure}
 
