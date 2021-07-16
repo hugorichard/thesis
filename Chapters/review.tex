@@ -28,6 +28,20 @@ data~\cite{beckmann2005investigations} or when subjects are
 exposed to natural~\cite{malinen2007towards}~\cite{bartels2005brain} or complex stimuli~\cite{calhoun2002different}. 
 In M/EEG processing, it is widely used to isolate acquisitions artifacts from neural signal~\cite{jung1998extended}, and to identify brain components of interest~\cite{vigario2000independent, delorme2012independent}.
 
+\subsection{Principal component analysis (PCA)}
+# Unicity of SVD
+# Complexity of SVD
+In ICA, the mixing matrices are assumed to be square. In practice, however we
+might want to estimate fewer components that they are observations. Therefore, a
+typical pre-processing step is to reduce the dimension by principal component
+analysis (PCA). 
+
+
+For completeness, we start by describing PCA. For a zero-mean data matrix $X$ of size $p\times n$ with $p \leq n$, we denote $X= UD V^{\top}$ the singular value decomposition of $X$ where $U \in \bbR^{p\times p}$, $V \in \bbR^{n \times p}$ are orthogonal and $D$ the diagonal matrix of singular values ordered in decreasing order.
+% 
+The PCA of $X$ with $p$ components is $Y\in\bbR^{p\times n}$ containing the first $p$ rows of $DV^{\top}$, and it does not hold in general that $YY^{\top}=I_p$: for the rest of the paper, what we call PCA does not include whitening of the signals.
+
+
 \subsection{Non Gaussian ICA}
 \subsubsection{Identifiability}
 \subsubsection{Robustness to density missmatch}
@@ -64,19 +78,17 @@ that our formulation of PCA does not include whitening of the signals.
 % first $k$ rows of $DV^{\top}$, and it does not hold in general that
 % $YY^{\top}=I_k$: in this thesis, what we cann PCA does not include whitening of the signals.
 \section{Analysis of MultiView data}
-The number of massive neuroimaging datasets, containing data from hundreds of
-participants has increased over the
-years~\cite{taylor2017cambridge,van2013wu,sudlow2015uk}.
-Large scale datasets provide an unprecedented opportunity to assess the generality and validity of neuroscientific findings across subjects, with the potential of offering novel insights on human brain function and useful medical biomarkers.
 In this section, we present multiview unsupervised techniques suited to
 analyze the data of multiple subjects exposed to the same complex stimuli. Such
 techniques assume some similarity between the data of different subjects. This
-assumption can be justified by the findings of
-\cite{hasson2004intersubject} showing that brains exposed to the same natural stimuli exhibit synchronous activity.
+assumption can be justified by the findings of \cite{hasson2004intersubject} showing that brains exposed to the same natural stimuli exhibit synchronous activity.
+The task of finding common patterns or responses that are shared between
+subjects is called \emph{shared response modeling}.
+
 
 Many methods for data-driven multivariate analysis of neuroimaging group studies have been proposed. We summarize the characteristics of some of the most commonly used ones.
-
 \subsection{Group independent component analysis}
+\label{sec:groupica}
 Given the success of ICA in analyzing the data of one subject. It is natural to
 look for extensions of ICA in a multiview setting.
 However, unlike with univariate methods like the GLM model, statistical inference about multiple subjects using ICA is not straightforward: so-called group-ICA is the topic of various studies~\cite{hyvarinen2013independent}.
@@ -86,14 +98,8 @@ Several works assume that the subjects share a common mixing matrix, but with di
 Instead, we focus on models where the subjects share a common components matrix, but have different mixing matrices.
 When the subjects are exposed to the same stimuli, the common component matrix corresponds to the group \emph{shared responses}.
 
-\subsubsection{Likelihood based method}
-One can consider the more general model $\xb_i = A_i\sbb^i + \nb_i$, where the noise covariance can be learned from the data~\cite{guo2008unified}.
-% 
-Having the simpler model~\eqref{eq:mvica:model} leads to a closed-form likelihood, that can then be optimized by more efficient means than the EM algorithm.
-In model~\eqref{eq:mvica:model}, the noise can be interpreted as individual variability rather than sensor noise. %It offers a way to capture more structured noise as is often the case in brain signals.
-% It offers a way to capture more structured noise, which is often present in neuroimaging recordings~\cite{engemann2015automated}.
 \subsubsection{CanICA and ConcatICA}
-
+\label{sec:canicaandconcatica}
 Most methods proposed in this framework proceed in two steps~\cite{calhoun2009review, huster2015group}.
 % 
 First, the data of individual subjects are aggregated into a single dataset, often resorting to dimension reduction techniques like Principal Component Analysis (PCA).
@@ -113,16 +119,37 @@ This is a popular method for fMRI~\cite{calhoun2009review} and EEG~\cite{eichele
 These methods directly recover only group level, shared components; when individual components are needed, additional steps are required (back-projection \cite{calhoun2001method} or dual-regression \cite{beckmann2009group}).
 % 
 
-\subsubsection{ConcatICA}
-In contrast, MultiView ICA finds individual and shared independent components in a single step.
-%
-%
-Finally, in contrast to the methods described above, our method maximizes a likelihood, which brings statistical guarantees like consistency or asymptotic efficiency.
+\subsubsection{Matching individual ICA decompositions}
+\label{sec:permica}
+A different path to multi-subject ICA is to extract independent components with individual ICA in each subject and align them. We propose a simple baseline approach to do so called \emph{PermICA}.
+Inspired by the heuristic of the hyperalignment method~\cite{haxby2011common} we choose a reference subject and first match the components of all other subjects to the components of the reference subject. The process is then repeated multiple times, using the average of previously aligned components as a reference. Finally, group components are given by the average of all aligned components. We use the Hungarian algorithm to align pairs of mixing matrices~\cite{tichavsky2004optimal}.
+
+% 
+Alternative approaches involving clustering have also been developed~\cite{esposito2005independent,bigdely2013measure}.
+\subsubsection{Likelihood based method}
+\label{sec:guo}
+One can consider the more general model $\xb_i = A_i\sbb^i + \nb_i$, where the noise covariance can be learned from the data~\cite{guo2008unified}.
+% 
+Having the simpler model~\eqref{eq:mvica:model} leads to a closed-form likelihood, that can then be optimized by more efficient means than the EM algorithm.
+In model~\eqref{eq:mvica:model}, the noise can be interpreted as individual variability rather than sensor noise. %It offers a way to capture more structured noise as is often the case in brain signals.
+% It offers a way to capture more structured noise, which is often present in neuroimaging recordings~\cite{engemann2015automated}.
+
 \subsection{Independent vector analysis}
+Independent vector analysis~\cite{lee2008independent} (IVA) models the data as a linear mixture of independent components $\xb_i = A_i \sbb_i$ where each component $s_{ij}$ of a given view $i$ can depend on the corresponding component in other views ($(s_{ij})_{i=1}^m$ are not independent).
+\label{sec:IVA}
+Practical implementations of this very general idea assume a distribution for $p((s_{ij})_{i=1}^m)$. In IVA-L~\cite{lee2008independent}, $p((s_{ij})_{i=1}^m) \propto \exp(-\sqrt{\sum_i (s_{ij})^2})$ (so the variance of each component in each view is assumed to be the same), in IVA-G~\cite{anderson2011joint} or in~\cite{via2011maximum}, $p((s_{ij})_{i=1}^m) \sim \mathcal{N}(0, R_{ss})$ and~\cite{engberg2016independent} proposed a normal inverse-Gamma density.
 \subsubsection{IVA-L}
 \subsubsection{IVA-G}
 
 \subsection{Multiset CCA}
+\label{sec:mcca}
+In its basic formulation, CCA identifies a shared space between two datasets.
+The extension to more than two datasets is ambiguous, and many
+different generalized CCA methods have been proposed. \cite{kettenring1971canonical} introduces 6 objective functions that reduce to CCA when $m=2$ and \cite{nielsen2002multiset} considered 4 different possible constrains leading to 24 different formulations of Multiset CCA.
+
+In this section, we present the formulation refered to
+in~\cite{nielsen2002multiset} as SUMCORR with constraint 4 which is one of the
+fastest to fit.
 
 \subsection{Hyperalignment}
 
@@ -281,4 +308,3 @@ $\bigO(mvn)$ which simply means that the dataset needs to hold in memory.
 % These methods are popular alternative to non-Gaussian ICA in the single-subject setting~\cite{tong1991indeterminacy, belouchrani1997blind, pham1997blind} and they output significantly different components than non-Gaussian ICA~\cite{delorme2012independent}.
 % %
 % Extensions to multiview problems have been proposed~\cite{lukic2002ica, congedo2010group}.
-% \vspace{-5pt}

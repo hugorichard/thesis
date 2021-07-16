@@ -17,7 +17,7 @@ the sensors.
 This greatly simplifies the likelihood of the model which can even be
 written in closed-form.
 
-Despite its simplicity, our model allows for an expressive representation of inter-subject variability through subject-specific functional topographies (mixing matrices) and variability in the individual response (with noise in the component domain).
+Despite its simplicity, MultiView ICA allows for an expressive representation of inter-subject variability through subject-specific functional topographies (mixing matrices) and variability in the individual response (with noise in the component domain).
 % 
 To the best of our knowledge, this is the first time that such a tractable likelihood is proposed for multi-subject ICA.
 % 
@@ -30,19 +30,20 @@ We also provide a sensitivity analysis for MultiView ICA, and show that the choi
 \label{sec:mvica}
 \subsection{Model, likelihood and approximation}
 %
-Given $m$ subjects, we model the data $\xb_i\in\bbR^k$ of subject $i$ as
+Given $m$ subjects, we model the data of subject $i$ as a random vector
+$\xb_i\in\bbR^p$  such that:
 \begin{equation}
 \label{eq:ica_model}
     \xb_i = A_i(\sbb + \nb_i), \enspace i=1,\dots, m
 \end{equation}
 %\bt{Matrices as bold letters ?} \pa{I find it understandable to have nothing but matrices in uppercase}
-where $\sbb \in \bbR^k$ are the shared independent components, $\nb_i \in \bbR^k$ is individual noise, $A_i \in \bbR^{k\times k}$ are the individual mixing matrices, assumed to be full-rank.
+where $\sbb \in \bbR^p$ are the shared independent components, $\nb_i \in \bbR^p$ is individual noise, $A_i \in \bbR^{p\times p}$ are the individual mixing matrices, assumed to be full-rank.
 %
-We assume that samples are observed i.i.d. For simplicity, we assume that the components share the same density $d$, so that the independence assumption is $p(\sbb) = \prod_{j=1}^k d(s_j)$. Finally, we assume that the noise is Gaussian decorrelated of variance $\sigma^2$, $\nb_i \sim \mathcal{N}(0, \sigma^2I_k)$, and that the noise is independent across subjects and independent from the components.
+We assume that samples are observed i.i.d. For simplicity, we assume that the components share the same density $\delta$, so that the independence assumption is $p(\sbb) = \prod_{j=1}^p \delta(s_j)$. Finally, we assume that the noise is Gaussian decorrelated of variance $\sigma^2$, $\nb_i \sim \mathcal{N}(0, \sigma^2I_p)$, and that the noise is independent across subjects and independent from the components.
 The assumption of additive white noise on the components models individual deviations from the shared components $\sbb$.
 It is equivalent to having noise on the sensors with covariance $\sigma^2 A_i \left(A_i\right)^{\top}$, i.e. a scaled version of the data covariance without noise.
 
-Since the components are shared by the subjects, there are many more observed variables than components in the model: there are $k$ components, while there are $k \times m$ observations.
+Since the components are shared by the subjects, there are many more observed variables than components in the model: there are $p$ components, while there are $p \times m$ observations.
 %
 Therefore, model~\eqref{eq:ica_model} can be seen as an instance of \emph{undercomplete} ICA.
 %
@@ -52,128 +53,146 @@ The following proposition extends the standard idenfitiability theory of ICA~\ci
 %
 \begin{proposition}[Identifiability of MultiView ICA]
 \label{prop:identifiability}
-Consider $\xb_i, \enspace i=1\dots m,$ generated from~\eqref{eq:ica_model}. Assume that $\xb_i = A'^i(\sbb' + \nb'^i)$ for some invertible matrices $A'^i\in \bbR^{k\times k}$, independent non-Gaussian components $\sbb'\in \bbR^k$ and Gaussian noise $\nb'^i$. Then, there exists a scale and permutation matrix $P\in \bbR^{k\times k}$ such that for all $i$, $A'^i = A_i P$.
+Consider $\xb_i, \enspace i=1\dots m,$ generated from~\eqref{eq:ica_model}. Assume that $\xb_i = A'_i(\sbb' + \nb'_i)$ for some invertible matrices $A'_i\in \bbR^{p\times p}$, independent non-Gaussian components $\sbb'\in \bbR^p$ and Gaussian noise $\nb'_i$. Then, there exists a scale and permutation matrix $P\in \bbR^{p\times p}$ such that for all $i$, $A'_i = A_i P$.
 \end{proposition}
-%
-%
-%A simple method to solve~\eqref{eq:ica_model} is to perform an individual ICA of each subject, therefore obtaining the individual mixing matrices $A_i$ and the sources corrupted with noise $\sbb + \nb_i$.
-%
-%The first problem with this approach is that there is an inherent scale and permutation ambiguity in ICA, which means that the recovered sources can be swapped across subjects. 
-%
-%The sources should therefore be matched.
-%
-%Second, using the data from one subject at a time instead of all the available data to estimate the mixing matrices leads to a loss in statistical power: one would need more samples to estimate properly the mixing matrices using an individual ICA than by using all datasets. 
-%
-%This problem is illustrated in the experiments.
-%
+The proof is available in appendix~\ref{app:proof:mvica:identifiability}.
+
 We propose a maximum-likelihood approach to estimate the mixing matrices. 
-We denote by $W^i = (A_i)^{-1}$ the unmixing matrices, and view the likelihood as a function of $W^i$ rather than $A_i$. As shown in Appendix~\ref{sec:appendix:likelihood_transform}, the negative log-likelihood can be written by integrating over the components
-\begin{equation} 
-    \label{eq:likelihood}
-    \loss(W^1, \dots, W^m) = -\sum_{i=1}^m\log|W^i| - \log\left(\int_{\sbb}\exp\left(-\frac1{2\sigma^2}\sum_{i=1}^m\|W^i\xb_i - \sbb\|^2\right)p(\sbb)d\sbb\right),
+We denote by $W_i = (A_i)^{-1}$ the unmixing matrices, and view the likelihood
+as a function of $W_i$ rather than $A_i$.
+
+To derive the likelihood, we start by conditioning on $\sbb$. Then, we make a variable transformation from $\xb_i$ to $\nb_i=W_i\xb_i-\sbb$, as opposed to the transformation to $\sbb$ as is usual in ICA. Using the probability transformation formula, we obtain
+\begin{equation}
+p_{\xb_i|\sbb}(\xb_i|\sbb)=|W_i|p_{\nb_i}(W_i\xb_i-\sbb)    
 \end{equation}
+where $p_{\nb_i}$ is the density of $\nb_i$. Note that the $\xb_i$ are conditionally independent given $\sbb$, so we have:
+\begin{equation}
+  p_{\xb|\sbb}(\xb|\sbb)=\prod_{i=1}^m  |W_i| p_{\nb_i}(W_i\xb_i-\sbb)
+\end{equation}
+and we next get the joint density as:
+\begin{equation}
+  p_{\xb, \sbb}(\xb,\sbb)=p_{\sbb}(\sbb) \prod_{i=1}^m  |W_i| p_{\nb^i}(W_i\xb_i-\sbb)
+\end{equation}
+
+Integrating out $\sbb$ and taking the log gives the negative likelihood:
+\begin{align} 
+  \label{eq:likelihood}
+ &\loss(W_1, \dots, W_m) =  \nonumber
+  \\& -\sum_{i=1}^m\log|W_i| -  \log\left(\int_{\sbb}\exp\left(-\frac1{2\sigma^2}\sum_{i=1}^m\|W_i\xb_i - \sbb\|^2\right)p(\sbb)d\sbb\right)
+\end{align}
 up to additive constants.
-%\hr{I think there is a missing term here: I think $log|W_i|$ should actually be $log|\frac{W_i}{\sigma}|$ does not change the optimization though}\pa{yes we should be clearer that we omit everything not depending on W}
-%where $f$ is the mapping $f(\sbb) = -\sum_{j=1}^k \log(d(s_j))$.
-%
-Since this integral factorizes, i.e.\ the integrand is a product of functions of $s_j$, we can perform the integration as shown in Appendix~\ref{sec:appendix:integration}. We define a smoothened version of the logarithm of the component density $d$ by convolution with a Gaussian kernel as
-$
-    f(s)= \log \left(\int \exp(-\frac{m}{2\sigma^2} z^2) d(s-z) dz\right)
-$
-%\bt{For clarity, mention that f is a log density, that  of the sources convolved with a gaussian kernel ?}
-%In order to obtain an approximation, we use Laplace's method \cite{erdelyi1956asymptotic}, which states that when the noise level is small, we have $$ \log\left(\int_{\sbb}\exp\left(-\frac1{2\sigma^2}\sum_{i=1}^m\|W^i\xb_i - \sbb\|^2 - f(\sbb)\right)d\sbb\right) \simeq-\frac1{2\sigma^2}\sum_{i=1}^m\|W^i\xb_i - \tilde{\sbb}\|^2 - f(\tilde{\sbb}) +  \text{Cst.}, $$
-and $\tilde{\sbb} = \frac1m\sum_{i=1}^m W^i\xb_i$ the component estimate.
+
+The integral in~\ref{eq:likelihood} after factorization, is given by
+\begin{equation}
+\int_{\sbb} \prod_{j=1}^p \exp \left( -\frac{1}{2\sigma^2} \sum_{i=1}^m (W_{ij}^{\top}\xb_i-s_j)^2 \right) \delta(s_j) d\sbb
+\end{equation}
+where $W_{ij}$ is the $j$-th line of $W_i$. Denote $y_{ij}=W_{ij}^{\top}\xb_i$ and $\tilde{s_j}=\frac1m\sum_{i=1}^m y_{ij}$.  Fix $j$, and drop it to simplify notation. Then we need to solve the integral
+\begin{align*}
+   &\int_s \exp \left(-\frac{1}{2\sigma^2} \sum_{i=1}^m (y_i-s)^2 \right) \delta(s)ds\\
+   &=\int_s \exp \left(-\frac{1}{2\sigma^2} [ m(\tilde{s}-s)^2 + \sum_{i=1}^m (y_i-\tilde{s})^2] \right) \delta(s)ds \\ 
+&= \exp \left(-\frac{1}{2\sigma^2}\sum_{i=1}^m (y_i-\tilde{s})^2 \right) 
+\int_z \exp \left(-\frac{m}{2\sigma^2} z^2 \right) \delta(\tilde{s}-z) dz
+\end{align*}
+
+where we have made the change of variable $z=\tilde{s}-s$. The remaining integral simply means that $\delta$ is smoothed by a Gaussian kernel, which can be computed exactly if $\delta$ is a Gaussian mixture. We therefore define $f(s) = -\log \left(\int_z \exp \left(-\frac{m}{2\sigma^2} z^2 \right) \delta(s-z) dz\right)$.
+
 The negative log-likelihood becomes
 \begin{equation}
     \label{eq:cost_function}
-    \loss(W^1, \dots, W^m) = -\sum_{i=1}^m \log|W^i| + \frac1{2\sigma^2}\sum_{i=1}^m\|W^i\xb_i - \tilde{\sbb}\|^2 + f(\tilde{\sbb}).
+    \loss(W_1, \dots, W_m) = -\sum_{i=1}^m \log|W_i| + \frac1{2\sigma^2}\sum_{i=1}^m\|W_i\xb_i - \tilde{\sbb}\|^2 + f(\tilde{\sbb}).
 \end{equation}
 Multiview ICA is then performed by minimizing $\loss$, and the estimated shared components are $\tilde{\sbb}$.
 The negative log-likelihood $\loss$ is quite simple, and importantly, can be computed easily given the parameters of the model and the data; it does not involve any intractable integral.
 %
 
-For one subject ($m=1$), $\loss(W^1)$ simplifies to the negative log-likelihood of ICA and we recover Infomax~\cite{bell1995information,cardoso1997infomax}, where the component log-pdf is replaced with the smoothened $f$.
-%\ag{you have no noise in Infomax. I am confused.}\pa{In the one subject case (usual ica), if you assume gaussian noise on the sources, you recover the same cost function as usual infomax, but with a different non-linearity}
+For one subject ($m=1$), $\loss(W_1)$ simplifies to the negative log-likelihood of ICA and we recover Infomax~\cite{bell1995information,cardoso1997infomax}, where the component log-pdf is replaced with the smoothened $f$.
 %
+
 \subsection{Alternate quasi-Newton method for MultiView ICA}
 %
 The parameters of the model are estimated by minimizing $\loss$.
 %
 We propose a combination of quasi-Newton method and alternate minimization for this task.
 %
-First, $\mathcal{L}$ is non-convex: it is only defined when the $W^i$ are invertible, which is a non-convex set.
+First, $\mathcal{L}$ is non-convex: it is only defined when the $W_i$ are invertible, which is a non-convex set.
 %
 Therefore, we only look for local minima as usual in ICA.
 %
-We propose an alternate minimization scheme, where $\loss$ is alternatively diminished with respect to each $W^i$. 
+We propose an alternate minimization scheme, where $\loss$ is alternatively diminished with respect to each $W_i$. 
 %
-When all matrices $W^1, \dots, W^m$ are fixed but one, $W^i$, $\loss$ can be rewritten, up to an additive constant 
-\begin{equation}
+When all matrices $W_1, \dots, W_m$ are fixed but one, $W_i$, $\loss$ can be rewritten, up to an additive constant 
+\begin{align}
     \label{eq:indiv_loss}
-    \loss^i(W^i) = -\log|W^i| + \frac{1 - 1/m}{2\sigma^2}\|W^i\xb_i - \frac{m}{m-1}\tilde{\sbb}^{-i}\|^2 + f(\frac1m W^i \xb_i +\tilde{\sbb}^{-i}), 
-\end{equation}
-with $\tilde{\sbb}^{-i} = \frac1m \sum_{j \neq i}W^j \xb^j$.
+    &\loss_i(W_i) = \nonumber  \\&-\log|W_i| + \frac{1 - 1/m}{2\sigma^2}\|W_i\xb_i - \frac{m}{m-1}\tilde{\sbb}_{-i}\|^2 + f(\frac1m W_i \xb_i +\tilde{\sbb}_{-i}), 
+\end{align}
+with $\tilde{\sbb}_{-i} = \frac1m \sum_{j \neq i}W_j \xb_j$.
 %
-This function has the same structure as the usual maximum-likelihood ICA cost function: it is written $\loss^i(W^i) = -\log|W^i| + g(W^i\xb_i)$, where $g(\yb) = \sum_{j=1}^kf(\frac{y_j}{m} + \tilde{\sbb}^{-i}_j) + \frac{1 - 1/m}{2\sigma^2}(y_j - \frac{m}{m-1}\tilde{\sbb}^{-i}_j)^2$.
+This function has the same structure as the usual maximum-likelihood ICA cost
+function: it is written $\loss_i(W_i) = -\log|W_i| + g(W_i\xb_i)$, where $g(\yb)
+= \sum_{j=1}^pf(\frac{y_j}{m} + \tilde{\sbb}_{-i, j}) + \frac{1 -
+  1/m}{2\sigma^2}(y_j - \frac{m}{m-1}\tilde{\sbb}_{-i, j})^2$ where
+$\tilde{\sbb}_{-i, j}$ is the $j$-th component of $\tilde{\sbb}_{-i}$.
 %
 Fast quasi-Newton algorithms ~\cite{zibulevsky2003blind, ablin2018faster} have been proposed for minimizing such functions.
 %
 We employ a similar technique as~\cite{zibulevsky2003blind}, which we now describe.
 
-Quasi-Newton methods are based on approximations of the Hessian of $\loss^i$.
+Quasi-Newton methods are based on approximations of the Hessian of $\loss_i$.
 %
-The relative gradient (resp. Hessian)~\cite{amari1996new, cardoso1996equivariant} of $\loss^i$ is defined as the matrix $G^i\in \bbR^{k \times k}$ (resp. tensor $\mathcal{H}^i \in \bbR^{k\times k\times k\times k}$) such that as the matrix $E\in\bbR^{k\times k}$ goes to $0$, we have $\loss^i((I_k + E)W^i) \simeq \loss^i(W^i) + \langle G^i, W^i\rangle + \frac12\langle E, \mathcal{H}^iE\rangle$. Standard manipulations yield:
+The relative gradient (resp. Hessian)~\cite{amari1996new, cardoso1996equivariant} of $\loss_i$ is defined as the matrix $G_i\in \bbR^{p \times p}$ (resp. tensor $\mathcal{H}_i \in \bbR^{p\times p\times p\times p}$) such that as the matrix $E\in\bbR^{p\times p}$ goes to $0$, we have $\loss_i((I_p + E)W_i) \simeq \loss_i(W_i) + \langle G_i, W_i\rangle + \frac12\langle E, \mathcal{H}_iE\rangle$. Standard manipulations yield:
 \begin{equation}
     \label{eq:gradient}
-    G^i = \frac1mf'(\tilde{\sbb})(\yb^i)^{\top} + \frac{1 - 1 /m}{\sigma^2}(\yb^i - \frac{m}{m-1}\tilde{\sbb}^{-i})(\yb^i)^{\top} - I_k, \text{ where } \yb^i= W^i\xb_i
+    G_i = \frac1mf'(\tilde{\sbb})(\yb_i)^{\top} + \frac{1 - 1 /m}{\sigma^2}(\yb_i - \frac{m}{m-1}\tilde{\sbb}_{-i})(\yb_i)^{\top} - I_p 
 \end{equation}
-\begin{equation}
+where $\yb_i= W_i\xb_i$.
+\begin{align}
     \label{eq:hessian}
-    \mathcal{H}^i_{abcd} = \delta_{ad}\delta_{bc} + \delta_{ac}\left(\frac{1}{m^2}f''(\tilde{\sbb}_a) + \frac{1 - 1/m}{\sigma^2}\right)\yb^i_{b}\yb^i_d,\enspace \text{for }a, b, c, d =1\dots k
-\end{equation}
+    (\mathcal{H}_i)_{abcd} &= \delta_{ad}\delta_{bc} + \delta_{ac}\left(\frac{1}{m^2}f''(\tilde{s}_a) + \frac{1 - 1/m}{\sigma^2}\right)y_{ib}y_{id} \\ &\text{for }a, b, c, d =1\dots p \nonumber
+\end{align}
 
-Newton's direction is then $-\left(\mathcal{H}^i\right)^{-1}G^i$. However, this Hessian is costly to compute (it has $\simeq k^3$ non-zero coefficients) and invert (it can be seen as a big $k ^2\times k^2$ matrix). Furthermore, to enforce that Newton's direction is a descent direction, the Hessian matrix should be regularized in order to eliminate its negative eigenvalues~\cite{nocedal2006numerical}, and $\mathcal{H}^i$ is not guaranteed to be positive definite.
+Newton's direction is then $-\left(\mathcal{H}_i\right)^{-1}G_i$. However, this Hessian is costly to compute (it has $\simeq p^3$ non-zero coefficients) and invert (it can be seen as a big $p ^2\times p^2$ matrix). Furthermore, to enforce that Newton's direction is a descent direction, the Hessian matrix should be regularized in order to eliminate its negative eigenvalues~\cite{nocedal2006numerical}, and $\mathcal{H}_i$ is not guaranteed to be positive definite.
 %
 These obstacles render the computation of Newton's direction impractical.
 %
-Luckily, if we assume that the signals in $\yb^i$ are independent, severall coefficients cancel, and the Hessian simplifies to the approximation
-%\bt{IIUC if the sources are independent this is not an approximation} \pa{It is an approximation because even if the sources are independent, you have $y^i = s^i$ only when $W^i$ is the true unmixing matrix, i.e. when the algo has converged}
-\begin{equation}
+Luckily, if we assume that the signals in $\yb_i$ are independent, severall coefficients cancel, and the Hessian simplifies to the approximation
+%\bt{IIUC if the sources are independent this is not an approximation} \pa{It is an approximation because even if the sources are independent, you have $y_i = s^i$ only when $W_i$ is the true unmixing matrix, i.e. when the algo has converged}
+\begin{align}
     \label{eq:hessian_approx}
-    H^i_{abcd} = \delta_{ad}\delta_{bc} + \delta_{ac}\delta_{bd}\Gamma^i_{ab}\enspace \text{with  }\Gamma^i_{ab} = \left(\frac{1}{m^2}f''(\tilde{\sbb}_a) + \frac{1 - 1/m}{\sigma^2}\right)\left(\yb^i_{b}\right)^2.
-\end{equation}
-This approximation is sparse: it only has $k(2k -1)$ non-zero coefficients.
+    (H_i)_{abcd} &= \delta_{ad}\delta_{bc} + \delta_{ac}\delta_{bd}\Gamma^i_{ab} \\
+    &\text{with  }(\Gamma_i)_{ab} = \left(\frac{1}{m^2}f''(\tilde{s}_a) + \frac{1 - 1/m}{\sigma^2}\right)\left(y_{ib}\right)^2 \nonumber
+\end{align}
+This approximation is sparse: it only has $p(2p -1)$ non-zero coefficients.
 %
-In order to better understand the structure of the approximation, we can compute the matrix $\left(H^iM\right)$ for $M\in \bbR^{k\times k}$. 
+In order to better understand the structure of the approximation, we can compute the matrix $\left(H_iM\right)$ for $M\in \bbR^{p\times p}$. 
 %
-We find $\left(H^iM\right)_{ab} = \Gamma^i_{ab}M_{ab} + M_{ba}$: $H^iM_{ab}$ only depends on $M_{ab}$ and $M_{ba}$, indicating a simple block diagonal structure of $H^i$.
+We find $\left(H_iM\right)_{ab} = (\Gamma_i)_{ab}M_{ab} + M_{ba}$: $H_iM_{ab}$ only depends on $M_{ab}$ and $M_{ba}$, indicating a simple block diagonal structure of $H_i$.
 %
-The tensor $H^i$ is therefore easily regularized and inverted:
-$\left((H^i)^{-1}M\right)_{ab} = \frac{\Gamma^i_{ba}M_{ab} - M_{ba}}{\Gamma^i_{ab}\Gamma^i_{ba} - 1}$.
+The tensor $H_i$ is therefore easily regularized and inverted:
+$\left((H_i)^{-1}M\right)_{ab} = \frac{\Gamma^i_{ba}M_{ab} - M_{ba}}{\Gamma^i_{ab}\Gamma^i_{ba} - 1}$.
 %
-Finally, since this approximation is obtained by assuming that the $\yb^i$ are independent, the direction $-\left(H^i\right)^{-1}G^i$ is close to Newton's direction when the $\yb^i$ are close to independence, leading to fast convergence.
+Finally, since this approximation is obtained by assuming that the $\yb_i$ are independent, the direction $-H_i^{-1}G_i$ is close to Newton's direction when the $\yb_i$ are close to independence, leading to fast convergence.
 %
 Algorithm~\ref{algo:mv_ica} alternates one step of the quasi-Newton method for each subject until convergence.
 %
-A backtracking line-search is used to ensure that each iteration leads to a decrease of $\loss^i$.
+A backtracking line-search is used to ensure that each iteration leads to a decrease of $\loss_i$.
 %
-The algorithm is stopped when maximum norm of the gradients over one pass on each subject is below some tolerance level, indicating that the algorithm is close to a stationary point.
+The algorithm is stopped when the maximum norm of the gradients over one pass on each subject is below some tolerance level, indicating that the algorithm is close to a stationary point.
 
 \begin{algorithm}[H]
 \label{algo:mv_ica}
 \SetAlgoLined
-\KwIn{Dataset $(\xb_i)_{i=1}^m$, initial unmixing matrices $W^i$, noise parameter $\sigma$, function $f$,  tolerance $\varepsilon$}
-Set tol$=+\infty$, $\tilde{\sbb} = \frac1m\sum_{i=1}^kW^i\xb_i$\\
+\KwIn{Dataset $(\xb_i)_{i=1}^m$, initial unmixing matrices $W_i$, noise parameter $\sigma$, function $f$,  tolerance $\varepsilon$}
+Set tol$=+\infty$, $\tilde{\sbb} = \frac1m\sum_{i=1}^pW_i\xb_i$\\
  \While{\text{tol}$>\varepsilon$}{
  tol = 0 \\
   \For{$i=1\dots m$}{
-  Compute $\yb^i = W^i \xb_i$, $\tilde{\sbb}^{-i} = \tilde{\sbb} - \frac1m\yb^i$, gradient $G^i$ (eq.~\eqref{eq:gradient}) and Hessian $H^i$ (eq.~\eqref{eq:hessian_approx})\\
-  Compute the search direction $D = -\left(H^i\right)^{-1}G^i$\\
-  Find a step size $\rho$ such that $\loss^i((I_k + \rho D)W^i) < \loss^i(W^i)$ with line search\\
-  Update $\tilde{\sbb} = \tilde{\sbb} + \frac{\rho}{m} DW^i \xb_i$, $W^i = (I_k + \rho D)W^i$, tol$=\max($tol$,\|G^i\|)$\\
+  Compute $\yb_i = W_i \xb_i$, $\tilde{\sbb}_{-i} = \tilde{\sbb} - \frac1m\yb_i$, gradient $G_i$ (eq.~\eqref{eq:gradient}) and Hessian $H_i$ (eq.~\eqref{eq:hessian_approx})\\
+  Compute the search direction $D = -H_i^{-1}G_i$\\
+  Find a step size $\rho$ such that $\loss_i((I_p + \rho D)W_i) < \loss_i(W_i)$ with line search\\
+  Update $\tilde{\sbb} = \tilde{\sbb} + \frac{\rho}{m} DW_i \xb_i$, $W_i = (I_p + \rho D)W_i$, tol$=\max($tol$,\|G_i\|)$\\
   }
  }
- \Return{Estimated unmixing matrices $W^i$, estimated shared components $\tilde{\sbb}$}
+ \Return{Estimated unmixing matrices $W_i$, estimated shared components $\tilde{\sbb}$}
  \caption{Alternate quasi-Newton method for MultiView ICA}
 \end{algorithm}
 %
@@ -197,6 +216,8 @@ Assume that $\xb_i$ is generated following model~\eqref{eq:ica_model}, with nois
 %
 Then, there exists a diagonal matrix $\Lambda$ such that $(\Lambda (A^1)^{-1}, \dots, \Lambda (A^m)^{-1})$ is a stationary point of $\loss$, that is $G^1,\dots, G^m =0$ at this point.
 \end{proposition}
+The proof is available in appendix~\ref{ref:robust}.
+
 %
 The sub-linear growth of $f'$ is a customary hypothesis in ICA which implies that $d$ has heavier-tails than a Gaussian, and in appendix~\ref{ref:robust} we provide other conditions for the result to hold.
 %
@@ -211,78 +232,35 @@ In the appendix~\ref{sec:stability}, we provide an analysis similar to~\cite{car
 We also study the practical impact of changing the hyperparameter $\sigma$ on the accuracy of a machine learning pipeline based on MultiviewICA on real fMRI data in the appendix Sec.~\ref{sec:app_sigma_impact}.
 %
 As expected from the theoretical study, the performance of the algorithm is barely affected by $\sigma$.
-\subsection{Dimensionality reduction}
-%
-So far, we have assumed that the dimensionality of each view (subject) and that of the components is the same. This reflects the standard practice in ICA of having equal number of observations and components. 
-%
-In practice, however, we might want to estimate fewer components than there are observations per view; the original dimensionality of the data %(number of voxels, sensors) 
-might in practice not be computationally tractable.
-%
-The problem of how to perform subject-wise dimensionality reduction in group studies 
-% of data for each of the individuals while still considering them jointly and preserving the signal shared across them
-is an interesting one \emph{per se}, and out of the main scope of this work. For our purposes, it can be considered as a preprocessing step for which well-known various solutions can be applied. % step prior to the application of our method,. 
-We discuss this further in section~\ref{sec:rel_work} and in appendix~\ref{sec:app_rel_work}.
-%
-%
-%
+
 \section{Related Work}
-\label{sec:rel_work}
-Many methods for data-driven multivariate analysis of neuroimaging group studies have been proposed. We summarize the characteristics of some of the most commonly used ones. A more thorough description of these methods can be found in appendix~\ref{sec:app_rel_work}.
-%
-For completeness, we start by describing PCA. For a zero-mean data matrix $X$ of size $p\times n$ with $p \leq n$, we denote $X= UD V^{\top}$ the singular value decomposition of $X$ where $U \in \bbR^{p\times p}$, $V \in \bbR^{n \times p}$ are orthogonal and $D$ the diagonal matrix of singular values ordered in decreasing order.
-%
-The PCA of $X$ with $k$ components is $Y\in\bbR^{k\times n}$ containing the first $k$ rows of $DV^{\top}$, and it does not hold in general that $YY^{\top}=I_k$: for the rest of the paper, what we call PCA does not include whitening of the signals.
+In contrast to ConcatICA or GroupICA (see section~\ref{sec:canicaandconcatica}),
+MultiView ICA maximizes a likleihood, which brings statistical guarantees like
+consistency or asymptotic efficiency. Furthermore MultiViewICA finds individual
+and shared independent components in a single step. This differs from ConcatICA or
+GroupICA that require additional steps when individual components are needed
+such as back-projection~\cite{calhoun2001method} or dual-regression~\cite{beckmann2009group}.
+
+The approach of~\cite{guo2008unified} (see section~\ref{sec:guo}) optimizes the more
+general model $\xb_i = A_i\sbb + \nb_i$. 
+The likelihood for this model involves an intractable high dimensional integral
+that is cumbersome to evaluate, and is then optimized with an EM algorithm using
+an inexact E-step.
+Having the simpler model $\xb_i = A_i(\sbb + \nb_i)$ leads to a closed-form likelihood,
+that can then be optimized by more efficient means.
+Note that in MultiView ICA, the noise can be interpreted as individual variability rather than sensor noise. %It offers a way to capture more structured noise as is often the case in brain signals.
 
 
-\textbf{Group ICA} When datasets are high-dimensional, a three steps procedure is often used: first dimensionality reduction is performed on data of each subject  separately; then the reduced data are merged into a common representation; finally, an ICA algorithm is applied for shared component extraction. The merging of the reduced data is often done by PCA \cite{calhoun2001method} or multi set CCA \cite{varoquaux2009canica}.
-%Note that even with large datasets, it can still be computationally feasible to do group level reduction in one step (see \cite{chen2015reduced} or \cite{smith2014group}).
-This is a popular method for fMRI~\cite{calhoun2009review} and EEG~\cite{eichele2011eegift} group studies.
-These methods directly recover only group level, shared components; when individual components are needed, additional steps are required (back-projection \cite{calhoun2001method} or dual-regression \cite{beckmann2009group}).
-%
-In contrast, MultiView ICA finds individual and shared independent components in a single step.
-%
-%
-Finally, in contrast to the methods described above, our method maximizes a likelihood, which brings statistical guarantees like consistency or asymptotic efficiency.
-%
 The SR-ICA approach of \cite{zhang2016searchlight} performs dimension reduction, merging and independent component estimation. It is therefore similar to our method.
-%
 However, they propose to modify the FastICA algorithm~\cite{hyvarinen1999fast} in a rather heuristic way, without specifying an optimization problem, let alone maximizing a likelihood. In the experiments on fMRI data in appendix~\ref{appendix_reproduce}, we obtain better performance with MultiView ICA than the reported performance of SR-ICA.
-%
-%
 
-\textbf{Likelihood-based models} One can consider the more general model $\xb_i = A_i\sbb^i + \nb_i$, where the noise covariance can be learned from the data~\cite{guo2008unified}.
-%
-The likelihood for this model involves an intractable high dimensional integral that is cumbersome to evaluate, and is then optimized with the Expectation-Maximization (EM) algorithm, which is known to converge slowly and unreliably~\cite{bermond1999approximate, petersen2005slow}.
-%
-Having the simpler model~\eqref{eq:ica_model} leads to a closed-form likelihood, that can then be optimized by more efficient means than the EM algorithm.
-In model~\eqref{eq:ica_model}, the noise can be interpreted as individual variability rather than sensor noise. %It offers a way to capture more structured noise as is often the case in brain signals.
-% It offers a way to capture more structured noise, which is often present in neuroimaging recordings~\cite{engemann2015automated}.
-%
-%
-%
+One strength of our model is that we only assume that the mixing matrices are invertible and still enjoy identifiability whereas some other approaches impose additional constraints. For instance tensorial methods~\cite{beckmann2005tensorial} assume that the mixing matrices are the same up to diagonal scaling.
+Other methods impose a common mixing matrix~\cite{cong2013validating, grin2010independent, calhoun2001fmri, Monti18UAI}. Like PCA, the Shared Response Model~\cite{chen2015reduced} (SRM) assumes orthogonality of the mixing matrices. While the model defines a simple likelihood and provides an efficient way to reduce dimension, the orthogonal constraint may not be plausible.
 
-\textbf{Structured mixing matrices} One strength of our model is that we only assume that the mixing matrices are invertible and still enjoy identifiability whereas some other approaches impose additional constraints. For instance tensorial methods~\cite{beckmann2005tensorial} assume that the mixing matrices are the same up to diagonal scaling.
-%
-Other methods impose a common mixing matrix~\cite{cong2013validating, grin2010independent, calhoun2001fmri, Monti18UAI}. Like PCA, the Shared Response Model~\cite{chen2015reduced} (SRM) assumes orthogonality of the mixing matrices. While the model defines a simple likelihood and provides an efficient way to reduce dimension, the SRM model is not identifiable as shown in appendix~\ref{sec:app_identifiability}, and the orthogonal constraint may not be plausible.
-%
+Deep Learning methods, such as convolutional auto-encoders (CAE), can also be used to find the subject specific unmixing~\cite{chen2016convolutional}. While these nonlinear extensions of the aforementioned methods are interesting, these models are hard to train and interpret. In the experiments on fMRI data in appendix~\ref{appendix_reproduce}, we obtain better accuracy with MultiView ICA than that of CAE reported in~\cite{chen2016convolutional}.
 
-\textbf{Matching components a posteriori} A different path to multi-subject ICA is to extract independent components with individual ICA in each subject and align them. We propose a simple baseline approach to do so called \emph{PermICA}.
-Inspired by the heuristic of the hyperalignment method~\cite{haxby2011common} we choose a reference subject and first match the components of all other subjects to the components of the reference subject. The process is then repeated multiple times, using the average of previously aligned components as a reference. Finally, group components are given by the average of all aligned components. We use the Hungarian algorithm to align pairs of mixing matrices~\cite{tichavsky2004optimal}.
-%
-Alternative approaches involving clustering have also been developed~\cite{esposito2005independent,bigdely2013measure}.
+Lastly, IVA based methods (see section~\ref{sec:IVA}) do not specifically model
+the shared response which is the quantity of interest in this work.
 
-\textbf{Deep Learning} Deep Learning methods, such as convolutional auto-encoders (CAE), can also be used to find the subject specific unmixing~\cite{chen2016convolutional}. While these nonlinear extensions of the aforementioned methods are interesting, these models are hard to train and interpret. In the experiments on fMRI data in appendix~\ref{appendix_reproduce}, we obtain better accuracy with MultiView ICA than that of CAE reported in~\cite{chen2016convolutional}.
-
-\textbf{Correlated component analysis} Other methods can be used to recover the shared neural responses such as the correlated component approach of Dmochowski~\cite{dmochowski2012correlated}. We benchmark our method against its probabilistic version~\cite{kamronn2015multiview} called BCorrCA in Figure~\ref{fig:meg}. Our method yields much better results. 
-
-\textbf{Autocorrelation} Another way to perform ICA is to leverage spectral diversity of the components rather than non-Gaussianity.
-%
-These methods are popular alternative to non-Gaussian ICA in the single-subject setting~\cite{tong1991indeterminacy, belouchrani1997blind, pham1997blind} and they output significantly different components than non-Gaussian ICA~\cite{delorme2012independent}.
-%
-Extensions to multiview problems have been proposed~\cite{lukic2002ica, congedo2010group}.
-\vspace{-5pt}
-%
-%
-%Our method is demonstrated on multiple neuroscience data, where the use of ICA is widespread.
-%
-%Applied to a group study of hundreds of subjects, it has the potential to give unprecedented insights on the human brain.
+In the next section, we evaluate the performance of MultiView ICA on synthetic
+data, on EEG and fMRI data and compare its performance to other GroupICA methods.

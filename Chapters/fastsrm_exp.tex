@@ -17,7 +17,83 @@ $min_{A \in \RR^{p, p}} \|A \hat{S} - S \|^2_F =  \|S \hat{S}^{\dagger}\hat{S} -
 
 
 
+\textbf{fMRI data and preprocessing} 
+We evaluate the performance of our approach on four different fMRI datasets.
+%
+The \emph{sherlock} dataset~\cite{chen2017shared} contains recordings of 16 subjects watching an episode of the BBC TV show "Sherlock" (50 mins).
+%
+The \emph{forrest} dataset~\cite{hanke2014high} was collected while 19 subjects were listening to an auditory version of the film "Forrest Gump" (110 mins).
+%
+The \emph{clips} dataset~\cite{ibc} was collected while 12 participants were exposed to short video clips (130 mins).
+%
+The \emph{raiders} dataset~\cite{ibc} was collected while 11 participants were watching the movie "Raiders of the Lost Ark" (110 mins).
+%
+The \emph{raiders-full} dataset~\cite{ibc} is an extension of the \emph{raiders} dataset where the first two scenes of the movie are shown twice (130 mins).
+%
+Like \cite{zhang2016searchlight}, we used full brain data. The rest of the preprocessing is identical to \cite{chen2017shared}. See \ref{preprocessing} for a detailed description of the datasets and preprocessing steps. Unless stated otherwise we use spatially unsmoothed data, except for the \emph{sherlock} dataset, for which the available data are already preprocessed with a 6\,mm spatial smoothing. All datasets are built from successive acquisitions called \emph{runs} that typically last 10 minutes each.
+%
 
+\textbf{Between subjects time-segment matching} 
+\label{timesegment_expe}
+We reproduce the time-segment matching experiment in
+\cite{chen2015reduced}. 
+We split the runs into a train and test set. After fitting the model on the training set, we apply the forward operator of each subject on the test set yielding individual components matrices. We estimate the shared responses by averaging the individual components of each subjects but one.  We select a target time-segment (9 consecutive timeframes) in the shared responses and try to localize the corresponding time segment in the components of the left-out subject using a maximum-correlation classifier.
+This is a standard evaluation of SRM-like methods also used in  \cite{chen2015reduced}, \cite{guntupalli2018computational}, \cite{Nastase741975} or
+\cite{zhang2016searchlight}.
+%
+The time-segment is said to be
+correctly classified if the correlation between the sample and target
+time-segment is higher than with any other time-segment (partially overlapping time windows are excluded).
+%
+We use 5-Fold cross-validation across runs: the training set contains 80\% of the runs and the test set 20\%, and repeat the experiment using all possible choices for left-out subjects. 
+%
+The mean accuracy is reported in Figure~\ref{fig:timesegment} (bottom). 
+%
+\textbf{Reconstructing the BOLD signal of missing subjects}
+\label{sec:srm:reconstruction}
+
+We want to show that once unmixing matrices have been learned, they can be
+used to predict
+evoked responses across subjects, which can be useful to perform transfer learning~\cite{zhang2018transfer}.
+%
+We split the data into three groups. First, we randomly choose $80\%$ of all runs from all subjects to form the training set.
+%
+Then, we randomly choose $80\%$ of subjects and take the remaining $20\%$  runs as testing set.
+%
+The left-out runs  of the remaining $20\%$ subjects form the validation set.
+%
+The compared algorithms are run on the training set and evaluated using the testing and validation sets.
+%
+After an algorithm is run on training data, it defines for each subject a \emph{forward operator} that maps individual data to the component space and a \emph{backward operator} that maps the component space to individual data. For instance in ICA the forward operator is the product of the dimensionality reduction projection and unmixing matrix.
+%
+We estimate the shared responses on the testing set by applying the forward operators on the testing data and averaging. Finally, we reconstruct the individual data from subjects in the validation set by applying the backward operators to the shared responses. We measure the difference between the true signal and the reconstructed one using voxel-wise $R^2$ score. The $R^2$ score between two series $\xb \in \bbR^n$ and $\yb \in \bbR^n$ is defined as
+$R^2(\xb, \yb) = 1 - \frac1{n\Var(\yb)}\sum_{t=1}^n (x_t - y_t)^2$, where $\Var(\yb) = \frac1n\sum_{t=1}^n (y_t - \frac1n \sum_{t'=1}^n y_{t'})^2$ is the empirical variance of $\yb$.
+%
+The $R^2$ score is always smaller than $1$, and equals $1$ when $\xb= \yb$.
+The experiment is repeated 25 times with random splits to obtain error bars.
+
+
+In this experiment we apply a 6\,mm spatial smoothing to all datasets. The $R^2$ score per
+voxel depends heavily on which voxel is considered. For example voxels in the
+visual cortex are better reconstructed in the \emph{sherlock} dataset than in
+the \emph{forrest} dataset.
+
+Performances are therefore given in terms of mean $R^2$ score inside a region of interest (ROI)
+in order to leave out regions where there is no useful information.
+
+In order to determine the ROIs, we focus on the R2 score per voxel between the BOLD signal reconstructed by ConcatICA and the actual bold signal. We run GroupICA with $10, 20$ and $50$ components and select the voxels that obtained a positive R2 score for all sets of components.
+% 
+We discard voxels with an R2 score above 80\% as they visually correspond to artefacts and apply a binary opening using a unit cube as the structuring element. The chosen regions are plotted in figure~\ref{fig:roi}.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{figures/mvica/reconstruction_score_roi.pdf}
+  \caption{\textbf{Data-driven choice of ROI} Chosen ROIs for the experiment: Reconstructing the BOLD signal of missing subjects.}
+  \label{fig:roi}
+\end{figure}
+
+The ROI choice is driven by the performance of Concat ICA (more information
+available in appendix~\ref{brainmaps}.
 \subsubsection{Datasets}
 
 We use five fMRI datasets of subjects exposed to naturalistic stimuli. When needed, datasets are preprocessed with FSL \url{http://fsl.fmrib.ox.ac.uk/fsl} using slice time correction, spatial realignment, coregistration to the T1 image and affine transformation of the functional volumes to a template brain (MNI). Using nilearn \cite{abraham2014machine}, preprocessed data are resampled, masked (using a full brain mask available at \url{http://cogspaces.github.io/assets/data/hcp_mask.nii.gz}), detrended and standardized after a 5 mm smoothing is applied.  
@@ -79,6 +155,66 @@ CamCAN consists of data obtained from the CamCAN repository (available at \url{h
 We use all available subjects and runs yielding 647 participants and 1 run of 193 timeframes.
 
 A summary about the size of each dataset is available in Table~\ref{tab:dataset_desc}.
+
+
+\section{fMRI experiments}
+\label{sec:app_expts}
+\subsection{Dataset description and preprocessing}
+\label{preprocessing}
+The full brain mask used to select brain regions is available in the Python package associated with the paper.
+
+\paragraph{Sherlock}
+In \emph{sherlock} dataset, 17 participants are watching "Sherlock" BBC TV show (beginning of episode 1). 
+%
+These data are downloaded from \url{http://arks.princeton.edu/ark:/88435/dsp01nz8062179}. 
+%
+Data were acquired using a 3T scanner with an isotropic spatial resolution of 3 mm. 
+%
+More information including the preprocessing pipeline is available in~\cite{chen2017shared}.
+%
+Subject 5 is removed because of missing data leaving us with 16 participants.
+%
+Although \emph{sherlock} data are downloaded as a temporal concatenation of two runs, we split it manually into 4 runs of 395 timeframes and one run of 396 timeframes so that we can perform 5 fold cross-validation in our experiments.
+
+
+\paragraph{FORREST}
+In FORREST dataset 20 participants are listening to an audio version of the Forrest Gump  movie.
+%
+FORREST data are downloaded from OpenfMRI~\cite{poldrack2013toward}. 
+%
+Data were acquired using a 7T scanner with an isotropic spatial resolution of 1~mm (see more details in~\cite{hanke2014high}) and resampled to an isotropic spatial resolution of 3~mm.
+%
+More information about the forrest project can be found at \url{http://studyforrest.org}.
+%
+Subject 10 is discarded because not all runs available for other subjects were available for subject 10 at the time of writing.
+%
+Run 8 is discarded because it is not present in most subjects.
+ 
+\paragraph{RAIDERS}
+In RAIDERS dataset, 11 participants are watching the movie "Raiders of the lost ark".
+% 
+The RAIDERS dataset belongs to the Individual Brain Charting dataset~\cite{ibc}.
+% 
+Data were acquired using a 3T scanner and resampled to an isotropic spatial resolution of 3~mm.
+% 
+The RAIDERS dataset reproduces the protocol described in~\cite{haxby2011common}.
+%
+Preprocessing details are described in~\cite{ibc}.
+
+\paragraph{CLIPS}
+In CLIPS dataset, 12 participants are exposed to short video clips. 
+%
+The CLIPS dataset also belongs to the Individual Brain Charting dataset (\cite{ibc}).
+%
+Data were acquired using a 3T scanner and resampled to an isotropic spatial resolution of 3~mm.
+%
+It reproduces the protocol of original studies described in \cite{nishimoto2011reconstructing} and \cite{huth2012continuous}.
+%
+Preprocessing details are described in~\cite{ibc}.
+
+At the time of writing, the CLIPS and RAIDERS dataset from the individual brain charting dataset \url{https://project.inria.fr/IBC/} are available at \url{https://openneuro.org/datasets/ds002685}.
+%
+Protocols on the visual stimuli presented are available in a dedicated repository on Github: \url{https://github.com/hbp-brain-charting/public_protocols}.
 
 
 \subsubsection{fMRI reconstruction: Evaluate the ability to recover BOLD signal on left-out runs}

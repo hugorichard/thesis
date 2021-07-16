@@ -1,57 +1,63 @@
-In this section, we empirically verify through extensive experiments on fMRI and MEG data that it improves component identification with respect to competing methods, suggesting that the expressiveness and robustness of our model make it a useful tool for multivariate neural signal analysis.
+In this section, we empirically verify through extensive experiments on fMRI and
+MEG data that MultiView ICA improves component identification with respect to competing methods, suggesting that the expressiveness and robustness of this model make it a useful tool for multivariate neural signal analysis.
 
-\section{Experiments}
+\section{Experimental setting}
 \label{sec:expts}
-All code for the experiments is written in Python.
-%
-We use Matplotlib for plotting~\cite{hunter2007matplotlib} , scikit-learn for
-machine-learning pipelines~\cite{pedregosa2011scikit}, MNE for MEG
-processing~\cite{gramfort2013meg}, Nilearn for fMRI processing and for its CanICA implementation~\cite{abraham2014machine}, Brainiak~\cite{kumar2020brainiak} for its SRM implementation. 
-%
 In the following, the noise parameter in MultiviewICA is always fixed to $\sigma =1$.
-%
 We use the function $f(\cdot)= \log\cosh(\cdot)$, giving the non-linearity $f'(\cdot) = \tanh(\cdot)$.
-%
 We use the Infomax cost function~\cite{bell1995information} with the same non-linearity to perform standard ICA, with the Picard algorithm~\cite{ablin2018faster} for fast and robust minimization of the cost function. Picard is applied with the default hyper-parameters.
-%
 The code for MultiViewICA is available online at \url{https://github.com/hugorichard/multiviewica}.
 %
 
-We compare the following methods to obtain $k$ components:
+We compare the following methods to obtain $p$ components:
+\emph{PermICA} is described in section~\ref{sec:permica}.
 %
-\emph{GroupPCA} is PCA on spatially concatenated data. It corresponds to a transposed version of \cite{smith2014group}.
+\emph{SRM} is the FastSRM algorithm described in part~\ref{part:fastsrm}.
 %
-\emph{PermICA} is described in the previous section.
+\emph{ConcatICA} is described in section~\ref{sec:canicaandconcatica}.
 %
-\emph{SRM} is  the algorithm of~\cite{chen2015reduced}.
+\emph{PCA+ConcatICA} corresponds to ConcatICA applied on subject data that have been first individually reduced by PCA with $p$ components. 
 %
-\emph{GroupICA} is ICA applied after GroupPCA.
-%
-\emph{PCA+GroupICA} corresponds to GroupICA applied on subject data that have been first individually reduced by PCA with $k$ components. 
-%
-These two approaches correspond to transposed versions of~\cite{calhoun2001fmri}, and are similar to \cite{eichele2011eegift}.
-\emph{CanICA} corresponds to PCA+GroupICA where the merging is done using multi set CCA rather than PCA. The dimension reduction in MultiView ICA and PermICA is performed with SRM in fMRI experiments and subject-specific PCA in MEG experiments. Initialization is discussed in appendix~\ref{sec:app_init}. A summary of our quantitative results on real data is available in appendix~\ref{sec:app_real_data}.
+\emph{CanICA} is described in section~\ref{sec:canicaandconcatica}.
+We define the chance level as the performance of an algorithm that computes unmixing matrices and projections to lower dimensional space by sampling random numbers from a standard normal distribution. 
+% 
 
-\begin{wrapfigure}{l}{0.4\textwidth}
-\label{fig:synth}
-\includegraphics[width=0.38\textwidth]{figures/mvica/distance_expe.pdf}
-\captionof{figure}{\textbf{Synthetic experiment}: reconstruction error of the algorithms on data following model~\eqref{eq:ica_model}.}
-\end{wrapfigure}
 
-\textbf{Synthetic experiment}
+The dimension reduction in MultiView ICA and PermICA is performed with SRM in
+fMRI experiments and subject-specific PCA in MEG experiments.
+
+Since the cost function $\mathcal{L}$ is non-convex, having a good initialization can make a difference in the final result. We propose a two stage approach.
+We begin by applying PermICA on the datasets, which gives us a first set of unimixing matrices $W_1, \dots, W_m$.
+Note that we could also use ConcatICA for this task.
+Next, we perform a diagonal scaling of the mixing matrices, i.e. we find the diagonal matrices $\Lambda_1, \dots, \Lambda_m$ such that $\mathcal{L}(\Lambda_1W_1, \dots, \Lambda_mW_m)$ is minimized.
+To do so, we employ Algorithm~\ref{algo:mv_ica} but only take into account the diagonal of the descent direction at each step: the update rule becomes $W_i \leftarrow (I_p + \rho \text{Diag}(D))W_i$.
+The initial unmixing matrices for Algorithm~\ref{algo:mv_ica} are then taken as $\Lambda_1W_1, \dots, \Lambda_mW_m$.
+Empirically, we find that this two stage procedure allows for the algorithm to start close from a satisfactory solution.
+A summary of our quantitative results on real data is available in appendix~\ref{sec:app_real_data}.
+
+
+\section{Synthetic experiment}
+
 We validate our method on synthetic data generated according to the model in equation~\eqref{eq:ica_model}.
 %
 The components are generated i.i.d. from a Laplace density $d(x)=\frac12\exp(-|x|)$.
 %
-The mixing matrices $A^1,\cdots, A^m$ are generated with i.i.d. entries following a normal law.
-Each compared algorithm returns a sequence of estimated unmixing matrices $W^1, \dots, W^m$.
+The mixing matrices $A_1,\cdots, A_m$ are generated with i.i.d. entries following a normal law.
+Each compared algorithm returns a sequence of estimated unmixing matrices $W_1, \dots, W_m$.
 %
 The performance of an algorithm is measured by the reconstruction error between the estimated components and the true components.
-%$\frac1M\sum_{i=1}^Md(W^iA^i)$, where $d(P)=\sum_{i=1}^n \left(\sum_{j=1}^n\frac{|p_{ij}|}{\max_{k} |p_{ik}|} - 1\right) + \sum_{j=1}^n \left(\sum_{i=1}^n\frac{|p_{ij}|}{\max_{k} |p_{kj}|} - 1\right)$.
+
+\begin{figure}
+  \label{fig:synth}
+  \includegraphics[width=0.5\textwidth]{figures/mvica/distance_expe.pdf}
+  \captionof{figure}{\textbf{Synthetic experiment}: reconstruction error of the algorithms on data following model~\eqref{eq:ica_model}.}
+\end{figure}
+
+%$\frac1M\sum_{i=1}^Md(W^iA^i)$, where $d(P)=\sum_{i=1}^n \left(\sum_{j=1}^n\frac{|p_{ij}|}{\max_{p} |p_{ip}|} - 1\right) + \sum_{j=1}^n \left(\sum_{i=1}^n\frac{|p_{ij}|}{\max_{p} |p_{pj}|} - 1\right)$.
 %
 %This quantity cancels if and only if $P$ is a scale and permutation matrix.
 %
-We use $m=10$ datasets, $k=15$ components and $n=1000$ samples. Each experiment is repeated with $100$ random seeds.
+We use $m=10$ datasets, $p=15$ components and $n=1000$ samples. Each experiment is repeated with $100$ random seeds.
 %
 We vary the noise level in the data generation from $10^{-2}$ to $10$.
 
@@ -60,54 +66,14 @@ Multiview ICA has uniformly better performance than the other algorithms, which 
 %\subsection{fMRI experiments}
 %\label{sec:experiments}
 
-\textbf{fMRI data and preprocessing} 
-We evaluate the performance of our approach on four different fMRI datasets.
-%
-The \emph{sherlock} dataset~\cite{chen2017shared} contains recordings of 16 subjects watching an episode of the BBC TV show "Sherlock" (50 mins).
-%
-The \emph{forrest} dataset~\cite{hanke2014high} was collected while 19 subjects were listening to an auditory version of the film "Forrest Gump" (110 mins).
-%
-The \emph{clips} dataset~\cite{ibc} was collected while 12 participants were exposed to short video clips (130 mins).
-%
-The \emph{raiders} dataset~\cite{ibc} was collected while 11 participants were watching the movie "Raiders of the Lost Ark" (110 mins).
-%
-The \emph{raiders-full} dataset~\cite{ibc} is an extension of the \emph{raiders} dataset where the first two scenes of the movie are shown twice (130 mins).
-%
-Like \cite{zhang2016searchlight}, we used full brain data. The rest of the preprocessing is identical to \cite{chen2017shared}. See \ref{preprocessing} for a detailed description of the datasets and preprocessing steps. Unless stated otherwise we use spatially unsmoothed data, except for the \emph{sherlock} dataset, for which the available data are already preprocessed with a 6\,mm spatial smoothing. All datasets are built from successive acquisitions called \emph{runs} that typically last 10 minutes each.
-%
-We define the chance level as the performance of an algorithm that computes unmixing matrices and projections to lower dimensional space by sampling random numbers from a standard normal distribution. 
-%
+\section{Reconstructing the BOLD signal of missing subjects}
+We first benchmark GroupICA methods through their ability to reconstruct the
+BOLD signal of a left-out subject.
+The experimental setting is the same as in the reconstruction experiment in the
+FastSRM chapter (see section~\ref{sec:srm:reconstruction}).
 
-\textbf{Reconstructing the BOLD signal of missing subjects}
-We want to show that once unmixing matrices have been learned, they can be
-used to predict
-evoked responses across subjects, which can be useful to perform transfer learning~\cite{zhang2018transfer}.
-%
-We split the data into three groups. First, we randomly choose $80\%$ of all runs from all subjects to form the training set.
-%
-Then, we randomly choose $80\%$ of subjects and take the remaining $20\%$  runs as testing set.
-%
-The left-out runs  of the remaining $20\%$ subjects form the validation set.
-%
-The compared algorithms are run on the training set and evaluated using the testing and validation sets.
-%
-After an algorithm is run on training data, it defines for each subject a \emph{forward operator} that maps individual data to the component space and a \emph{backward operator} that maps the component space to individual data. For instance in ICA the forward operator is the product of the dimensionality reduction projection and unmixing matrix.
-%
-We estimate the shared responses on the testing set by applying the forward operators on the testing data and averaging. Finally, we reconstruct the individual data from subjects in the validation set by applying the backward operators to the shared responses. We measure the difference between the true signal and the reconstructed one using voxel-wise $R^2$ score. The $R^2$ score between two series $\xb \in \bbR^n$ and $\yb \in \bbR^n$ is defined as
-$R^2(\xb, \yb) = 1 - \frac1{n\Var(\yb)}\sum_{t=1}^n (x_t - y_t)^2$, where $\Var(\yb) = \frac1n\sum_{t=1}^n (y_t - \frac1n \sum_{t'=1}^n y_{t'})^2$ is the empirical variance of $\yb$.
-%
-The $R^2$ score is always smaller than $1$, and equals $1$ when $\xb= \yb$.
-The experiment is repeated 25 times with random splits to obtain error bars.
-
-
-In this experiment we apply a 6\,mm spatial smoothing to all datasets. The $R^2$ score per
-voxel depends heavily on which voxel is considered. For example voxels in the
-visual cortex are better reconstructed in the \emph{sherlock} dataset than in
-the \emph{forrest} dataset (see Figure~\ref{fig:brainmaps} in appendix~\ref{brainmaps}). In Figure~\ref{fig:reconstruction}
-(top) we plot the mean $R^2$ score inside a region of interest (ROI) in order to leave out regions where there is no useful information.
-%
-ROIs are chosen based on the performance of GroupICA (more
-details in appendix~\ref{brainmaps}).
+ In Figure~\ref{fig:reconstruction}
+(top) we report the mean $R^2$ score inside region of interest.
 %
 MultiView ICA has similar or better performance than the other methods on all datasets.
 %
@@ -125,31 +91,97 @@ This demonstrates its ability to capture inter-subject variability, making it a 
 \end{figure}
 
 
-\textbf{Between subjects time-segment matching} 
-We reproduce the time-segment matching experiment of
-\cite{chen2015reduced}. 
-We split the runs into a train and test set. After fitting the model on the training set, we apply the forward operator of each subject on the test set yielding individual components matrices. We estimate the shared responses by averaging the individual components of each subjects but one.  We select a target time-segment (9 consecutive timeframes) in the shared responses and try to localize the corresponding time segment in the components of the left-out subject using a maximum-correlation classifier.
-This is a standard evaluation of SRM-like methods also used in  \cite{chen2015reduced}, \cite{guntupalli2018computational}, \cite{Nastase741975} or
-\cite{zhang2016searchlight}.
+For completeness, we plot in Figure~\ref{fig:brainmaps}, for GroupICA, SRM and MultiViewICA, the R2 score per voxel using 50 components for datasets \emph{sherlock}, \emph{forrest}, \emph{raiders} and \emph{clips}. As could be anticipated from the task definition, \emph{forrest} obtains high reconstruction accuracy in the auditory cortices, while \emph{clips} shows good reconstruction in the visual cortex (occipital lobe mostly); the richer \emph{sherlock} and \emph{raiders} datasets yield good reconstructions in both domains, but also in other systems (language, motor).
 %
-The time-segment is said to be
-correctly classified if the correlation between the sample and target
-time-segment is higher than with any other time-segment (partially overlapping time windows are excluded).
+We also see visually see that data reconstructed by MultiViewICA are
+a better approximation of the original data than other methods.
 %
-We use 5-Fold cross-validation across runs: the training set contains 80\% of the runs and the test set 20\%, and repeat the experiment using all possible choices for left-out subjects. 
-%
-The mean accuracy is reported in Figure~\ref{fig:timesegment} (bottom). 
-%
+This is particularly obvious for the \emph{clips} datasets where it is
+clear that voxels in the posterior part of the superior
+temporal sulcus are better recovered by MultiViewICA than by SRM or
+GroupICA.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{figures/mvica/reconstruction_score_fullbrain.pdf}
+  \caption{\textbf{Reconstructing the BOLD signal of missing subjects: Reconstruction R2 score per voxel} We plot for GroupICA, SRM and MultiViewICA, the R2 score per voxel using 50 components for datasets \emph{sherlock}, \emph{forrest}, \emph{raiders} and \emph{clips}. We visually see that data reconstructed by MultiViewICA are more faithful reproduction of the original data than other methods.}
+  \label{fig:brainmaps}
+\end{figure}
+
+
+
+\section{Between subjects time-segment matching} 
+We reproduce the time-segment matching experiment in
+section~\ref{sec:timesegment_expe}. 
 MultiView ICA yields a consistent and substantial improvement in accuracy compared to other methods on the four datasets. We see a marked improvement on the datasets sherlock and forrest. A possible explanation lies in the preprocessing pipeline. Sherlock data undergo a 6~mm spatial smoothing and Forrest data are acquired at a higher resolution (7T vs 3T for other data). This affects the signal to noise ratio.
 %
-In appendix~\ref{sec:app_sigma_impact}, we compute the accuracy of MultiviewICA on the sherlock dataset with 10 components when the noise parameter varies. MultiviewICA performs consistently well for a wide range of noise parameter values, and only breaks at very high values. It supports the theoretical claim of Prop~\ref{prop:robust} that the noise parameter is of little importance.
 
-In appendix~\ref{app_spatialmaps}, we present a variation of this experiment.  We measure the ability of each algorithm to extract meaningful shared components that correlate more when they correspond to the same stimulus than when they correspond to distinct stimuli and show the improved performance of MultiView ICA. 
-%
+In order to investigate the practical impact of the choice of hyper-parameter
+$\sigma$, we compute the accuracy of the MultiView ICA algorithm with different
+choice of $\sigma$.
+Results are reported in Fig.~\ref{fig:supp_noise_sensitivity}. 
+\begin{figure}
+  \centering
+  \includegraphics[width=0.6\textwidth]{figures/mvica/noise_sensitivity_reb.pdf}
+  \caption{\textbf{Effect of the parameter $\sigma$}: We compute the accuracy of the multiview-ICA pipeline on the time-segment matching experiment for various values of the $\sigma$ hyperparameter over a grid. The accuracy varies only marginally with $\sigma$.}
+  \label{fig:supp_noise_sensitivity}
+\end{figure}
+MultiviewICA performs consistently well for a wide range of noise parameter values, and only breaks at very high values. It supports the theoretical claim of Prop~\ref{prop:robust} that the noise parameter is of little importance.
+
 In appendix~\ref{sec:spatial_maps}, we plot the average forward operator across subjects of MultiView ICA and GroupICA with 5 components on the forrest, sherlock, raiders and clips datasets.
 
+
+\subsection{Between-runs time-segment matching}
+\label{app_spatialmaps}
+We measure the ability of each algorithm to extract meaningful shared components that correlate more when they correspond to the same stimulus than when they correspond to distinct stimuli. We use the \emph{raiders-full} dataset, which allows this kind of analysis because subjects watch some selected scenes from the movie twice, during the first two runs (1 and 2) and the last two (11 and 12).
+%
+First, the forward operators are learned by fitting each algorithm with 20 components on the data of all 11 subjects using all 12 runs. We then select a subset of 8 subjects and the shared components are computed by applying the forward operators and averaging.
+%
+We select a large target time-segment ($50$
+timeframes) taken at random from run 1 and 2, and we try to localize the corresponding sample time-segment from the 10 last runs using a single component of the shared components.
+%
+The time-segment is said to be
+correctly classified if the correlation between the target and corresponding sample
+time-segment is higher than with any other time-segment (partially overlapping windows are excluded).
+%
+In contrast to the \emph{between subject time-segment matching} experiment, we obtain one accuracy score per component.
+%
+We repeat the experiment 10 times with different subsets of subjects randomly chosen and report the mean accuracy of the 3 best performing components in Figure~\ref{fig:swetha}. Error bars correspond to a 95~\% confidence interval.
+%
+MultiView ICA achieves the highest accuracy.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{figures/mvica/swetha_exp_full_fit.pdf}
+  \caption{\textbf{Between runs time-segment matching}. Interesting components correlates more when they correspond to the same stimulus (same scenes of the movie) than when they correspond to distinct stimuli (different scenes).
+  %We show that when MultiView ICA is used, we can locate a target time-segment in one session using the data of another session corresponding to the same stimuli.
+  We extract 20 components and report the mean accuracy of the 3 best performing components}
+  \label{fig:swetha}
+\end{figure}
+
+
+We then focus on the 3 best performing components of MultiView ICA. For each component, we plot in Figure~\ref{fig:app_spatialmaps} (left) the shared components during two sets of runs where subjects were exposed to the same scenes of the movie. We then study the localisation of these components.
+%
+We average the forward operators across subjects and plot the columns corresponding to the components of interest in Figure~\ref{fig:app_spatialmaps} (right).
+%
+As each column is seen as a set of weights over all voxels, it represents a spatial map.
+
+The component 1 of the shared responses follows almost the same pattern in the two set of runs corresponding to the same scenes of the movie. The spatial map corresponding to component 1 highlights the language network.
+%
+In component 2, the temporal patterns during the viewing of identical scenes are also very similar. The corresponding spatial map highlights the visual network especially the visual dorsal pathway.
+%
+In component 3, there exists a similarity however less striking than with the two previous components. The corresponding spatial map highlights a contrast between the spatial attention network and the auditory network.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{figures/mvica/swetha_exp_full_fit_appendix.pdf}
+  \caption{\textbf{Between-runs time segment matching: spatial maps and timecourses} \emph{Left:} Timecourses of the 3 shared components yielding the highest accuracy. The two displayed set of runs correspond to the same scenes in the movie. \emph{Right:} Localisation of the same shared components in the brain}
+  \label{fig:app_spatialmaps}
+\end{figure}
+
+
 %\subsection{MEG experiments}
-\textbf{Phantom MEG data}
+\section{Phantom MEG data}
 We demonstrate the usefulness of our approach on MEG data.
 %
 The first experiment uses data collected with a realistic head phantom, which is a plastic device mimicking real electrical brain components.
@@ -168,7 +200,7 @@ We have access to $100$ epochs per dipole.
 %
 For each dipole, we chose $N_e=2, \dots, 16$ epochs at random among our set of 100 epochs and concatenate them in the temporal dimension.
 %
-We then apply algorithms on these data to extract $k=20$ shared components.
+We then apply algorithms on these data to extract $p=20$ shared components.
 %
 As we know the true component (the timecourse of the dipole), we can compute the reconstruction error of each component as the squared norm of the difference between the estimated component and the true component, after normalization to unit variance and fixing the sign.
 %
@@ -187,7 +219,7 @@ On this task, BCorrCA is outperformed by ICA methods.
 MultiView ICA requires fewer epochs to correctly reconstruct and localize the true component.
 %
 
-\textbf{Experiment on Cam-CAN dataset}
+\section{Experiment on Cam-CAN dataset}
 Finally, we apply MultiView ICA on the Cam-CAN dataset~\cite{taylor2017cambridge}. We use the magnetometer data from the MEG of $200$ subjects.
 %
 Each subject is repeatedly presented an audio-visual stimulus. 
@@ -214,10 +246,13 @@ of the activity towards the ventral regions and higher level visual areas.
 \begin{figure}
     \centering
 
-          \includegraphics[width=0.4\linewidth]{figures/mvica/phantom_new.pdf}
-          \includegraphics[width=0.4\textwidth]{figures/mvica/camcan_sources.pdf}
-          \includegraphics[width=0.4\textwidth]{figures/mvica/montage_all.png}
-    \caption{\emph{Left:} \textbf{Experiment on MEG Phantom data}. Reconstruction error is the norm of the difference between the estimated and true component. Localization error is the distance between the estimated and true dipole. \emph{Right:} \textbf{Experiment on 200 subjects from the CAM-can dataset} \emph{Top:} Time course of $11$ shared components (one color per component). We recover clean evoked potentials. \emph{Bottom:} Associated brain maps, obtained by averaging component estimates registered to a common reference.}
+          \includegraphics[width=0.6\textwidth]{figures/mvica/phantom_new.pdf}
+          \includegraphics[width=0.6\textwidth]{figures/mvica/camcan_sources.pdf}
+          \includegraphics[width=0.6\textwidth]{figures/mvica/montage_all.png}
+    \caption{\emph{Top:} \textbf{Experiment on MEG Phantom data}. Reconstruction
+      error is the norm of the difference between the estimated and true
+      component. Localization error is the distance between the estimated and
+      true dipole. \emph{Middle and Bottom:} \textbf{Experiment on 200 subjects from the CAM-can dataset} \emph{Middle:} Time course of $11$ shared components (one color per component). We recover clean evoked potentials. \emph{Bottom:} Associated brain maps, obtained by averaging component estimates registered to a common reference.}
     \label{fig:meg}
 \end{figure}
 

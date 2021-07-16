@@ -1,26 +1,19 @@
-\section{Introduction}
-In many data science problems, data are available through different views. In general, views represent different measurement modalities such as audio and video, or the same text can be available in different languages. Our main interest here is neuroimaging where recordings are made from several subjects. In particular, it is of interest to find common patterns or responses that are shared between subjects when they receive the same stimulation or perform the same cognitive task \citep{chen2015reduced,richard2020modeling}. 
+In the previous section, we have introduced MultiView ICA, a well principled method to perform shared response modeling. 
+However, MultiView ICA do not model subject specific deviations from the shared
+response. Yet, the magnitude of the response may differ across subjects \cite{penny2007random}, as does any noise due to heart beats, respiratory artefacts or head movement~\cite{liu2016noise}.
+%
+More importantly, most GroupICA methods are typically unable to separate
+Gaussian components.
 
-A popular line of work to perform such shared response modeling is given by group independent component analysis (ICA) methods. The fastest methods~\cite{calhoun2001method, varoquaux2009canica} are among the most popular, yet they are not grounded on principled probabilistic models for the multiview setting. 
-%
-More principled approaches exist~\cite{richard2020modeling, guo2008unified}, however they do not model subject specific-deviations from the shared response; the magnitude of the response may differ across subjects \cite{penny2007random}, as does any noise due to heart beats, respiratory artefacts or head movement~\cite{liu2016noise}.
-%
-More importantly, most GroupICA methods are typically unable to separate Gaussian components.
+Independent vector analysis (IVA)~\cite{lee2008independent, anderson2011joint}
+suggests a powerful framework. However, the two most common implementations (IVA-L~\cite{lee2008independent} and IVA-G~\cite{anderson2011joint}) only estimate view-specific components, and do not model or extract a shared response. 
+They are thus not well-suited for modelling the dependencies between views in
+functional brain imaging, as we will argue in detail below.
 
-Independent vector analysis (IVA)~\cite{lee2008independent, anderson2011joint} suggests a powerful framework, where components are independent within views but each component of a given view can depend on the corresponding component in other views. 
-%
-However, the two most common implementations (IVA-L~\cite{lee2008independent} and IVA-G~\cite{anderson2011joint}) only estimate view-specific components, and do not model or extract a shared response. 
-%\bt{What versions of IVA ? need to be more precise}
-%
-They are thus not well-suited for modelling the dependencies between views in functional brain imaging, as we will argue in detail below. On the other hand, the shared response model~\cite{chen2015reduced} is a popular approach to perform shared response modeling, yet it imposes orthogonality constrains that are too restrictive and not biologically plausible.
-
-In this work we introduce Shared ICA (ShICA), where each dataset is modeled as a linear transform of shared independent components contaminated by additive Gaussian noise. ShICA allows for principled extraction of the shared components (or responses) in addition to view-specific components. 
+In this chapter, we introduce Shared ICA (ShICA), where each dataset is modeled as a linear transform of shared independent components contaminated by additive Gaussian noise. ShICA allows for principled extraction of the shared components (or responses) in addition to view-specific components. 
 %
 Since it incorporates a statistically sound noise model, it enables optimal inference (minimum mean squared error, MMSE) of the shared responses.
-%, as well as the parameters modelling individual differences.
-% \ag{last sentence can be improved}
 
-The paper is organized as follows.
 We first analyse the theoretical properties of the ShICA model, before providing powerful inference algorithms.
 First, we exhibit necessary and sufficient conditions for ShICA to be identifiable (previous work only shows local identifiability~\cite{anderson2014independent}), in the presence of Gaussian or non-Gaussian components. 
 %
@@ -31,28 +24,22 @@ We next point out a practical problem, namely that even a small sampling noise c
 We further introduce ShICA-ML, a maximum likelihood estimator of ShICA that models non-Gaussian components using a Gaussian mixture model. 
 %
 While ShICA-ML yields more accurate components, ShICA-J is significantly faster and offers a great initialization to ShICA-ML.
-Experiments on fMRI and MEG data demonstrate that the ensuing method outperforms existing GroupICA and IVA methods.
-
 
 \section{Shared ICA (ShICA): an identifiable multi-view model}
-\paragraph{Notations} We write vectors in bold letter $\vb$ and scalars in lower case $a$. Upper case letters $M$ are used to denote
-matrices. We denote $|W|$ the absolute value of the determinant of $W$. $\xb \sim \Ncal(\mub, \Sigma)$ means that $\xb \in \mathbb{R}^k$ follows
-a multivariate normal distribution of mean $\mub \in \mathbb{R}^k$ and
-covariance $\Sigma \in \mathbb{R}^{k \times k}$. The $j, j$ entry of a diagonal matrix $\Sigma_i$ is denoted $\Sigma_{ij}$, the $j$ entry of $\yb_i$ is denoted $y_{ij}$. Lastly, $\delta$ is the Kronecker delta.
-
-\paragraph{Model Definition} In the following, $\xb_1, \dots ,\xb_m \in \bbR^p$ denote the $m$ observed random vectors obtained from the $m$ different views. We posit the following generative model, called Shared ICA (ShICA): for $i= 1\dots m$
+We assume a similar generative model as in MultiViewICA:
 \begin{equation}
   \label{eq:model}
    \xb_i = A_i(\sbb + \nb_i)
 \end{equation}
-where $\sbb \in \mathbb{R}^{p}$ contains the latent variables giving the \emph{shared components}, $A_1,\dots, A_m\in\bbR^{p\times p}$ are invertible mixing matrices, and $\nb_i \in
-\mathbb{R}^{p}$ are \emph{individual noises}. The individual noises model both the deviations of a view  from the mean ---i.e.\ individual differences--- and measurement noise. Importantly, we explicitly model both the shared components and the individual differences in a probabilistic framework to enable an optimal inference of the parameters and the responses.
 
-We assume that the shared components are statistically independent, and that the individual noises are Gaussian and independent from the shared components:
-$p(\sbb) = \prod_{j=1}^p p(s_j)$ and $\nb_i \sim\mathcal{N}(0, \Sigma_i)$, where the matrices $\Sigma_i$ are assumed diagonal and positive. Without loss of generality, components are assumed to have unit variance $\bbE[\sbb \sbb^{\top}] = I_p$. We further assume that there are at least 3 views: $m \geq 3$. 
+Like in MultiView ICA we assume that the shared components are statistically independent $p(\sbb) = \prod_{j=1}^p p(s_j)$, and
+that the individual noises are Gaussian and independent from the shared
+components. We assume $\nb_i \sim\mathcal{N}(0, \Sigma_i)$, where the matrices
+$\Sigma_i$ are assumed diagonal and positive. This contrasts with MultiView ICA: the individual noise variances are learned and are not assumed to be the same across
+components or subjects.
+We further assume that there are at least 3 views: $m \geq 3$. 
 
 In contrast to almost all existing works, we assume that some components (possibly all of them) may be Gaussian, and denote $\mathcal{G}$ the set of Gaussian components: $\sbb_j \sim \mathcal{N}(0, 1)$ for $j \in \mathcal{G}$. The other components are non-Gaussian: for $j\notin \mathcal{G}$, $\sbb_j$ is non-Gaussian.
-%We denote $g$ the number of Gaussian components.
 
 
 \paragraph{Identifiability} The parameters of the model are $\Theta = (A_1, \dots, A_m, \Sigma_1, \dots, \Sigma_m)$. We are interested in the identifiability of this model: given observations $\xb_1,\dots, \xb_m$ generated with parameters $\Theta$, are there some other $\Theta'$ that can generate the same observations?
@@ -69,12 +56,37 @@ It is readily seen that there is one trivial set of indeterminacies in the probl
 \label{thm:identif}
 We suppose Assumption~\ref{ass:diversity}. We let $\Theta'=(A_1', \dots, A_m', \Sigma_1', \dots,\Sigma_m')$ another set of parameters, and assume that they also generate $\xb_1,\dots, \xb_m$. Then, there exists a sign and permutation matrix $P$ such that for all $i$, $A_i'=A_iP$, and $\Sigma_i'= P^{\top} \Sigma_i P$.
 \end{theorem}
-The proof is in Appendix~\ref{proof:identif}. Identifiability in the Gaussian case is a consequence of the identifiability results in~\cite{via2011joint} and in the general case, local identifiability results can be derived from the work of ~\cite{anderson2014independent}. 
+\label{proof:identif}
+\begin{proof}
+By hypothesis, the covariances verify $C_{ij} =\bbE[\xb_i\xb_j^\top] = A_i(I_p + \delta_{ij}\Sigma_i)A_j^{\top} = A'_i(I_p + \delta_{ij}\Sigma'_i){A'_j}^{\top}$ for all $i, j$. We let $P_i=A_i^{-1}A_i'$. The previous relationship for $j\neq i$ gives $P_iP_j^{\top} = I_p$. Because there are more than 3 views, there is another integer $k \notin\{i,j\}$, and we have $P_iP_k^{\top}= P_jP_k^{\top}=I_p$. This shows that $P_i = P_j$: all these matrices are equal, and we call $P$ their common value. The previous equation also gives $PP^{\top} = I_p$, so $P$ is orthogonal. 
+%
+We have that $s + n_i$ and $s' + n_i'$ have independent components and $s + n^i
+= P(s' + n_i')$. Lemma~\ref{lemma:ica} in appendix~\ref{app:sec:lemmas} (a direct consequence of classical ICA results~\cite{comon1994independent}, Theorem 10) gives $P=\Pi^{-1} \Omega \Pi'$ where $\Pi$ and $\Pi'$ are sign and permutation matrices such that the first $g$ components of $\Pi(s + n_i)$ and $\Pi'(s' + n_i')$ are Gaussian, and $\Omega$ is a block diagonal matrix given by
+\[
+\Omega = \begin{bmatrix} \Omega_g & 0 \\ 0 & I_{p - g} \end{bmatrix}
+\]
+where $\Omega_g$ is orthogonal.
+%
+We call $A^{(g)}$ the first $g \times g$ block of a matrix $A$ so that $\Omega^{(g)} = \Omega_g$.
+
+Then, considering only the Gaussian components, we can write for $i=j$:  
+$(\Pi \Sigma_i)^{(g)} = \Omega_g (\Pi' \Sigma'_i)^{(g)} \Omega_g^{\top}$ for all
+$i$. This, combined with Assumption~\ref{ass:diversity}, implies that $\Omega_g$
+is a sign and permutation matrix (see Lemma~\ref{lemma:eigdecomp} in appendix~\ref{app:sec:lemmas}) and therefore $P$ is a sign and permutation matrix. Then it follows that $I + \Sigma_i = P(I + \Sigma'_i)P^{\top}$ and therefore $\Sigma_i = P \Sigma'_i P^{\top}$ so $\Sigma'_i = P^{\top} \Sigma_i P$.
+\end{proof}
+
+Identifiability in the Gaussian case is a consequence of the identifiability results in~\cite{via2011joint} and in the general case, local identifiability results can be derived from the work of ~\cite{anderson2014independent}. 
 %
 However local identifiability only shows that for a given set of parameters there exists a neighborhood in which no other set of parameters can generate the same observations~\cite{rothenberg1971identification}. In contrast, the proof of Theorem~\ref{thm:identif} shows global identifiability.
 
 % \pierre{Lacks biblio: this result is not from us per se}
-Theorem~\ref{thm:identif} shows that the task of recovering the parameters from the observations is a well-posed problem, under the sufficient condition of Assumption~\ref{ass:diversity}.  We also note that Assumption~\ref{ass:diversity} is necessary for identifiability. For instance, if $j$ and $j'$ are two Gaussian components such that $\Sigma_{ij} = \Sigma_{ij'}$ for all $i$, then a global rotation of the components $j, j'$ yields the same covariance matrices. The current work assumes $m \geq 3$, in appendix~\ref{app:identifiability} we give an identifiability result for $m=2$.
+Theorem~\ref{thm:identif} shows that the task of recovering the parameters from
+the observations is a well-posed problem, under the sufficient condition of
+Assumption~\ref{ass:diversity}.  We also note that
+Assumption~\ref{ass:diversity} is necessary for identifiability. For instance,
+if $j$ and $j'$ are two Gaussian components such that $\Sigma_{ij} =
+\Sigma_{ij'}$ for all $i$, then a global rotation of the components $j, j'$
+yields the same covariance matrices. The current work assumes $m \geq 3$. In appendix~\ref{app:identifiability} we give an identifiability result for $m=2$.
 
 
 
@@ -124,7 +136,23 @@ $\lambda_1 \dots \lambda_p$ are distinct.
   We suppose
   Assumption~\ref{ass:uniqueeig} (only). Then, there exists a permutation matrix $P$ and scale matrices $\Gamma_i$ such that $W_i = P\Gamma_i A_i^{-1}$ for all $i$.
 \end{theorem}
-The proof is in Appendix~\ref{proof:eig}. This theorem means that solving the generalized eigenvalue problem~\eqref{eq:eigv} allows to recover the mixing matrices up to a scaling and permutation: this form of generalized CCA recovers the parameters of the statistical model.
+\label{proof:eig}
+\begin{proof}
+  Let us denote $W \in \bbR^{mp \times mp}$ the block diagonal matrix with block $i$ given by
+  $(A_i)^{-1}$. We have $C \ub = \lambda D \ub  \iff W C W^\top \zb = \lambda W D W^\top \zb
+  $ where $\ub = W^\top \zb$. We call $\zb$ a reduced eigenvector.
+  Each
+  block in $W C W^\top$ and in $W D W^\top$ is diagonal so any reduced eigenvector $\zb = \begin{bmatrix} \zb_1 \\ \vdots \\ \zb_m \end{bmatrix}$ is
+  such that the matrix $Z = [\zb_1 \dots \zb_m]$ has exactly one non-zero line.
+  Following Lemma~\ref{lemma:nonzerocoord} in appendix~\ref{app:sec:lemmas}, the first $p$ leading reduced
+  eigenvectors $\zb^1, \dots, \zb^p$ all have different first non-zero coordinates.
+  Therefore the concatenation of the first $p$ leading reduced eigenvectors is given
+  by $[\zb^1, \dots \zb^p] = \begin{bmatrix} \Gamma_1 \\ \vdots \\ \Gamma_m \end{bmatrix} P^{\top}$ where $P^{\top} \in \mathbb{R}^{p \times p}$ is a permutation matrix and $\Gamma_i
+  \in \mathbb{R}^{p \times p}$ is a diagonal matrix. Therefore, the first $p$
+  eigenvectors are given by $[\ub^1 \dots \ub^p] = \begin{bmatrix} W_1^{\top} \\ \vdots \\ W_m^{\top} \end{bmatrix} = \begin{bmatrix} (A_1^{-1})^{\top} \Gamma_1 P^{\top} \\ \vdots \\ (A_m^{-1})^{\top} \Gamma_m P^{\top} \end{bmatrix}$  and so $W_i = P \Gamma_i A_i^{-1}$
+\end{proof}
+
+This theorem means that solving the generalized eigenvalue problem~\eqref{eq:eigv} allows to recover the mixing matrices up to a scaling and permutation: this form of generalized CCA recovers the parameters of the statistical model.
 Note that Assumption~\ref{ass:uniqueeig} is also a necessary condition. Indeed, if two eigenvalues are identical, the eigenvalue problem is not uniquely determined.
 
 %\aapo{[Aapo: due to lack of space the rest of this subsection could be moved to suppl material.]}
@@ -161,12 +189,10 @@ approximations obtained from observed samples. In practice, however, a serious l
 
 
 \begin{wrapfigure}{r}{.4\textwidth}
-\vspace{-1.5em}
 \centering
 \includegraphics[width=.99\linewidth]{figures/amvica/multicca_gap_jd.pdf}
 \caption{Amari distance between true mixing matrices and estimates of Multiset CCA when covariances are perturbed. Different curves correspond to different eigen-gaps. When the gap is small, a small perturbation can lead to complete mixing. Joint-diagonalization (colored dotted lines) fixes the problem.}
 \label{fig:cca_gap}
-\vspace{-1.5em}
 \end{wrapfigure}
 We begin with an empirical illustration. We take $m=3$, $p=2$, and $\Sigma_i$ such that $\lambda_1 = 2 + \varepsilon$ and $\lambda_2 =2$ for $\varepsilon > 0$.
 %
@@ -220,16 +246,40 @@ We propose to use joint-diagonalization to recover the matrix $Q$. Given the $\t
 %
 In other words, the matrix $Q$ is an approximate diagonalizer of the $\tilde{K}_i$'s, and we approximate $Q$ by joint-diagonalization of the $\tilde{K}_i$'s. In Fig~\ref{fig:cca_gap}, we see that this procedure mitigates the problems of multiset-CCA, and gets uniformly better performance regardless of the eigen-gap.
 %
-In practice, we use a fast joint-diagonalization algorithm~\cite{ablin2018beyond} to minimize a joint-diagonalization criterion for positive symmetric matrices~\cite{pham2001joint}. The estimated unmixing matrices $U_i = Q\tilde{W}_i$ correspond to the true unmixing matrices only up to some scaling: the information that the components are of unit variance is lost.
+In practice, we use a fast joint-diagonalization
+algorithm~\cite{ablin2018beyond} to minimize a joint-diagonalization criterion
+for positive symmetric matrices~\cite{pham2001joint}. The estimated unmixing
+matrices
+\begin{align}
+U_i = Q\tilde{W}_i
+\end{align}
+correspond to the true unmixing matrices only up to some scaling: the information that the components are of unit variance is lost.
 
 \textbf{Scale estimation}
-We form the matrices $\Gamma_{ij} = U_i\tilde{C}_{ij}U_j^\top$. In order to estimate the scalings, we solve $
-\min_{(\Phi_i)} \sum_{i\neq j} \| \Phi_i \diag(\Gamma_{ij}) \Phi_j - I_p \|_F^2$
+We form the matrices $\Gamma_{ij} = U_i\tilde{C}_{ij}U_j^\top$. In order to
+estimate the scalings, we solve
+\begin{align}
+\loss_{\Phi} = \min_{(\Phi_i)} \sum_{i\neq j} \| \Phi_i \diag(\Gamma_{ij}) \Phi_j - I_p \|_F^2
+\end{align}
 where the $\Phi_i$ are diagonal matrices.
-This function is readily minimized with respect to one of the $\Phi_i$ by the formula
-$\Phi_i = \frac{\sum_{j \neq i} \Phi_j \diag(Y_{ij})}{\sum_{j \neq i} \Phi_j^2 \diag(Y_{ij})^2}$ (derivations in Appendix~\ref{app:fixedpoint}). We then iterate the previous formula over $i$ until convergence.
+The gradient is given by
+\begin{align}
+  \partialfrac{\Phi_i}{\loss_{\Phi}} = 2\sum_{j \neq i} (\Phi_i \diag(Y_{ij}) \Phi_j - I_p) \Phi_j
+\end{align}
+Therefore we get
+\begin{align}
+  &\partialfrac{\Phi_i}{\loss_{\Phi}} = 0 \\
+  &\iff 2\sum_{j \neq i} (\Phi_i \diag(Y_{ij}) \Phi_j - I_p) \Phi_j = 0 \\
+  &\iff \Phi_i \sum_{j \neq i} \diag(Y_{ij}) \Phi_j^2 - \sum_{j \neq i} \Phi_j = 0 \\
+  &\iff \Phi_i = \frac{\sum_{j \neq i} \Phi_j}{\sum_{j \neq i} \diag(Y_{ij}) \Phi_j^2}
+    \label{eq:phiupdates}
+\end{align}
+We then iterate formula~\eqref{eq:phiupdates} over $i$ until convergence.
 The final estimates of the unmixing matrices are given by
-$(\Phi_i U_i)_{i=1}^m$. The full procedure, called ShICA-J, is summarized in Algorithm~\ref{algo:shicaj}.
+\begin{align}
+  (\Phi_i U_i)_{i=1}^m
+\end{align}
+The full procedure, called ShICA-J, is summarized in Algorithm~\ref{algo:shicaj}.
 
 \subsection{Estimation of noise covariance and inference of shared components}
 
@@ -238,194 +288,110 @@ In practice, it is important to estimate noise co-variances $\Sigma_i$ in order 
 Using the ShICA model with Gaussian components, we derive noise covariances estimate directly from maximum likelihood. We use an expectation-maximization (EM) algorithm, which is especially fast because noise updates are in closed-form. Following derivations given in appendix~\ref{conditional_density}, the sufficient statistics in the E-step are given by 
 \begin{align}
 \label{mmse1}
-\EE[\sbb|\xb]= \left(\sum_{i=1}^m \Sigma_i^{-1}  + I \right)^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right)
-     && \VV[\sbb|\xb]= (\sum_{i=1}^m \Sigma_i^{-1}  + I)^{-1}
+&\EE[\sbb|\xb]= \left(\sum_{i=1}^m \Sigma_i^{-1}  + I \right)^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \\
+     &\VV[\sbb|\xb]= (\sum_{i=1}^m \Sigma_i^{-1}  + I)^{-1}
 \end{align}
 Incorporating the M-step we get the following updates that only depend on the covariance matrices:
-$
-\Sigma_i \leftarrow \diag(\hat{C_{ii}} - 2 \VV[\sbb | \xb]  \sum_{j=1}^m \Sigma_j^{-1} \hat{C}_{ji}  + \VV[\sbb | \xb]  \sum_{j = 1}^m \sum_{l = 1}^m \left(\Sigma_j^{-1} \hat{C}_{jl} \Sigma_l^{-1} \right) \VV[\sbb | \xb] + \VV[\sbb | \xb])
-$
+\begin{align*}
+  \Sigma_i \leftarrow &\diag(\hat{C_{ii}} - 2 \VV[\sbb | \xb]  \sum_{j=1}^m \Sigma_j^{-1} \hat{C}_{ji} \\&  + \VV[\sbb | \xb]  \sum_{j = 1}^m \sum_{l = 1}^m \left(\Sigma_j^{-1} \hat{C}_{jl} \Sigma_l^{-1} \right) \VV[\sbb | \xb] + \VV[\sbb | \xb])
+  \numberthis
+\end{align*}
 %We observe very fast convergence ($10$ iterations are usually enough to reach gradients $\ell_2$ norm below $10^{-4}$).
 
 \section{ShICA-ML: Maximum likelihood for non-Gaussian components}
 ShICA-J only uses second order statistics. However, the ShICA model~\eqref{eq:model} allows for non-Gaussian components. We now propose an algorithm for fitting the ShICA model that assumes non-Gaussian components so that it can separate Gaussian and non-Gaussian components.
 %\aapo{[Aapo: Motivate and link to previous sections]}
-We estimate the parameters by maximum likelihood. Since most non-Gaussian components in real data are super-Gaussian, we assume that the non-Gaussian components $\sbb$ have the super-Gaussian density \\ $p(s_j) = \frac12\left(\mathcal{N}( s_j; 0, \frac12) + \mathcal{N}( s_j; 0, \frac{3}{2})\right) \enspace.$
+We estimate the parameters by maximum likelihood. Since most non-Gaussian
+components in real data are super-Gaussian, we assume that the non-Gaussian
+components $\sbb$ have the super-Gaussian density
+\begin{equation}
+  p(s_j) = \frac12\left(\mathcal{N}( s_j; 0, \frac12) + \mathcal{N}( s_j; 0, \frac{3}{2})\right)
+\end{equation}
 
 We propose to maximize the log-likelihood using a generalized
 EM~\cite{neal1998view, dempster1977maximum}. Derivations are available in Appendix~\ref{app:emestep}. Like in the previous section, the E-step is in closed-form yielding the following sufficient statistics:
 \begin{align}
 \label{mmse2}
-\EE[\sbb | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32
+&\EE[\sbb | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32
     \}}\theta_{\alpha} \eb_{\alpha}}{\sum_{\alpha \in
     \{\frac12, \frac32 \}}\theta_{\alpha}}
-    && 
-    \VV[\sbb | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32
+    \\ 
+    &\VV[\sbb | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32
     \}}\theta_{\alpha} V_{\alpha}}{\sum_{\alpha \in
     \{\frac12, \frac32 \}}\theta_{\alpha}} 
 \end{align}
     where
-    $\eb_{\alpha}= \left(\sum_{i=1}^m \Sigma_i^{-1}  + \frac1{\alpha}I \right)^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right)$,  $V_{\alpha} = (\sum_{i=1}^m \Sigma_i^{-1}  + \frac1{\alpha}I)^{-1}$ and $\theta_{\alpha} = \mathcal{N}((\sum_{i=1}^m \Sigma_i^{-1})^{-1} \Sigma_i^{-1} \yb_i; 0, \alpha I + (\sum_{i=1}^m \Sigma_i^{-1})^{-1})$ with $\yb_i = W_i \xb_i$.
+    \begin{align}
+      &\eb_{\alpha}= \left(\sum_{i=1}^m \Sigma_i^{-1}  + \frac1{\alpha}I \right)^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \\
+      &V_{\alpha} = (\sum_{i=1}^m \Sigma_i^{-1}  + \frac1{\alpha}I)^{-1} \\
+      &\theta_{\alpha} = \mathcal{N}((\sum_{i=1}^m \Sigma_i^{-1})^{-1} \Sigma_i^{-1} \yb_i; 0, \alpha I + (\sum_{i=1}^m \Sigma_i^{-1})^{-1})
+    \end{align}
+    with $\yb_i = W_i \xb_i$.
 Noise updates are in closed-form and given by:
-$\Sigma_i \leftarrow  \diag((\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb])$.
+\begin{align}
+\Sigma_i \leftarrow  \diag((\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb])
+\end{align}
 However, no closed-form is available for the updates of unmixing matrices. We therefore perform quasi-Newton updates given by
-$W_i \leftarrow (I - \rho (\widehat{\mathcal{H}^{W_i}})^{-1} \mathcal{G}^{W_i}) W_i$ where $\rho \in \mathbb{R}$ is chosen by backtracking line-search, 
-$\widehat{\mathcal{H}^{W_i}_{a, b, c, d}} =  \delta_{ad} \delta_{bc} + \delta_{ac} \delta_{bd}\frac{(y_{ib})^2}{\Sigma_{ia}}$ is an approximation of the Hessian of the negative complete log-likelihood and $\mathcal{G}^{W_i} = -I + (\Sigma_i)^{-1}(\yb_i - \mathbb{E}[\sbb|\xb])(\yb_i)^{\top}$ is the gradient.
+\begin{align}
+  W_i \leftarrow (I - \rho (\widehat{\mathcal{H}^{W_i}})^{-1} \mathcal{G}^{W_i}) W_i
+\end{align}
+where $\rho \in \mathbb{R}$ is chosen by backtracking line-search
+
+\begin{align}
+	\widehat{\mathcal{H}^{W_i}_{a, b, c, d}} =  \delta_{ad} \delta_{bc} + \delta_{ac} \delta_{bd}\frac{(y_{ib})^2}{\Sigma_{ia}}
+\end{align}
+is an approximation of the Hessian of the negative complete log-likelihood and
+\begin{align}
+	\mathcal{G}^{W_i} = -I + (\Sigma_i)^{-1}(\yb_i - \mathbb{E}[\sbb|\xb])(\yb_i)^{\top}
+\end{align}
+ is the gradient.
 
 We alternate between computing the statistics $\mathbb{E}[\sbb|\xb]$, 
 $\mathbb{V}[\sbb|\xb]$ (E-step) and updates of parameters $\Sigma_i$ and $W_i$ for $i=1 \dots m$ (M-step). Let us highlight that our EM algorithm and in particular the E-step resembles the one used in~\cite{moulines1997maximum}. However because they assume noise on the sensors and not on the components, their formula for $\EE[\sbb| \xb]$ involves a sum with $2^p$ terms whereas we have only $2$ terms. The resulting method is called ShICA-ML.
 
 \paragraph{Minimum mean square error estimates in ShICA}
 In ShICA-J as well as in ShICA-ML, we have a closed-form for the expected components given the data $\EE[\sbb | \xb]$, shown in equation~\eqref{mmse1} and~\eqref{mmse2} respectively. This provides minimum mean square error estimates of the shared components, and is an important benefit of explicitly modelling shared components in a probabilistic framework.
-%\aapo{[Aapo: The formulas for Es|x should be given as numbered equations, and they should be referred to here. But this is too short to be a proper section...]}
+\section{Related Work}
+ShICA combines theory and methods coming from different branches of ``component analysis''. It can be viewed as a GroupICA method, as an extension of Multiset CCA, as an Independent Vector Analysis method or, crucially, as an extension of SRM. In the setting studied here, ShICA improves upon all existing methods.
 
-% \section{An alternate quasi-newton algorithm for MIFA}
+ShICA inherits from all the advantages of MultiView ICA. Unlike the GroupICA
+methods presented in section~\ref{sec:permica} and
+section~\ref{sec:canicaandconcatica} such as CanICA or ConcatICA, it optimizes a
+proper likelihood. And unlike tensorial
+methods~\cite{backmann2005tensorial} or SRM, it does not assume any structure on
+the mixing matrices.
 
+Compared to the likelihood based method of Guo presented in section~\ref{sec:guo} or to MultiView ICA, ShICA allows different subjects to have different noise
+variances. This last point is crucial as it allows to separate Gaussian components. In addition, the estimation in ShICA-ML relies on a very efficient closed form
+E-step. This differs from the likelihood based method of Guo that does not have
+a closed form E-step and has to rely on a first order approximation.
 
-% We estimate the parameters of model~\eqref{model} ($W_i$ and $\Sigma_i$) via maximum likelihood.
-% As shown in Appendix~\ref{likelihood_derivation}, the negative log-likelihood is given by
-% \begin{align}
-%   \mathcal{L} = &\sum_{i=1}^m\left(-\log|W_i| + \frac12 \log |\Sigma_i|\right) + \frac12 \log(|\sum_{i=1}^m \Sigma_i^{-1} + I|) + \frac12 (\sum_{i=1}^m \langle \yb_i | \Sigma_i^{-1} \yb_i \rangle \\&  - \frac12 \langle \left(\sum_{i=1}^m \Sigma_i^{-1} + I \right)^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) | \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \rangle)
-% \end{align}
+ShICA-J uses the Multiset CCA presented in section~\ref{sec:mcca} which is one of the fastest as it reduces to solving a generalized eigenvalue problem. The fact that CCA solves a well defined probabilistic model has first been studied in~\cite{bach2005probabilistic} where it is shown that CCA is identical to multiple battery factor analysis~\cite{browne1980factor} (restricted to 2 views). This latter formulation differs from our model in that the noise is added on the sensors and not on the components which makes the model unidentifiable. Identifiable variants and
+generalizations can be obtained by imposing sparsity on the mixing matrices such as in~\cite{archambeau2008sparse, klami2014group, witten2009extensions} or non-negativity~\cite{DELEUS2011143}.
+Lastly, the work in~\cite{li2009joint} exhibits a set of sufficient (but not necessary) conditions under which a well defined model can be learnt by the formulation of Multiset CCA used in ShICA-J. The set of conditions we exhibit in this work are necessary and sufficient. We further emphasize that basic Multiset CCA provides a poor estimator as explained in section~\ref{sec:samplingnoise}.
 
-% We optimize this likelihood using expectation-maximization (EM)~\addref.
+Let us highlight that ShICA can be seen as a particular instance of IVA where
+subject specific components $s_{ij}$ are such that $s_{ij} = s_j + n_{ij}$. However,
+in IVA-L, the variance of $s_{ij}$ is assumed to be the same and components are
+uncorrelated over views. We argue that this is quite unrealistic for fMRI or any
+MEG/EEG evoked response, while our model is explicitly constructed to be
+realistic for brain imaging applications. In IVA-G, components are allowed to have different variances but
+need to follow a Gaussian law. ShICA can in addition make use of the
+non-Gaussianity of the components. Lastly, let us highlight that ShICA (like
+MultiView ICA) specifically enables extraction of shared components from the
+subject specific components, unlike previous versions of IVA. In fact, ShICA comes with minimum mean square error estimates for the shared components
+that is often the quantity of interest.
 
-% The completed likelihood is given by
-% \begin{equation}
-%   p(\xb, \sbb) = p(\xb_i | \sbb) p(\sbb)=  |W_i| \Ncal(\yb_i; \sbb, \Sigma_i) \Ncal(\sbb; 0, I_k)
-% \end{equation}
-% Therefore the negative completed log-likelihood is a quadratic function of the
-% components so only second moments of $\sbb | \xb$ are needed. It turns out that we
-% can compute $\sbb | \xb$ exactly. Derivations given in appendix~\ref{conditional_density} yield:
-% \begin{align}
-%   &\sbb|\xb \sim \Ncal( \EE[\sbb|\xb], \VV[\sbb | \xb]) \\
-%   & \text{where } \enspace \EE[\sbb|\xb]= \left(\sum_{i=1}^m \Sigma_i^{-1}  + I \right)^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \text{ and } \VV[\sbb|\xb]= (\sum_{i=1}^m \Sigma_i^{-1}  + I)^{-1}
-% \end{align}
+The IVA theory provides global identifiability conditions in the Gaussian case (IVA-G)~\cite{via2011joint} and local identifiability conditions in the general case~\cite{anderson2014independent} from which local identifiability conditions of ShICA could be derived. However, in this work, we provide global identifiability conditions for ShICA.
+Lastly, IVA can be performed using joint diagonalization of cross covariances~\cite{li2011joint, congedo2012orthogonal} although multiple matrices have to be learnt and cross-covariances are not necessarily symmetric positive definite which makes the algorithm slower and less principled.
 
-% The function to minimize in the M-step is therefore given by:
-% \begin{align}
-%   \Jcal = \sum_{i=1}^m -\log(|W_i|) +\log(|\Sigma_i|) + \frac12 \tr(\Sigma_i^{-1} \left[(\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb]\right])  
-% \end{align}
+Let us point out that extracting a shared response from multiple dataset is also
+the goal of SRM. Some deep variants~\cite{chen2016convolutional} release the
+orthogonality constrain but they are much more computationally demanding.
+ShICA leverages ICA theory to provide a much more powerful model of shared responses.
 
-% We get closed-form updates for $\Sigma_i$ given by
-% \[
-% \Sigma_i \leftarrow  \diag((\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb])
-% \]
-% Updates with respect to $W_i$ are obtained through a quasi-newton step:
-% $W_i \leftarrow (I - \rho H_i G_i^{-1}) W_i$ where the relative gradient is
-% given by
-% $G_i = I - \Sigma_i^{-1}(\yb_i - \EE[\sbb | \xb])\yb_i^{\top}$ and while the
-% true Hessian is given by $H_{i, abcd} = \delta_{a,c} \frac{y_{i, b} y_{i,
-%     d}}{\Sigma_{i, a}}$, we use for increased speed, the following
-% approximation: $\tilde{H}_{i, abcd} = \delta_{a, c} \delta_{b,d}
-% \frac{y_{i, b}^2}{\Sigma_{i, a}}$ which is exact when the unmixed
-% data are truly independent. The step-size $\rho$ is chosen by backtracking
-% line-search.
+\paragraph{Limitations}
+The main limitation of this work is that the model does not reduce the dimension inside each view. In line with other methods, such view-specific  dimension reduction has to be done by some external method, typically view-specific PCA. Using specialized methods for the estimation of covariances should also be of interest for ShICA-J, where it only relies on sample covariances. Finally, ShICA-ML uses a simple model of a super-Gaussian distribution, while modeling the non-gaussianities in more detail in ShICA-ML should improve the performance.
 
-% Note that the likelihood and therefore the updates only depend on the covariance
-% of the data. Therefore in practice, we pre-compute the covariances $\xb_i \xb_j^{\top}$ for
-% all $1 \leq i \leq m$ and $1 \leq i \leq m$ and do not use the original data
-% anymore. This provide a great speed-up when the number of samples is high.
-
-
-% \begin{ack}
-% Use unnumbered first level headings for the acknowledgments. All acknowledgments
-% go at the end of the paper before the list of references. Moreover, you are required to declare
-% funding (financial activities supporting the submitted work) and competing interests (related financial activities outside the submitted work).
-% More information about this disclosure can be found at: \url{https://neurips.cc/Conferences/2021/PaperInformation/FundingDisclosure}.
-
-% Do {\bf not} include this section in the anonymized submission, only in the final paper. You can use the \texttt{ack} environment provided in the style file to autmoatically hide this section in the anonymized submission.
-% \end{ack}
-
-% \section{A generalized eigenvalue approach for MIFA}
-% While maximum-likelihood approaches possess several important statistical properties that make them attractive, a major drawback is the slowness of the algorithms. 
-
-% These method also require the likelihood to be well defined, and prevents dimension reduction without a more complicated model: for the likelihood to be well defined, we must assume that $A_i$ is square, invertible.
-
-% If we only consider two views, the model of MIFA in equation~\eqref{model} is
-% the model of probabilistic CCA~\addref but with a different noise covariance.
-% Many multiview CCA methods exists~\addref. They are typically referred to as
-% Multiset CCA and differ by the objective they optimize as well as the
-% constraints they put on the canonical vectors~\addref. A tractable formulation is given
-% by the SUMCOR~\addref objective:
-% \begin{align}
-%   \rho(\vb_1 \dots \vb_m) = \sum_{i=1}^m \sum_{j \neq i}^m \vb_i^{\top} C_{ij} \vb_j,  \text{ such that } \forall i, \sum_{i=1}^m\vb_i^{\top} C_{ii} \vb_i = 1
-% \end{align}
-% which we can write in matrix form as
-% \begin{align}
-%   \rho(V_1 \dots V_m) = \sum_{i=1}^m \sum_{j \neq i}^m \tr(V_i^{\top} C_{ij} V_j),  \text{ such that } \forall i, \sum_{i=1}^m V_i^{\top} C_{ii} V_i = I
-% \end{align}
-% for $V^i \in \mathbb{R}^{k, p}$.
-
-% The first order conditions yield the following generalized eigenvalue problem
-% \begin{align}
-%   \begin{bmatrix} C_{11} & \dots & C_{1m} \\
-%     \vdots & \ddots & \vdots  \\
-%     C_{m1} & \dots  &C_{mm}
-%   \end{bmatrix} \begin{bmatrix} V_1 \\ \vdots \\ V_m \end{bmatrix} = \begin{bmatrix} C_{11} &  & 0 \\
-%      & \ddots &   \\
-%     0 &   &C_{mm}
-%   \end{bmatrix} \begin{bmatrix} V_1 \\ \vdots \\ V_m \end{bmatrix} \Lambda  \label{problem}
-% \end{align}
-% where $\Lambda \in \mathbb{R}^{kxk}$ is a matrix of Lagrange
-% multipliers. The $k$ eigenvectors corresponding to the largest eigenvalues yield
-% the solution up to a global rotation.
-
-% The following lemma shows that minimizing the above objective leads to estimates
-% of the true unmixing matrices up to a view specific scaling and a global rotation.
-% \begin{prop}
-%   \label{gev}
-%   Assume that data are generated from model~\eqref{model} with mixing matrix
-%   $A_i \in \mathbb{R}^{k \times k}$ and assume all subjects have distinct
-%   noise covariances $\Sigma_i$. Then, in the limit of large samples $n=\infty$,
-%   the $k$ first eigenvectors of the
-%   generalized eigenvalue problem~\eqref{problem} are given by
-%   $\begin{bmatrix} W_1^{\top} \Gamma_1 P \\ \vdots \\ W_m^{\top} \Gamma_m P \end{bmatrix}$ where
-%   $\Gamma_i$ are scale matrices and $P$ is a permutation matrix.
-% \end{prop}
-
-
-% \begin{prop}
-%   \label{finite}
-%   Assume $n < \infty$ samples are generated from model~\eqref{model} with mixing matrix
-%   $A_i \in \mathbb{R}^{k \times k}$ and assume all subjects have distinct
-%   noise covariances $\Sigma_i$. Then, assuming the empirical covariance is close to
-%   the actual covariance the $k$ first eigenvectors are given by the formula of
-%   prop~\label{gev} up to a global rotation.
-% \end{prop}
-
-  
-
-% \section{Related Work}
-% ShICA combines theory and methods coming from different branches of ``component analysis''. It can be viewed as a GroupICA method, as an extension of Multiset CCA, as an Independent Vector Analysis method or, crucially, as an extension of the shared response model. In the setting studied here, ShICA improves upon all existing methods.
-
-% \paragraph{GroupICA}
-% GroupICA methods extract independent components from multiple datasets. In its original form\cite{calhoun2001method}, views are concatenated and then a PCA is applied yielding reduced data on which ICA is applied. One can also reduce the data using Multiset CCA instead of PCA, giving a method called \emph{CanICA}~\cite{varoquaux2009canica}. Other works~\cite{Esposito05NI, Hyva11NI} apply ICA separately on the datasets and attempt to match the decompositions afterwards.
-% Although these works provide very fast methods, they do not rely on a well defined model like ShICA. %In contrast, the procedure in ShICA-J is based on an explicit model.
-% Other GroupICA methods impose some structure on the mixing matrices such as the tensorial method of~\cite{beckmann2005tensorial} or the group tensor model in~\cite{guo2008unified} (which assumes identical mixing matrices up to a scaling) or \cite{svensen2002ica} (which assumes identical mixing matrices but different components). In ShICA the mixing matrices are only constrained to be invertible.
-% Lastly, maximum-likelihood based methods exist such as \emph{MultiViewICA}~\cite{richard2020modeling} or the full model of~\cite{guo2008unified}. These methods are weaker than ShICA as they assume non-Gaussianity, the same noise covariance across views and lack a principled method for shared response inference.
-% %\aapo{These methods are weaker than from ShICA as they assume non-Gaussianity, the same noise covariance across views, and lack a principles method for shared response inference. [I hope this is all correct? - Hugo:We have seen that multiview ICA can separate Gaussian components but in practice it does it quite poorly. However we could have derived a principle method for shared response inference (but that cannot take into account the fact the some views are noisier than others) ]}
-% %Aapo: But our comparison here should be limited to what is actually done and said in the papers, not what the methods could be able to do with further development. Hugo: Ok agreed !
-
-% \paragraph{Multiset CCA}
-% In its basic formulation, CCA identifies a shared space between two datasets.
-% The extension to more than two datasets is ambiguous, and many
-% different generalized CCA methods have been proposed. \cite{kettenring1971canonical} introduces 6 objective functions that reduce to CCA when $m=2$ and \cite{nielsen2002multiset} considered 4 different possible constrains leading to 24 different formulations of Multiset CCA. The formulation used in ShICA-J is refered to in~\cite{nielsen2002multiset} as SUMCORR with constraint 4 which is one of the fastest as it reduces to solving a generalized eigenvalue problem. The fact that CCA solves a well defined probabilistic model has first been studied in~\cite{bach2005probabilistic} where it is shown that CCA is identical to multiple battery factor analysis~\cite{browne1980factor} (restricted to 2 views). This latter formulation differs from our model in that the noise is added on the sensors and not on the components which makes the model unidentifiable. Identifiable variants and
-% generalizations can be obtained by imposing sparsity on the mixing matrices such as in~\cite{archambeau2008sparse, klami2014group, witten2009extensions} or non-negativity~\cite{DELEUS2011143}.
-% The work in~\cite{li2009joint} exhibits a set of sufficient (but not necessary) conditions under which a well defined model can be learnt by the formulation of Multiset CCA used in ShICA-J. The set of conditions we exhibit in this work are necessary and sufficient. We further emphasize that basic Multiset CCA provides a poor estimator as explained in Section~\ref{sec:samplingnoise}.
-
-% \paragraph{Independent vector analysis}
-% Independent vector analysis~\cite{lee2008independent} (IVA) models the data as a linear mixture of independent components $\xb_i = A_i \sbb_i$ where each component $s_{ij}$ of a given view $i$ can depend on the corresponding component in other views ($(s_{ij})_{i=1}^m$ are not independent).
-% % the components $\sbb_i \in \bbR^{p}$ differ across subjects but component $j$  \bt{the joint distribution of s samples ? it is unclear what j stands for} is not independent across subjects
-% Practical implementations of this very general idea assume a distribution for $p((s_{ij})_{i=1}^m)$. In IVA-L~\cite{lee2008independent}, $p((s_{ij})_{i=1}^m) \propto \exp(-\sqrt{\sum_i (s_{ij})^2})$ (so the variance of each component in each view is assumed to be the same), in IVA-G~\cite{anderson2011joint} or in~\cite{via2011maximum}, $p((s_{ij})_{i=1}^m) \sim \mathcal{N}(0, R_{ss})$ and~\cite{engberg2016independent} proposed a normal inverse-Gamma density. The model of ShICA can be seen as an instance of IVA %(where $p$ in ShICA-ML is a Gaussian mixture in which variances are learnt), 
-% which specifically enables extraction of shared components from the subject specific components, unlike previous versions of IVA. In fact, ShICA comes with minimum mean square error estimates for the shared components
-% %(given by $\bbE[\sbb | \xb]$) 
-% that is often the quantity of interest. By contrast, the model in IVA-L has components that are uncorrelated over views, which is quite unrealistic for fMRI or any MEG/EEG evoked response, while our model is explicitly constructed to be realistic for brain imaging applications.
-% The IVA theory provides global identifiability conditions in the Gaussian case (IVA-G)~\cite{via2011joint} and local identifiability conditions in the general case~\cite{anderson2014independent} from which local identifiability conditions of ShICA could be derived. However, in this work, we provide global identifiability conditions for ShICA.
-% Lastly, IVA can be performed using joint diagonalization of cross covariances~\cite{li2011joint, congedo2012orthogonal} although multiple matrices have to be learnt and cross-covariances are not necessarily symmetric positive definite which makes the algorithm slower and less principled.
-
-% \paragraph{Shared response model}
-% ShICA extracts shared components from multiple datasets, which is also the goal of the shared response model (SRM)~\cite{chen2015reduced}. The robust SRM~\cite{turek2018capturing} also allows to capture subject specific noise. However these models impose orthogonality constraints on the mixing matrices while ShICA does not. Deep variants of SRM exist such as~\cite{chen2016convolutional} but while they release the orthogonality constrain, they are much more computationally demanding. ShICA leverages ICA theory to provide a much more powerful model of shared responses.
-
-% \paragraph{Limitations}
-% The main limitation of this work is that the model does not reduce the dimension inside each view. In line with other methods, such view-specific  dimension reduction has to be done by some external method, typically view-specific PCA. Using specialized methods for the estimation of covariances should also be of interest for ShICA-J, where it only relies on sample covariances. Finally, ShICA-ML uses a simple model of a super-Gaussian distribution, while modelling the non-gaussianities in more detail in ShICA-ML should improve the performance.
+In the next section, we evaluate ShICA using both real and synthetic data and
+compare with competitive approaches.

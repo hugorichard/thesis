@@ -113,7 +113,9 @@
 % use \cleardoublepage here to avoid problems with pdfbookmark
 \cleardoublepage
 
-\part{Background concepts}
+
+
+% \part{Background concepts}
 % \chapter{Statistical learning theory}
 % \input{Chapters/learning_theory.tex}
 % \chapter{Neuroscience background}
@@ -121,58 +123,61 @@
 % \chapter{Review of selected unsupervised methods popular in neuro-imaging studies}
 % \input{Chapters/review.tex}
 % \part{FastSRM: An efficient implementation of the shared response model}
+% \label{part:fastsrm}
 % \chapter{FastSRM theory}
 % \input{Chapters/fastsrm.tex}
 % \chapter{FastSRM experiments}
 % \input{Chapters/fastsrm_exp.tex}
-\part{MultiViewICA}
+% \part{MultiViewICA}
 \chapter{MultiViewICA theory}
 \input{Chapters/multiviewica.tex}
-% \chapter{MultiViewICA in practice}
-% \input{Chapters/multiviewica_exp.tex}
-% \part{Shared ICA}
-% \chapter{Shared ICA theory}
-% \input{Chapters/shica.tex}
-% \chapter{Shared ICA in practice}
-% \input{Chapters/shica_exp.tex}
+\chapter{MultiViewICA in practice}
+\label{chap:mvica_exp}
+\input{Chapters/multiviewica_exp.tex}
+\part{Shared ICA}
+\chapter{Shared ICA theory}
+\input{Chapters/shica.tex}
+\chapter{Shared ICA in practice}
+\input{Chapters/shica_exp.tex}
 % \part{Brain decoding and data augmentation in fMRI}
 % \chapter{Generating data via ICA}
 % \input{Chapters/condica.tex}
 % \chapter{Decoding experiments}
 % \input{Chapters/condica_exp.tex}
 
-\part{Conclusion}
-\chapter{Conclusion}
-\section{Resources resulting from this thesis}
-\subsection{Mvlearn}
-\subsection{Brainiak}
-\section{Contributions outside of the scope of the thesis}
-\subsection{A deep approach to model complex stimuli}
-\subsection{Predicting resting state from fMRI}
-\subsection{An optimal transport approach to hyperalignment}
-
-
-
+% \part{Conclusion}
 % \chapter{Conclusion}
+% \section{Resources resulting from this thesis}
+% \subsection{Mvlearn}
+% \subsection{Brainiak}
+% \section{Contributions outside of the scope of the thesis}
+% \subsection{A deep approach to model complex stimuli}
+% \subsection{Predicting resting state from fMRI}
+% \subsection{An optimal transport approach to hyperalignment}
+% \section{A note about resources used}
+% All the code is written in Python.
+% We use Matplotlib for plotting~\cite{hunter2007matplotlib} , scikit-learn for
+% machine-learning pipelines~\cite{pedregosa2011scikit}, MNE for MEG
+% processing~\cite{gramfort2013meg}, Nilearn for fMRI processing and for its CanICA implementation~\cite{abraham2014machine}, Brainiak~\cite{kumar2020brainiak} for its SRM implementation. 
+% % 
+
+
 
 
 \cleardoublepage\include{FrontBackmatter/Bibliography}
 
 \appendix
 \part{Appendices}
+% \chapter{FastSRM}
+% \input{Chapters/fastsrm_app.tex}
+% \chapter{MultiViewICA}
+% \input{Chapters/multiviewica_app.tex}
 \chapter{ShICA}
 \input{Chapters/shica_app.tex}
-\chapter{MultiViewICA}
-\input{Chapters/multiviewica_app.tex}
-\chapter{FastSRM}
-\input{Chapters/fastsrm_app.tex}
-\chapter{Data augmentation via conditional ICA}
-\input{Chapters/condica_app.tex}
+% \chapter{Data augmentation via conditional ICA}
+% \input{Chapters/condica_app.tex}
 
 
-% \chapter{Analyzing fMRI data of multiple subjects}
-% \section{The controlled setting: the general linear model}
-% \section{A deep approach for modeling complex stimuli}
 % % \cleardoublepage\include{FrontBackmatter/Declaration}
 % % \cleardoublepage\include{FrontBackmatter/Colophon}
 % % ********************************************************************

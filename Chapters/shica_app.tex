@@ -1,642 +1,578 @@
-\section{Proofs and Lemmas}
-\subsection{Proof of Theorem~\ref{thm:identif}}
-\label{proof:identif}
+\section{Lemmas}
+\begin{lemma}
+\label{lemma:ica}
+Let $\sbb \in \mathbb{R}^k$ and $\sbb'\in \mathbb{R}^k$ have independent components among which $g$ are Gaussian, and $P$ a rotation matrix such that $\sbb = P\sbb'$. Then, $P=\Pi^{-1} O \Pi'$ where $\Pi$ and $\Pi'$ are sign and permutation matrices such that the first $g$ components of $\Pi \sbb$ and $\Pi' \sbb'$ are Gaussian and $O$ is a block diagonal matrix such that $O^{(g)}$, the first $g \times g$ block of $O$, is orthogonal and the other block is identity.
+\end{lemma}
 \begin{proof}
-By hypothesis, the covariances verify $C_{ij} =\bbE[\xb_i\xb_j^\top] = A_i(I_p + \delta_{ij}\Sigma_i)A_j^{\top} = A'_i(I_p + \delta_{ij}\Sigma'_i){A'_j}^{\top}$ for all $i, j$. We let $P_i=A_i^{-1}A_i'$. The previous relationship for $j\neq i$ gives $P_iP_j^{\top} = I_p$. Because there are more than 3 views, there is another integer $k \notin\{i,j\}$, and we have $P_iP_k^{\top}= P_jP_k^{\top}=I_p$. This shows that $P_i = P_j$: all these matrices are equal, and we call $P$ their common value. The previous equation also gives $PP^{\top} = I_p$, so $P$ is orthogonal. 
-%
-We have that $s + n_i$ and $s' + n_i'$ have independent components and $s + n^i = P(s' + n_i')$. Lemma~\ref{lemma:ica} (a direct consequence of classical ICA results~\cite{comon1994independent}, Theorem 10) gives $P=\Pi^{-1} \Omega \Pi'$ where $\Pi$ and $\Pi'$ are sign and permutation matrices such that the first $g$ components of $\Pi(s + n_i)$ and $\Pi'(s' + n_i')$ are Gaussian, and $\Omega$ is a block diagonal matrix given by
-\[
-\Omega = \begin{bmatrix} \Omega_g & 0 \\ 0 & I_{p - g} \end{bmatrix}
-\]
-where $\Omega_g$ is orthogonal.
-%
-We call $A^{(g)}$ the first $g \times g$ block of a matrix $A$ so that $\Omega^{(g)} = \Omega_g$.
-
-Then, considering only the Gaussian components, we can write for $i=j$:  
-$(\Pi \Sigma_i)^{(g)} = \Omega_g (\Pi' \Sigma'_i)^{(g)} \Omega_g^{\top}$ for all $i$. This, combined with Assumption~\ref{ass:diversity}, implies that $\Omega_g$ is a sign and permutation matrix (see Lemma~\ref{lemma:eigdecomp}) and therefore $P$ is a sign and permutation matrix. Then it follows that $I + \Sigma_i = P(I + \Sigma'_i)P^{\top}$ and therefore $\Sigma_i = P \Sigma'_i P^{\top}$ so $\Sigma'_i = P^{\top} \Sigma_i P$.
+  From~\cite{comon1994independent}, Theorem 10:
+  Assume $\sbb = P\sbb'$, if the column $j$ of $P$ has more than one non-zero element then $s'_j$ is Gaussian. 
+  
+  Let us define permutations $\Pi_1$, $\Pi'_1$ such that the first $g$ components of $\Pi_1 \sbb$ and $\Pi'_1 \sbb'$ are Gaussian and $P_1  = \Pi_1 P (\Pi'_1)^{-1}$. We can see that $P_1$ is orthogonal.
+  
+  We have $\Pi_1 \sbb = P_1 \Pi'_1 \sbb'$. So the last $p-g$ columns of $P_1$ contain at most one non-zero element. Using orthogonality of $P_1$ this non-zero element has value $1$ or $-1$ and is also the only one in its line. Let us focus on column $l > g$. Assume column $l$ has its non-zero element at index $k \leq g$. Then line $k$ in $P_1$ is only non-zero at index $l$ and therefore $(\Pi_1 \sbb)_k$ (which is Gaussian) is equal to $(\Pi'_1 \sbb')_l$ (which is not). Therefore column $l$ can only have its non-zero element at an index greater than $g$. This shows that $P_1$ is block diagonal $P_1 = \begin{bmatrix} O_g & 0 \\ 0 & P_2 \end{bmatrix}$ where $O_g$ is orthogonal  and $P_2$ is a sign and permutation matrix.
+  \begin{align}
+      &\begin{bmatrix} O_g & 0 \\ 0 & P_2 \end{bmatrix} = \Pi_1 P (\Pi'_1)^{-1} \\
+      & \iff \begin{bmatrix} O_g & 0 \\ 0 & I \end{bmatrix} \begin{bmatrix} I & 0 \\ 0 & P_2 \end{bmatrix}  = \Pi_1 P (\Pi'_1)^{-1} \\
+      & \iff \Pi_1^{-1} \begin{bmatrix} O_g & 0 \\ 0 & I \end{bmatrix} \begin{bmatrix} I & 0 \\ 0 & P_2 \end{bmatrix} \Pi'_1  = P
+  \end{align}
+  
+  Therefore setting $\Pi' =   \begin{bmatrix} I & 0 \\ 0 & P_2 \end{bmatrix} \Pi'_1$ and $\Pi = \Pi_1$ and $O= \begin{bmatrix}O_g & 0 \\ 0 & I  \end{bmatrix}$ concludes the proof.
+  
 \end{proof}
 
-% \subsection{Proof of Theorem~\ref{th:eig}}
-% \label{proof:eig}
-% \begin{proof}
-%   Let us denote $W \in \bbR^{mp \times mp}$ the block diagonal matrix with block $i$ given by
-%   $(A_i)^{-1}$. We have $C \ub = \lambda D \ub  \iff W C W^\top \zb = \lambda W D W^\top \zb
-%   $ where $\ub = W^\top \zb$. We call $\zb$ a reduced eigenvector.
-%   Each
-%   block in $W C W^\top$ and in $W D W^\top$ is diagonal so any reduced eigenvector $\zb = \begin{bmatrix} \zb_1 \\ \vdots \\ \zb_m \end{bmatrix}$ is
-%   such that the matrix $Z = [\zb_1 \dots \zb_m]$ has exactly one non-zero line.
-%   Following Lemma~\ref{lemma:nonzerocoord}, the first $p$ leading reduced
-%   eigenvectors $\zb^1, \dots, \zb^p$ all have different first non-zero coordinates.
-%   Therefore the concatenation of the first $p$ leading reduced eigenvectors is given
-%   by $[\zb^1, \dots \zb^p] = \begin{bmatrix} \Gamma_1 \\ \vdots \\ \Gamma_m \end{bmatrix} P^{\top}$ where $P^{\top} \in \mathbb{R}^{p \times p}$ is a permutation matrix and $\Gamma_i
-%   \in \mathbb{R}^{p \times p}$ is a diagonal matrix. Therefore, the first $p$
-%   eigenvectors are given by $[\ub^1 \dots \ub^p] = \begin{bmatrix} W_1^{\top} \\ \vdots \\ W_m^{\top} \end{bmatrix} = \begin{bmatrix} (A_1^{-1})^{\top} \Gamma_1 P^{\top} \\ \vdots \\ (A_m^{-1})^{\top} \Gamma_m P^{\top} \end{bmatrix}$  and so $W_i = P \Gamma_i A_i^{-1}$
-% \end{proof}
+\begin{lemma}
+\label{lemma:eigdecomp}
+Assume that Assumption 2 holds for $\Sigma_i$, and that there is an orthogonal matrix $P$ and diagonal matrices $\Sigma_i'$ such that for all $i$, $\Sigma_i' = P\Sigma_iP^{\top}$. Then, $P$ is a permutation matrix.
+\end{lemma}
+\begin{proof}
+The proof is in two parts. First, we show that there exist some coefficients $\alpha_1, \dots, \alpha_m$ such that the matrix $\sum_i\alpha_i\Sigma_i$ has distinct coefficients on the diagonal. Then, since we have $\sum_i\alpha_i\Sigma'_i = P\left(\sum_i\alpha_i\Sigma_i\right)P^{\top}$, and the diagonal $\sum_i\alpha_i\Sigma_i$ has distinct entries, we can invoke the unicity of the eigenvalue decomposition for symmetric matrices, which shows that $P$ is necessarily a permutation matrix.
+Now, the only thing left is to prove is that Assumption 2 implies the existence of this linear combination.
 
+We assume by contradiction that any linear combination of the $\Sigma_i$ has two equal entries.
+
+For $\alpha = [\alpha_1, \dots, \alpha_m]$, we let $\mathcal{S}(\alpha) = \diag(\sum_i\alpha_i\Sigma_i)\in\bbR^p$, where $\diag(\cdot)$ extracts the diagonal entries. The operator $\mathcal{S}$ is linear.
+%
+We now define for $j, j'\leq p$ the linear form $\ell_{jj'}(\alpha) = \mathcal{S}(\alpha)_j - \mathcal{S}(\alpha)_{j'}\in\bbR$. The assumption on the linear combinations of $\Sigma_i$ simply rewrites:
+For all $\alpha\in\bbR^m$, there exists $j, j'\leq p$ such that $\ell_{jj'}(\alpha) = 0$.
+
+From a set point of view, this relationship writes
+$$
+\bigcup_{j, j'}\mathrm{Ker}(\ell_{jj'}) = \bbR^m\enspace.
+$$
+Since the $\ell_{jj'}$ are all linear forms, the $\mathrm{Ker}(\ell_{jj'})$ are subspaces of dimensions $m$ or $m-1$, and since their union is of dimension $m$, there exists $j, j'$ such that  $\mathrm{Ker}(\ell_{jj'}) = \bbR^m$, i.e. such that $\ell_{jj'} = 0$.
+
+As a consequence, we have for all $\alpha$, $\mathcal{S}(\alpha)_j = \mathcal{S}(\alpha)_{j'}$. This implies that the sequences $(\Sigma_{ij})_i$ and $(\Sigma_{ij'})_i$ are equal, which contradicts Assumption 2.
+
+
+We have therefore shown that Assumption 2 implies the existence of a linear combination of the $\Sigma_i$ that has distinct entries, which concludes the proof.
+\end{proof}
+
+
+\begin{lemma}
+\label{lemma:nonzerocoord}
+Let us consider the following eigenvalue problem:
+ \begin{align}
+  & \begin{bmatrix} I + \Sigma_1 & I & \dots & I \\
+    I & I + \Sigma_2 & \ddots & \vdots \\
+    \vdots &  \ddots & \ddots & I  \\
+    I & \dots & I  &I + \Sigma_m
+  \end{bmatrix} \zb = \lambda \begin{bmatrix}
+    I + \Sigma_1 & 0 & \dots  & 0 \\
+    0 & I + \Sigma_2 & \ddots & \vdots \\
+    \vdots & \ddots & \ddots & 0 \\
+    0& \dots  & 0 &  I + \Sigma_m  \\
+  \end{bmatrix} \zb
+  \label{reducedeig}
+\end{align}
+where $\forall i, \enspace 1 \leq i \leq m, \enspace  \Sigma_m \in \bbR^{p, p}$ are positive diagonal matrices and I is the identity matrix.
+If the first $p$ eigenvalues are distincts, the first $p$ eigenvectors $\zb^1, \dots, \zb^p, \zb^i \in \mathbb{R}^{mp}$ have different first non-zero coordinates.
+\end{lemma}
+%\bt{You implicitly assume that D is the block-diagonal part of C ?}
+\begin{proof}
+We sort the eigenvectors in $p$ groups of $m$ vectors so that all
+vectors in group $l$ have their $l$-th coordinate
+different from 0.
+Let $\zb^{(l)}$ be an eigenvector in group $l$ and let us call $\wb_l \in
+\mathbb{R}^{m}$ the non-zero coordinates of this eigenvector: $\forall i \in \{1 \dots m \}, w_{li} = z^{(l)}_{l + (i-1)p}$.
+
+We have:
+\begin{align}
+\begin{bmatrix}
+  1 + \Sigma_{1l} & 1 & \dots & 1  \\
+  1 & 1 + \Sigma_{2l} & \ddots  &\vdots \\
+  \vdots & \ddots & \ddots & 1  \\
+  1 & \dots & 1 & 1 + \Sigma_{ml}  \\
+\end{bmatrix} \wb_l =  \begin{bmatrix}
+  1 + \Sigma_{1l} & 0 & \dots  & 0 \\
+  0 & 1 + \Sigma_{2l} & \ddots & \vdots \\
+  \vdots & \ddots & \ddots & 0 \\
+  0& \dots  & 0 &  1 + \Sigma_{ml}  \\
+\end{bmatrix} \wb_l \lambda_l
+\label{eigsimp}
+\end{align}
+
+We now show that the biggest eigenvalue of~\eqref{eigsimp} is strictly above 1 while all
+others are strictly below 1. The core of the proof comes from the study of the eigenvalues of a matrix modified by a rank 1 matrix. The reasoning we use here follows~\cite{golub1973some} (end of section 5).
+
+Let us introduce 
+$K^l = \diag(\Sigma_{1l} \dots \Sigma_{ml})$ and $\ub = \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix}$.
+Let us drop the index $l$ in the notations for simplicity.
+
+The problem can be rewritten
+\begin{align}
+  &(\ub \ub^{\top} + K) \wb =  (I + K) \wb \lambda \\
+  & \iff (I + K)^{-1}(\ub \ub^{\top} + K) \wb =   \wb \lambda
+\end{align}
+
+The characteristic polynomial is given by:
+\begin{align}
+  &\mathcal{P}(\lambda) = \det( (I + K)^{-1} K - \lambda I + (I + K)^{-1} \ub \ub^{\top}) \label{carpol} \\
+  &\propto \det( I + ((I + K)^{-1} K - \lambda I)^{-1}(I + K)^{-1} \ub \ub^{\top})
+\end{align}
+where we implicitly focus here on eigenvalues $\lambda$ such that $\det((I + K)^{-1} K - \lambda I) \neq 0 \iff \forall i, \lambda \neq \frac{k_i}{1 + k_i}$.
+
+We then use the following property:
+Let $A \in \mathbb{R}^{a, b}$ and $B \in \mathbb{R}^{b, a}$ we have
+$\det(I_a + AB) = \det(I_b + BA)$.
+
+Let us call $\chi(\lambda) = \det( I + ((I + K)^{-1} K - \lambda I)^{-1}(I + K)^{-1} \ub \ub^{\top})$ we have:
+\begin{align}
+\chi(\lambda)
+  &= 1 + \ub^{\top}((I + K)^{-1} K - \lambda I)^{-1}(I + K)^{-1} \ub \\
+  &= 1  + \sum_{i=1}^m \frac1{1 + k_i} \frac1{ \frac{k_i}{1 + k_i} - \lambda}
+\end{align}
+%\bt{transition from (16) to (17) is not obvious to me !}
+where $k_i = \Sigma_{il} > 0$.
+% Since $k_i = \Sigma_{il} > 0$, the above secular function is simple to
+% study.
+% Let us re-order the values $\kappa_i = \frac{k_i}{1 + k_i}$ by increasing
+% order $\kappa_1 < \dots < \kappa_m$. The eigenvalues $\lambda_i$ are such that
+% $\kappa_1 < \lambda_1 < \kappa_2 < \lambda_2 < \kappa_3 < \dots < \kappa_m <
+% \lambda_m$.
+% Trivially $\kappa_m < 1$.
+Taking the derivative we get 
+\begin{align}
+\chi'(\lambda) = \sum_{i=1}^m \frac1{1 + k_i} \frac1{ (\frac{k_i}{1 + k_i} - \lambda)^2} > 0
+\end{align}
+
+Trivially, $\forall i, \frac{k_i}{1 + k_i} < 1$. We also have
+\begin{align}
+  \chi(1) = 1 + \sum_{i=1}^{m} \frac1{1 + k_i} \frac1{ \frac{k_i}{1 + k_i} - 1} = 1 - m < 0
+\end{align}
+ and $\lim_{\lambda \rightarrow + \infty} \chi(\lambda) = 1$ so as $\chi$
+ is continuous and strictly increasing on $[1, +\infty[$. Therefore, it reaches $0$ only once on this interval (excluding 1 since we know $\chi(1) \neq 0$). Therefore the greatest eigenvalue $\lambda^*$ is strictly above $1$ while all other eigenvalues are strictly below $1$.
+ 
+  Note that because $\chi' > 0$, $\lambda^*$ is of multiplicity $1$. In the analysis above we ignored those eigenvalues $\lambda$ such that $\lambda = \frac{k_i}{1 + k_i}$ for some $i$. However since $\frac{k_i}{1 + k_i} < 1$, none of these eigenvalues can be the largest one.
+ 
+ Finally, the $p$ first eigenvectors belong to different groups (the
+ corresponding eigenvalues are all strictly above 1). This shows that these eigenvectors have
+ different first non-zero coordinates. 
+ 
+\end{proof}
 
 % \begin{lemma}
-% \label{lemma:ica}
-% Let $\sbb \in \mathbb{R}^k$ and $\sbb'\in \mathbb{R}^k$ have independent components among which $g$ are Gaussian, and $P$ a rotation matrix such that $\sbb = P\sbb'$. Then, $P=\Pi^{-1} O \Pi'$ where $\Pi$ and $\Pi'$ are sign and permutation matrices such that the first $g$ components of $\Pi \sbb$ and $\Pi' \sbb'$ are Gaussian and $O$ is a block diagonal matrix such that $O^{(g)}$, the first $g \times g$ block of $O$, is orthogonal and the other block is identity.
+% \label{lemma:rotation}
+%   Let us consider the problem $(\Lambda + \delta
+%   E)\ub = \ub \psi$ where $\Lambda = \diag(\lambda_1 \dots \lambda_{mp})$ is a diagonal matrix of positive values arranged in decreasing order, $\delta E = o(\lambda_p - \lambda_{p+1})$ and $\delta E = o(\lambda_{pm})$. The first eigenvectors $[\ub^1 \dots  \ub^p]$ are given by
+%   $[\ub^1 \dots \ub^p] = [e_1 \dots e_p] \Theta + \delta Z$ where $e_i$ are the vectors of the canonical basis in $\bbR^{mp}$,
+%   $\Theta \in \mathbb{R}^{p \times p}$ is a rotation matrix and $\delta Z =
+%   O(\delta E)$
 % \end{lemma}
 % \begin{proof}
-%   From~\cite{comon1994independent}, Theorem 10:
-%   Assume $\sbb = P\sbb'$, if the column $j$ of $P$ has more than one non-zero element then $s'_j$ is Gaussian. 
-  
-%   Let us define permutations $\Pi_1$, $\Pi'_1$ such that the first $g$ components of $\Pi_1 \sbb$ and $\Pi'_1 \sbb'$ are Gaussian and $P_1  = \Pi_1 P (\Pi'_1)^{-1}$. We can see that $P_1$ is orthogonal.
-  
-%   We have $\Pi_1 \sbb = P_1 \Pi'_1 \sbb'$. So the last $p-g$ columns of $P_1$ contain at most one non-zero element. Using orthogonality of $P_1$ this non-zero element has value $1$ or $-1$ and is also the only one in its line. Let us focus on column $l > g$. Assume column $l$ has its non-zero element at index $k \leq g$. Then line $k$ in $P_1$ is only non-zero at index $l$ and therefore $(\Pi_1 \sbb)_k$ (which is Gaussian) is equal to $(\Pi'_1 \sbb')_l$ (which is not). Therefore column $l$ can only have its non-zero element at an index greater than $g$. This shows that $P_1$ is block diagonal $P_1 = \begin{bmatrix} O_g & 0 \\ 0 & P_2 \end{bmatrix}$ where $O_g$ is orthogonal  and $P_2$ is a sign and permutation matrix.
+%   In matrix form denoting $\Psi = \diag(\psi_1 \dots \psi_{mp})$ the eigenvalues
+%   in descending order and $U = [\ub^1 \dots \ub^{mp}]$ the matrix of associated
+%   eigenvectors.
+%   We want to solve
 %   \begin{align}
-%       &\begin{bmatrix} O_g & 0 \\ 0 & P_2 \end{bmatrix} = \Pi_1 P (\Pi'_1)^{-1} \\
-%       & \iff \begin{bmatrix} O_g & 0 \\ 0 & I \end{bmatrix} \begin{bmatrix} I & 0 \\ 0 & P_2 \end{bmatrix}  = \Pi_1 P (\Pi'_1)^{-1} \\
-%       & \iff \Pi_1^{-1} \begin{bmatrix} O_g & 0 \\ 0 & I \end{bmatrix} \begin{bmatrix} I & 0 \\ 0 & P_2 \end{bmatrix} \Pi'_1  = P
+%     (\Lambda +  \delta E)  U =  U \Psi
 %   \end{align}
+%   When the difference between any two values of $\Lambda$ is in $O(\min(\lambda_{pm}, \lambda_p - \lambda_{p+1}))$, no
+%   rotation indeterminacy appears. We refer the reader to section 3.1 of the tutorial of~\cite{bamieh2020tutorial} to
+%   have an explicit formula:
+%   $U = I - \Pi \odot \delta E$
+%   where $\odot$  is the Hadamar product and
+%   $\Pi_{ij} = \begin{cases}
+%     0 & \text{if } i =j \\
+%     \frac1{\lambda_i - \lambda_j} & \text{if } i \neq i \\
+%   \end{cases}$.
+
+%   The rotation indeterminacy appears whenever the difference between two values
+%   in $\Lambda$ is of the same order than $\delta E$. In which case we can
+%   reparametrize the problem by:
+%   \begin{align}
+%     (\Lambda' +  \delta E')  U =  U \Psi
+%   \end{align}
+%   where $\Lambda'$ is obtained by replacing $\lambda_i$ by $\lambda_{i-1}$
+%   whenever $\lambda_i - \lambda_{i-1} = O(\delta E)$ and the corresponding terms are
+%   added in $\delta E'$ so that we always have $\Lambda + \delta E = \Lambda' +
+%   \delta E'$ and $\delta E' = O(\delta E)$.
+
+%   Let us assume without loss of generality that the $l$ first diagonal values of
+%   $\Lambda'$ are the same while all others are different. Following derivations in~\cite{bamieh2020tutorial}, the
+%   eigenvectors are given by:
+%   \begin{align}
+%     U = \Theta - \Theta \Pi' \odot \Theta^{\top}\delta E' \Theta
+%   \end{align}
+%   where $\Theta$ is a matrix such that its first $l, l$ block $\Theta^l$ diagonalizes the
+%   first $l, l$ block of $\delta E'$, the off-diagonal blocks are nul and the
+%   last diagonal block is identity.
+%   \[
+%     \Theta = \begin{bmatrix} \Theta^l & 0 \\ 0 & I_{km - l} \\ \end{bmatrix}
+%   \]
+%   and $\Pi'$ is given by
+%   $\Pi'_{ij} = \begin{cases} 0 & \text{if } \lambda_i = \lambda_j \\
+%     \frac1{\lambda_i - \lambda_j} & \text{if } \lambda_i \neq \lambda_j
+%   \end{cases}$.
   
-%   Therefore setting $\Pi' =   \begin{bmatrix} I & 0 \\ 0 & P_2 \end{bmatrix} \Pi'_1$ and $\Pi = \Pi_1$ and $O= \begin{bmatrix}O_g & 0 \\ 0 & I  \end{bmatrix}$ concludes the proof.
+%   This can be rewritten:
+%   \begin{align}
+%       [\ub^1 \dots \ub^l] = [\eb_1 \dots \eb_l]\Theta^l
+%       [\ub^{l+1} \dots \ub^{pm}] = [\eb_{l+1} \dots \eb_{pm}]
+%   \end{align}
+%   In particular we see that the eigenvectors are given up to a correction term by the canonical vectors with eigenvalues given (up to a correction term) by the diagonal values in $\Lambda$, but the ones that correspond to the same values of $\lambda_i$ up to $O(\delta_E)$ undergo a rotation $\Theta^l$ that depends on the sampling noise.
   
+%   Note that as $\delta E = o(\lambda_p - \lambda_{p+1})$, none of the first $p$ eigenvectors can have the same eigenvalue as the last $pm -p$ up to $O(\delta E)$.
+%   Therefore the first $p$ eigenvectors are given by the first $p$ canonical vectors of $\bbR^{pm}$ up to a rotation and a correction term: $[\ub^1 \dots \ub^p] = [e_1 \dots e_p]
+%   \mathcal{O} + \delta Z$. Where $\mathcal{O} \in \bbR^{p, p}$ is a rotation and $\delta Z = O(\|\delta E \|_F^2)$.
 % \end{proof}
+% \bt{I'm lost between $\Theta$ and$ \mathcal{O}$}
 
-% \begin{lemma}
-% \label{lemma:eigdecomp}
-% Assume that Assumption 2 holds for $\Sigma_i$, and that there is an orthogonal matrix $P$ and diagonal matrices $\Sigma_i'$ such that for all $i$, $\Sigma_i' = P\Sigma_iP^{\top}$. Then, $P$ is a permutation matrix.
-% \end{lemma}
-% \begin{proof}
-% The proof is in two parts. First, we show that there exist some coefficients $\alpha_1, \dots, \alpha_m$ such that the matrix $\sum_i\alpha_i\Sigma_i$ has distinct coefficients on the diagonal. Then, since we have $\sum_i\alpha_i\Sigma'_i = P\left(\sum_i\alpha_i\Sigma_i\right)P^{\top}$, and the diagonal $\sum_i\alpha_i\Sigma_i$ has distinct entries, we can invoke the unicity of the eigenvalue decomposition for symmetric matrices, which shows that $P$ is necessarily a permutation matrix.
-% Now, the only thing left is to prove is that Assumption 2 implies the existence of this linear combination.
+\section{Identifiability results for $m< 3$}
+\label{app:identifiability}
+We have a slightly weaker identifiability result when $m=2$.
+\begin{prop}
+  \label{prop:identifiability_2d}
+  Let $m=2$, and suppose that the scalars $(1 + \Sigma_{1j})(1+\Sigma_{2j})$ for $j=1\dots p$ are all different. We let $\Theta'=(A_1', A_2', \Sigma_1',\Sigma_2')$ that also generates $\xb_1, \xb_2$. Then, there exists a permutation and scale matrix $P$ such that $A'_1 =A_1P$ and $A'_2 = A_2P^{-\top}$.
+\end{prop}
+\begin{proof}
+  We let $P=A_1^{-1}A_1'$. Since $C_{12} = I_p$, it holds 
+  $A_2^{-1}A_2'= P^{-\top}$. Then, we have
+  $I_p + \Sigma_1 = P(I_p + \Sigma'_1)P^{\top}$. This means that there exists $U\in\mathcal{O}_p$ such that $P = (I_p + \Sigma_1)^{\frac12}U(I_p + \Sigma'_1)^{-\frac12}$. Since $P^{-\top}(I_p+\Sigma'_2)P^{-1} = I_p+\Sigma_2$, we find
+  $U(I_p+\Sigma'_1)(I_p+\Sigma'_2)U^{\top} = (I_p+\Sigma_1)(I_p+\Sigma_2)$. By identification, $U$ is a permutation matrix, and $P$ is a scale and permutation matrix.
+\end{proof}
+As a consequence, when there are only two subjects, it is possible to recover the components and noise levels up to a scaling factor.
+%
+When there is only one view, $m=1$, there is a global rotation indeterminacy: 
+$
+A_1(I_p + \Sigma_1)A_1^{\top} = A'_1(I_p + \Sigma_1){A'_1}^{\top}
+$
+for $A'_1 = A_1(I_p + \Sigma_1)^{\frac12}U(I_p + \Sigma_1)^{-\frac12}$ where $U$ is any orthogonal matrix. In this case, we lose identifiability.
 
-% We assume by contradiction that any linear combination of the $\Sigma_i$ has two equal entries.
+% \section{Derivation of gradient and Hessian for the joint diagonalization}
+% \label{app:jointdiag}
+% We use a similar approach as\pierre{do we really need the orthogonal algorithm ? anyways, this should be put in appendix} in~\cite{ablin2018beyond} and optimize this loss using a quasi-newton approach. In our case though, we have to take into account the orthogonality constraint.
+% In order to take into account orthogonality constraints, the gradient $G$ and Hessian $H$ are defined as 
+% $\loss(\exp(\eps) O) = \loss(O) + \langle \eps , G \rangle + \langle \eps , H \eps \rangle + o(\|\eps \|_F^2)$ where $\eps$ is a small skew-symmetric matrix.
 
-% For $\alpha = [\alpha_1, \dots, \alpha_m]$, we let $\mathcal{S}(\alpha) = \diag(\sum_i\alpha_i\Sigma_i)\in\bbR^p$, where $\diag(\cdot)$ extracts the diagonal entries. The operator $\mathcal{S}$ is linear.
-% %
-% We now define for $j, j'\leq p$ the linear form $\ell_{jj'}(\alpha) = \mathcal{S}(\alpha)_j - \mathcal{S}(\alpha)_{j'}\in\bbR$. The assumption on the linear combinations of $\Sigma_i$ simply rewrites:
-% For all $\alpha\in\bbR^m$, there exists $j, j'\leq p$ such that $\ell_{jj'}(\alpha) = 0$.
-
-% From a set point of view, this relationship writes
-% $$
-% \bigcup_{j, j'}\mathrm{Ker}(\ell_{jj'}) = \bbR^m\enspace.
-% $$
-% Since the $\ell_{jj'}$ are all linear forms, the $\mathrm{Ker}(\ell_{jj'})$ are subspaces of dimensions $m$ or $m-1$, and since their union is of dimension $m$, there exists $j, j'$ such that  $\mathrm{Ker}(\ell_{jj'}) = \bbR^m$, i.e. such that $\ell_{jj'} = 0$.
-
-% As a consequence, we have for all $\alpha$, $\mathcal{S}(\alpha)_j = \mathcal{S}(\alpha)_{j'}$. This implies that the sequences $(\Sigma_{ij})_i$ and $(\Sigma_{ij'})_i$ are equal, which contradicts Assumption 2.
-
-
-% We have therefore shown that Assumption 2 implies the existence of a linear combination of the $\Sigma_i$ that has distinct entries, which concludes the proof.
-% \end{proof}
-
-
-% \begin{lemma}
-% \label{lemma:nonzerocoord}
-% Let us consider the following eigenvalue problem:
-%  \begin{align}
-%   & \begin{bmatrix} I + \Sigma_1 & I & \dots & I \\
-%     I & I + \Sigma_2 & \ddots & \vdots \\
-%     \vdots &  \ddots & \ddots & I  \\
-%     I & \dots & I  &I + \Sigma_m
-%   \end{bmatrix} \zb = \lambda \begin{bmatrix}
-%     I + \Sigma_1 & 0 & \dots  & 0 \\
-%     0 & I + \Sigma_2 & \ddots & \vdots \\
-%     \vdots & \ddots & \ddots & 0 \\
-%     0& \dots  & 0 &  I + \Sigma_m  \\
-%   \end{bmatrix} \zb
-%   \label{reducedeig}
-% \end{align}
-% where $\forall i, \enspace 1 \leq i \leq m, \enspace  \Sigma_m \in \bbR^{p, p}$ are positive diagonal matrices and I is the identity matrix.
-% If the first $p$ eigenvalues are distincts, the first $p$ eigenvectors $\zb^1, \dots, \zb^p, \zb^i \in \mathbb{R}^{mp}$ have different first non-zero coordinates.
-% \end{lemma}
-% %\bt{You implicitly assume that D is the block-diagonal part of C ?}
-% \begin{proof}
-% We sort the eigenvectors in $p$ groups of $m$ vectors so that all
-% vectors in group $l$ have their $l$-th coordinate
-% different from 0.
-% Let $\zb^{(l)}$ be an eigenvector in group $l$ and let us call $\wb_l \in
-% \mathbb{R}^{m}$ the non-zero coordinates of this eigenvector: $\forall i \in \{1 \dots m \}, w_{li} = z^{(l)}_{l + (i-1)p}$.
-
-% We have:
+% Let us call $D^i = \mathcal{O} \hat{W}_i C_{ii} \hat{W}_i^{\top} \mathcal{O}^{\top}$ and notice that $D^i$ is symmetric.
+% We have
 % \begin{align}
-% \begin{bmatrix}
-%   1 + \Sigma_{1l} & 1 & \dots & 1  \\
-%   1 & 1 + \Sigma_{2l} & \ddots  &\vdots \\
-%   \vdots & \ddots & \ddots & 1  \\
-%   1 & \dots & 1 & 1 + \Sigma_{ml}  \\
-% \end{bmatrix} \wb_l =  \begin{bmatrix}
-%   1 + \Sigma_{1l} & 0 & \dots  & 0 \\
-%   0 & 1 + \Sigma_{2l} & \ddots & \vdots \\
-%   \vdots & \ddots & \ddots & 0 \\
-%   0& \dots  & 0 &  1 + \Sigma_{ml}  \\
-% \end{bmatrix} \wb_l \lambda_l
-% \label{eigsimp}
+%     &\loss(\exp(\eps) \mathcal{O}) \\
+%     &= \loss((I + \eps + \frac12 \eps^2) \mathcal{O}) + o(\|\eps^2\|) \\
+%     &= \frac1{2n} \sum_{i=1}^m \log \det \diag((I + \eps + \frac12 \eps^2) D^i(I + \eps + \frac12 \eps^2)^{\top}) + o(\|\eps^2\|) \\
+%     &= \frac1{2n} \sum_{i=1}^m \log \det( \diag(D^i) + \diag(D^i \eps^{\top}) + \diag(\eps D^i) + \\ &\enspace \enspace \enspace \enspace \diag(\eps D^i \eps^{\top}) + \diag(\frac12 \eps^2 D^i) + \diag(\frac12 D^i (\eps^2)^{\top})) + o(\|\eps^2\|)\\
+%     &= \frac1{2n} \sum_{i=1}^m \log \det( \diag(D^i) + 2\diag(\eps D^i) + \diag(\eps D^i \eps^{\top}) + 2\diag(\frac12 \eps^2 D^i)) + o(\|\eps^2\|)\\
+%     &= \loss(\mathcal{O}) + \frac1{2n} \sum_{i=1}^m \log \det( I + 2\frac{\diag(\eps D^i)}{\diag(D^i)} + \frac{\diag(\eps D^i \eps^{\top})}{\diag(D^i)} + 2\frac{\diag(\frac12 \eps^2 D^i)}{\diag(D^i)}) + o(\|\eps^2\|) \\
+%     &= \loss(\mathcal{O}) + \frac1{2n} \sum_{i=1}^m \tr \log( I + 2\frac{\diag(\eps D^i)}{\diag(D^i)} + \frac{\diag(\eps D^i \eps^{\top})}{\diag(D^i)} + 2\frac{\diag(\frac12 \eps^2 D^i)}{\diag(D^i)}) + o(\|\eps^2\|) \\
+%     &= \loss(\mathcal{O}) + \frac1{2n} \sum_{i=1}^m \tr( 2\frac{\diag(\eps D^i)}{\diag(D^i)} + \frac{\diag(\eps D^i \eps^{\top})}{\diag(D^i)} \\ &\enspace \enspace \enspace \enspace + 2\frac{\diag(\frac12 \eps^2 D^i)}{\diag(D^i)} - 2(\frac{\diag(\eps D^i)}{\diag(D^i)})^2) + o(\|\eps^2\|) \\
+%     &= \loss(\mathcal{O}) + \frac1{2n} \sum_{i=1}^m  \sum_k \left[ \sum_l 2\frac{\eps_{kl} D^i_{lk}}{D^i_{kk}} + \sum_{lm} \frac{\eps_{kl} D^i_{lm} \eps_{km}}{D^i_{kk}} \right.\\  &\left.\enspace \enspace \enspace \enspace + \sum_{lm}\frac{ \eps_{kl} \eps_{lm} D^i_{mk}}{D^i_{kk}} - 2\sum_{lm} \frac{ \eps_{kl}D^i_{lk} \eps_{km}D^i_{mk}}{(D^i_{kk})^2} \right] + o(\|\eps^2\|)
 % \end{align}
-
-% We now show that the biggest eigenvalue of~\eqref{eigsimp} is strictly above 1 while all
-% others are strictly below 1. The core of the proof comes from the study of the eigenvalues of a matrix modified by a rank 1 matrix. The reasoning we use here follows~\cite{golub1973some} (end of section 5).
-
-% Let us introduce 
-% $K^l = \diag(\Sigma_{1l} \dots \Sigma_{ml})$ and $\ub = \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix}$.
-% Let us drop the index $l$ in the notations for simplicity.
-
-% The problem can be rewritten
+% By identification we get
 % \begin{align}
-%   &(\ub \ub^{\top} + K) \wb =  (I + K) \wb \lambda \\
-%   & \iff (I + K)^{-1}(\ub \ub^{\top} + K) \wb =   \wb \lambda
+%     &G_{kl} = \frac1{n} \sum_i \frac{D^i_{lk}}{D^i_{kk}}
+%     &H_{klmn} = \frac1{n} \sum_i (\delta_{km} \frac{D^i_{ln}}{D^i_{kk}} + \delta_{lm}\frac{D^i_{nk}}{D^i_{kk}} - 2 \delta_{km} \frac{D^i_{lk} D^i_{nk}}{(D^i_{kk})^2})
 % \end{align}
 
-% The characteristic polynomial is given by:
 % \begin{align}
-%   &\mathcal{P}(\lambda) = \det( (I + K)^{-1} K - \lambda I + (I + K)^{-1} \ub \ub^{\top}) \label{carpol} \\
-%   &\propto \det( I + ((I + K)^{-1} K - \lambda I)^{-1}(I + K)^{-1} \ub \ub^{\top})
+%     &G_{kl} = \frac1{n} \sum_i \frac{D^i_{lk}}{D^i_{kk}}
+%     &H_{klmn} = \frac1{n} \sum_i (\delta_{km} \frac{D^i_{ln}}{D^i_{kk}} + \delta_{lm}\frac{D^i_{nk}}{D^i_{kk}} - 2 \delta_{km} \frac{D^i_{lk} D^i_{nk}}{(D^i_{kk})^2})
 % \end{align}
-% where we implicitly focus here on eigenvalues $\lambda$ such that $\det((I + K)^{-1} K - \lambda I) \neq 0 \iff \forall i, \lambda \neq \frac{k_i}{1 + k_i}$.
+% We approximate the Hessian by replacing $D^i_{lk}$ by $D^i_{kk} \delta_{lk}$. This approximation is exact when the unmixed covariances are truly diagonal. The approximated Hessian is given by
+% $\hat{H}_{klmn} = \frac1{n} \sum_i (\delta_{km} \delta_{ln} \frac{D^i_{ll}}{D^i_{kk}} + \delta_{lm} \delta_{kn} - 2 \delta_{kmln})$.
+% Using the fact that $\eps$ is a skew-symmetric matrix
 
-% We then use the following property:
-% Let $A \in \mathbb{R}^{a, b}$ and $B \in \mathbb{R}^{b, a}$ we have
-% $\det(I_a + AB) = \det(I_b + BA)$.
-
-% Let us call $\chi(\lambda) = \det( I + ((I + K)^{-1} K - \lambda I)^{-1}(I + K)^{-1} \ub \ub^{\top})$ we have:
+% Let us call $\hat{D^i} = \frac1{n} \sum_i D^i$.
 % \begin{align}
-% \chi(\lambda)
-%   &= 1 + \ub^{\top}((I + K)^{-1} K - \lambda I)^{-1}(I + K)^{-1} \ub \\
-%   &= 1  + \sum_{i=1}^m \frac1{1 + k_i} \frac1{ \frac{k_i}{1 + k_i} - \lambda}
+% \langle G , \eps \rangle + \frac12 \langle \eps , \hat{H} \eps \rangle &= \sum_{kl} \eps_{kl} G_{kl} + \frac12 \sum_{klmn} \hat{H}_{klmn} \eps_{kl} \eps_{mn} \\
+% &= \sum_{kl} G_{kl} \eps_{kl} + \frac12 \left[\sum_{kl} \frac{\hat{D}^i_{ll}}{\hat{D}^i_{kk}} \eps_{kl}^2 + \sum_{kl}\eps_{kl} \eps_{lk} - 2\sum_k \eps_{kk} \right]
 % \end{align}
-% %\bt{transition from (16) to (17) is not obvious to me !}
-% where $k_i = \Sigma_{il} > 0$.
-% % Since $k_i = \Sigma_{il} > 0$, the above secular function is simple to
-% % study.
-% % Let us re-order the values $\kappa_i = \frac{k_i}{1 + k_i}$ by increasing
-% % order $\kappa_1 < \dots < \kappa_m$. The eigenvalues $\lambda_i$ are such that
-% % $\kappa_1 < \lambda_1 < \kappa_2 < \lambda_2 < \kappa_3 < \dots < \kappa_m <
-% % \lambda_m$.
-% % Trivially $\kappa_m < 1$.
-% Taking the derivative we get 
+% Using the fact that $\eps$ is anti-symmetric gives:
 % \begin{align}
-% \chi'(\lambda) = \sum_{i=1}^m \frac1{1 + k_i} \frac1{ (\frac{k_i}{1 + k_i} - \lambda)^2} > 0
+% \langle G , \eps \rangle + \langle \eps , \hat{H} \eps \rangle
+% &= \sum_{k} \sum_{l < k} (G_{kl} - G_{lk}) \eps_{kl} + \frac12(\sum_{k} \sum_{l < k} (\frac{\hat{D}^i_{ll}}{\hat{D}^i_{kk}} + \frac{\hat{D}^i_{kk}}{\hat{D}^i_{ll}}) \eps_{kl}^2 -\sum_{k} \sum_{l < k}2\eps_{kl}^2) \\
+% &= \sum_{k} \sum_{l < k} (G_{kl} - G_{lk}) \eps_{kl} + \frac12(\sum_{k} \sum_{l < k} \left[\frac{\hat{D}^i_{ll}}{\hat{D}^i_{kk}} + \frac{\hat{D}^i_{kk}}{\hat{D}^i_{ll}} - 2\right] \eps_{kl}^2)
 % \end{align}
+% So updates are given by
+% $\mathcal{O} \leftarrow \exp(J) \mathcal{O}$ where $J_{kl} = \frac{G_{kl} - G_{lk}}{\frac{\hat{D}^i_{ll}}{\hat{D}^i_{kk}} + \frac{\hat{D}^i_{kk}}{\hat{D}^i_{ll}} - 2}$.
 
-% Trivially, $\forall i, \frac{k_i}{1 + k_i} < 1$. We also have
+
+% \section{Derivation of log-likelihood}
+% \label{likelihood_derivation}
+
+
+% and the log-likelihood writes:
 % \begin{align}
-%   \chi(1) = 1 + \sum_{i=1}^{m} \frac1{1 + k_i} \frac1{ \frac{k_i}{1 + k_i} - 1} = 1 - m < 0
+%   \mathcal{L} = &\sum_{i=1}^m\left(-\log|W_i| + \frac12 \log |\Sigma_i|\right) + \frac12 \log(|\sum_{i=1}^m \Sigma_i^{-1} + I|) + \frac12 (\sum_{i=1}^m \langle \yb_i , \Sigma_i^{-1} \yb_i \rangle \\&  - \frac12 \langle \left(\sum_{i=1}^m \Sigma_i^{-1} + I \right)^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) , \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \rangle)
 % \end{align}
-%  and $\lim_{\lambda \rightarrow + \infty} \chi(\lambda) = 1$ so as $\chi$
-%  is continuous and strictly increasing on $[1, +\infty[$. Therefore, it reaches $0$ only once on this interval (excluding 1 since we know $\chi(1) \neq 0$). Therefore the greatest eigenvalue $\lambda^*$ is strictly above $1$ while all other eigenvalues are strictly below $1$.
- 
-%   Note that because $\chi' > 0$, $\lambda^*$ is of multiplicity $1$. In the analysis above we ignored those eigenvalues $\lambda$ such that $\lambda = \frac{k_i}{1 + k_i}$ for some $i$. However since $\frac{k_i}{1 + k_i} < 1$, none of these eigenvalues can be the largest one.
- 
-%  Finally, the $p$ first eigenvectors belong to different groups (the
-%  corresponding eigenvalues are all strictly above 1). This shows that these eigenvectors have
-%  different first non-zero coordinates. 
- 
-% \end{proof}
+% which yields the expected formula.
 
-% % \begin{lemma}
-% % \label{lemma:rotation}
-% %   Let us consider the problem $(\Lambda + \delta
-% %   E)\ub = \ub \psi$ where $\Lambda = \diag(\lambda_1 \dots \lambda_{mp})$ is a diagonal matrix of positive values arranged in decreasing order, $\delta E = o(\lambda_p - \lambda_{p+1})$ and $\delta E = o(\lambda_{pm})$. The first eigenvectors $[\ub^1 \dots  \ub^p]$ are given by
-% %   $[\ub^1 \dots \ub^p] = [e_1 \dots e_p] \Theta + \delta Z$ where $e_i$ are the vectors of the canonical basis in $\bbR^{mp}$,
-% %   $\Theta \in \mathbb{R}^{p \times p}$ is a rotation matrix and $\delta Z =
-% %   O(\delta E)$
-% % \end{lemma}
-% % \begin{proof}
-% %   In matrix form denoting $\Psi = \diag(\psi_1 \dots \psi_{mp})$ the eigenvalues
-% %   in descending order and $U = [\ub^1 \dots \ub^{mp}]$ the matrix of associated
-% %   eigenvectors.
-% %   We want to solve
-% %   \begin{align}
-% %     (\Lambda +  \delta E)  U =  U \Psi
-% %   \end{align}
-% %   When the difference between any two values of $\Lambda$ is in $O(\min(\lambda_{pm}, \lambda_p - \lambda_{p+1}))$, no
-% %   rotation indeterminacy appears. We refer the reader to section 3.1 of the tutorial of~\cite{bamieh2020tutorial} to
-% %   have an explicit formula:
-% %   $U = I - \Pi \odot \delta E$
-% %   where $\odot$  is the Hadamar product and
-% %   $\Pi_{ij} = \begin{cases}
-% %     0 & \text{if } i =j \\
-% %     \frac1{\lambda_i - \lambda_j} & \text{if } i \neq i \\
-% %   \end{cases}$.
+\section{EM E-step and M-step for ShICA with Gaussian components}
+  \subsection{E-step}
+  \label{conditional_density}
+  The complete likelihood is given by
+\begin{equation}
+  p(\xb, \sbb) = \prod_i p(\xb_i | \sbb) p(\sbb)=  \prod_i (|W_i| \Ncal(\yb_i; \sbb, \Sigma_i)) \Ncal(\sbb; 0, I_k)
+\end{equation}
 
-% %   The rotation indeterminacy appears whenever the difference between two values
-% %   in $\Lambda$ is of the same order than $\delta E$. In which case we can
-% %   reparametrize the problem by:
-% %   \begin{align}
-% %     (\Lambda' +  \delta E')  U =  U \Psi
-% %   \end{align}
-% %   where $\Lambda'$ is obtained by replacing $\lambda_i$ by $\lambda_{i-1}$
-% %   whenever $\lambda_i - \lambda_{i-1} = O(\delta E)$ and the corresponding terms are
-% %   added in $\delta E'$ so that we always have $\Lambda + \delta E = \Lambda' +
-% %   \delta E'$ and $\delta E' = O(\delta E)$.
+The likelihood writes
+\begin{align}
+  p(\xb) &= \int_{\sbb} \prod_{i=1}^m \left(|W_i| \Ncal(\yb_i; \sbb, \Sigma_i) \right) \Ncal(\sbb; 0, I_k) d \sbb \\
+\end{align}
 
-% %   Let us assume without loss of generality that the $l$ first diagonal values of
-% %   $\Lambda'$ are the same while all others are different. Following derivations in~\cite{bamieh2020tutorial}, the
-% %   eigenvectors are given by:
-% %   \begin{align}
-% %     U = \Theta - \Theta \Pi' \odot \Theta^{\top}\delta E' \Theta
-% %   \end{align}
-% %   where $\Theta$ is a matrix such that its first $l, l$ block $\Theta^l$ diagonalizes the
-% %   first $l, l$ block of $\delta E'$, the off-diagonal blocks are nul and the
-% %   last diagonal block is identity.
-% %   \[
-% %     \Theta = \begin{bmatrix} \Theta^l & 0 \\ 0 & I_{km - l} \\ \end{bmatrix}
-% %   \]
-% %   and $\Pi'$ is given by
-% %   $\Pi'_{ij} = \begin{cases} 0 & \text{if } \lambda_i = \lambda_j \\
-% %     \frac1{\lambda_i - \lambda_j} & \text{if } \lambda_i \neq \lambda_j
-% %   \end{cases}$.
+Denoting $P = (\sum_{i=1}^m \Sigma_i^{-1} + I)$ we can write
+\begin{align}
+  &\sum_{i=1}^m \langle \yb_i - \sbb, \Sigma_i^{-1} (\yb_i - \sbb) \rangle + \langle \sbb , \sbb \rangle \\
+  &=  \sum_{i=1}^m \langle \yb_i , \Sigma_i^{-1} \yb_i\rangle + \langle \sbb ,(\sum_{i=1}^m \Sigma_i^{-1} + I) \sbb \rangle  -2 \langle \sbb ,\sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \rangle \\
+  &=  \sum_{i=1}^m \left(\langle \yb_i , \Sigma_i^{-1} \yb_i\rangle \right)  +\langle \sbb  - P^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) , P (\sbb - P^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right)) \rangle   \\&- \langle P^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) , \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \rangle 
+\end{align}
+
+Denoting
+\begin{align*}
+&\psi(\yb, \sbb, P, \Sigma) = \\& \exp(-\frac12 \langle \sbb  - P^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) , P (\sbb - P^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right)) \rangle)
+\end{align*}
+ we get
+ \begin{align}
+     p(\sbb | \xb) &= \frac{p(\xb, \sbb)}{p(\xb)} \\
+                   &= \frac{\psi(\yb, \sbb, P, \Sigma)}{
+                     \int_{\sbb} \psi(\yb, \sbb, P, \Sigma) d \sbb} \\
+     &= \mathcal{N}(\sbb; P^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right), P^{-1})
+ \end{align}
+so 
+\begin{align}
+  &\sbb|\xb \sim \Ncal( \EE[\sbb|\xb], \VV[\sbb | \xb])
+\end{align}
+where
+\begin{align}
+	&\EE[\sbb|\xb]= \left(\sum_{i=1}^m \Sigma_i^{-1}  + I \right)^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right)  \\
+  &\VV[\sbb|\xb]= (\sum_{i=1}^m \Sigma_i^{-1}  + I)^{-1} 
+\end{align}
+
+\subsection{M-step}
+The function to minimize in the M-step is then given by:
+\begin{align}
+  \Jcal &= -\log p(\xb, \sbb) \\
+        &= \sum_{i=1}^m \log(|\Sigma_i|) + \\ &\enspace \enspace \enspace \frac12 \tr(\Sigma_i^{-1} \left[(\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb]\right]) \\ &\enspace \enspace \enspace + c
+\end{align}
+where $c$ does not depend on $\Sigma_i$
+
+Therefore we get closed-form updates for $\Sigma_i$: 
+\begin{align}
+\Sigma_i \leftarrow  \diag((\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb])
+\end{align}
+Plugging in the closed-form formula for $\EE[\sbb|\xb]$ and $\VV[\sbb|\xb]$ we get updates that only depends on the covariances $\hat{C_{ij}} = \EE[\xb_i \xb_j^{\top}]$.
+\begin{align*}
+\Sigma_i \leftarrow &\diag(\hat{C_{ii}} \\&- 2 \VV[\sbb | \xb]  \sum_{j=1}^m \Sigma_j^{-1} \hat{C}_{ji}  \\&+ \VV[\sbb | \xb]  \sum_{j = 1}^m \sum_{l = 1}^m \left(\Sigma_j^{-1} \hat{C}_{jl} \Sigma_l^{-1} \right) \VV[\sbb | \xb] \\&+ \VV[\sbb | \xb])
+\end{align*}
+
+
+\section{EM E-step and M-step for ShICA with non-Gaussian components}
+\label{app:emestep}
+
+  \subsection{E-step}
+  The complete likelihood is given by
+\begin{align}
+  p(\xb, \sbb) &= \prod_i p(\xb_i | \sbb) p(\sbb) \\
+  &=  \sum_{\alpha \in \{\frac12, \frac32\}} p(\xb, \sbb | \alpha) 
+\end{align}
+where 
+\[
+p(\xb, \sbb | \alpha)  = \prod_i (|W_i| \Ncal(\yb_i; \sbb, \Sigma_i)) \Ncal(\sbb; 0, \alpha I_k)
+\]
+
+We denote $P_{\alpha} = (\sum_{i=1}^m \Sigma_i^{-1} + \frac1{\alpha}I), R_{\alpha} =  ((\sum_{i=1}^m \Sigma_i^{-1})^{-1} + \alpha I)$ and $\bar{\yb} = \frac{\sum_i \Sigma_i^{-1} \yb_i}{\sum_i \Sigma_i^{-1}}$. We introduce the constants $c_1, \dots c_3$ that are independent of $\alpha$ and $\sbb$.
+We have:
+\begin{align}
+  p(\xb, \sbb | \alpha) &= \frac{c_1}{|\alpha I|}\exp(-\frac12(\sum_{i=1}^m \langle \yb_i - \sbb, \Sigma_i^{-1} (\yb_i - \sbb) \rangle + \frac1{\alpha}\langle \sbb , \sbb \rangle)) \\
+  &= \frac{c_1}{|\alpha I|} \exp(-\frac12(\sum_{i=1}^m \langle \yb_i - \sbb + \nonumber \\& \enspace \enspace \bar{\yb} - \bar{\yb}, \Sigma_i^{-1} (\yb_i - \sbb + \bar{\yb} - \bar{\yb}) \rangle + \frac1{\alpha}\langle \sbb , \sbb \rangle)) \\
+                        &= \frac{c_1}{|\alpha I|} \exp(-\frac12(\sum_{i=1}^m \langle \yb_i - \bar{\yb}, \Sigma_i^{-1} (\yb_i - \bar{\yb}) \rangle \nonumber \\& \enspace \enspace+ \sum_{i=1}^m \langle \bar{\yb} - \sbb, \Sigma_i^{-1} (\bar{\yb}- \sbb) \rangle + \frac1{\alpha}\langle \sbb , \sbb \rangle)) \\
+  &= \frac{c_2}{|\alpha I|} \exp(-\frac12( \langle \bar{\yb} - \sbb, \sum_{i=1}^m  \Sigma_i^{-1} (\bar{\yb}- \sbb) \rangle + \frac1{\alpha}\langle \sbb , \sbb \rangle)) \\
+                        &= \frac{c_2}{|\alpha I|} \exp(-\frac12( \langle \bar{\yb}, \sum_{i=1}^m  \Sigma_i^{-1} \bar{\yb} \rangle + \nonumber \\& \enspace \enspace
+  \langle \sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, P_{\alpha} (\sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1} \bar{\yb}) \rangle \nonumber
+   \\& \enspace - \langle P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, \sum_i \Sigma_i^{-1}\bar{\yb} \rangle)) \\
+     &= \frac{c_2}{|\alpha I|} \exp(-\frac12( \langle \bar{\yb}, (\sum_{i=1}^m  \Sigma_i^{-1} -  \sum_{i=1}^m  \Sigma_i^{-1} P_{\alpha}^{-1} \sum_{i=1}^m  \Sigma_i^{-1}) \bar{\yb} \rangle + \nonumber \\
+  & \enspace \langle \sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, P_{\alpha} (\sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1} \bar{\yb}) \rangle)) \\
+                        &= \frac{c_2}{|\alpha I|} \exp(-\frac12( \langle \bar{\yb}, R_{\alpha}^{-1} \bar{\yb} \rangle + \nonumber \\& \enspace \enspace \langle \sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, P_{\alpha} (\sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1} \bar{\yb}) \rangle)) \label{app:51}  \\
+  &= c_3 \mathcal{N}(\bar{y}; 0, R_{\alpha}) \mathcal{N}(\sbb, P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, P_{\alpha}^{-1}) \label{app:52}
+\end{align}
+In equation~\eqref{app:51}, we use the Woodburry matrix identity
+$(A + B)^{-1} = A^{-1} - A^{-1} (A^{-1} + B^{-1})^{-1} A^{-1}$ with $A = (\sum_i \Sigma_i^{-1})^{-1}$ and $B = \alpha I$.
+
+In equation~\eqref{app:52}, we use: $|\alpha I | \propto |R_{\alpha}||P_{\alpha}^{-1}|$. Indeed we have:
+\begin{align}
+&(\sum_{i=1}^m \Sigma_i^{-1} + \frac1{\alpha}I) ((\sum_i \Sigma_i^{-1})^{-1} \alpha I) = \alpha I + (\sum_i \Sigma_i^{-1})^{-1} \\
+&\implies P_{\alpha}((\sum_i \Sigma_i^{-1})^{-1} \alpha I) = R_{\alpha} \\
+& \implies |P_{\alpha}||\alpha I||(\sum_i \Sigma_i^{-1})^{-1}| = |R_{\alpha}| \\
+& \implies |\alpha I | \propto |R_{\alpha}||P_{\alpha}^{-1}|
+\end{align}
+
+
+ Therefore we get
+ \begin{align}
+     p(\sbb | \xb) &= \frac{\sum_{\alpha} \mathcal{N}(\bar{y}; 0, R_{\alpha}) \mathcal{N}(\sbb, P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, P_{\alpha}^{-1})}{\sum_{\alpha} \mathcal{N}(\bar{y}; 0, R_{\alpha})} \\
+ \end{align}
+so 
+
+ \begin{align}
+  &\sbb|\xb \sim \frac{\sum_{\alpha \in \{\frac12, \frac32 \}}\theta_{\alpha} \Ncal( \eb_{\alpha}, V_{\alpha})}{\sum_{\alpha \in \{\frac12, \frac32 \}}\theta_{\alpha}}
+ \end{align}
+
+ \begin{align}
+   &\eb_{\alpha}= \left(\sum_{i=1}^m \Sigma_i^{-1}  + \frac1{\alpha}I \right)^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \\
+   &V_{\alpha} = (\sum_{i=1}^m \Sigma_i^{-1}  + \frac1{\alpha}I)^{-1} \\ 
+   &\theta_{\alpha} = \mathcal{N}((\sum_{i=1}^m \Sigma_i^{-1})^{-1} \Sigma_i^{-1} \yb_i; 0, (\alpha I + \sum_{i=1}^m \Sigma_i^{-1})^{-1})
+ \end{align}
   
-% %   This can be rewritten:
-% %   \begin{align}
-% %       [\ub^1 \dots \ub^l] = [\eb_1 \dots \eb_l]\Theta^l
-% %       [\ub^{l+1} \dots \ub^{pm}] = [\eb_{l+1} \dots \eb_{pm}]
-% %   \end{align}
-% %   In particular we see that the eigenvectors are given up to a correction term by the canonical vectors with eigenvalues given (up to a correction term) by the diagonal values in $\Lambda$, but the ones that correspond to the same values of $\lambda_i$ up to $O(\delta_E)$ undergo a rotation $\Theta^l$ that depends on the sampling noise.
-  
-% %   Note that as $\delta E = o(\lambda_p - \lambda_{p+1})$, none of the first $p$ eigenvectors can have the same eigenvalue as the last $pm -p$ up to $O(\delta E)$.
-% %   Therefore the first $p$ eigenvectors are given by the first $p$ canonical vectors of $\bbR^{pm}$ up to a rotation and a correction term: $[\ub^1 \dots \ub^p] = [e_1 \dots e_p]
-% %   \mathcal{O} + \delta Z$. Where $\mathcal{O} \in \bbR^{p, p}$ is a rotation and $\delta Z = O(\|\delta E \|_F^2)$.
-% % \end{proof}
-% % \bt{I'm lost between $\Theta$ and$ \mathcal{O}$}
-
-% \section{Identifiability results for $m< 3$}
-% \label{app:identifiability}
-% We have a slightly weaker identifiability result when $m=2$.
-% \begin{prop}
-%   \label{prop:identifiability_2d}
-%   Let $m=2$, and suppose that the scalars $(1 + \Sigma_{1j})(1+\Sigma_{2j})$ for $j=1\dots p$ are all different. We let $\Theta'=(A_1', A_2', \Sigma_1',\Sigma_2')$ that also generates $\xb_1, \xb_2$. Then, there exists a permutation and scale matrix $P$ such that $A'_1 =A_1P$ and $A'_2 = A_2P^{-\top}$.
-% \end{prop}
-% \begin{proof}
-%   We let $P=A_1^{-1}A_1'$. Since $C_{12} = I_p$, it holds 
-%   $A_2^{-1}A_2'= P^{-\top}$. Then, we have
-%   $I_p + \Sigma_1 = P(I_p + \Sigma'_1)P^{\top}$. This means that there exists $U\in\mathcal{O}_p$ such that $P = (I_p + \Sigma_1)^{\frac12}U(I_p + \Sigma'_1)^{-\frac12}$. Since $P^{-\top}(I_p+\Sigma'_2)P^{-1} = I_p+\Sigma_2$, we find
-%   $U(I_p+\Sigma'_1)(I_p+\Sigma'_2)U^{\top} = (I_p+\Sigma_1)(I_p+\Sigma_2)$. By identification, $U$ is a permutation matrix, and $P$ is a scale and permutation matrix.
-% \end{proof}
-% As a consequence, when there are only two subjects, it is possible to recover the components and noise levels up to a scaling factor.
-% %
-% When there is only one view, $m=1$, there is a global rotation indeterminacy: 
-% $
-% A_1(I_p + \Sigma_1)A_1^{\top} = A'_1(I_p + \Sigma_1){A'_1}^{\top}
-% $
-% for $A'_1 = A_1(I_p + \Sigma_1)^{\frac12}U(I_p + \Sigma_1)^{-\frac12}$ where $U$ is any orthogonal matrix. In this case, we lose identifiability.
-
-% % \section{Derivation of gradient and Hessian for the joint diagonalization}
-% % \label{app:jointdiag}
-% % We use a similar approach as\pierre{do we really need the orthogonal algorithm ? anyways, this should be put in appendix} in~\cite{ablin2018beyond} and optimize this loss using a quasi-newton approach. In our case though, we have to take into account the orthogonality constraint.
-% % In order to take into account orthogonality constraints, the gradient $G$ and Hessian $H$ are defined as 
-% % $\loss(\exp(\eps) O) = \loss(O) + \langle \eps , G \rangle + \langle \eps , H \eps \rangle + o(\|\eps \|_F^2)$ where $\eps$ is a small skew-symmetric matrix.
-
-% % Let us call $D^i = \mathcal{O} \hat{W}_i C_{ii} \hat{W}_i^{\top} \mathcal{O}^{\top}$ and notice that $D^i$ is symmetric.
-% % We have
-% % \begin{align}
-% %     &\loss(\exp(\eps) \mathcal{O}) \\
-% %     &= \loss((I + \eps + \frac12 \eps^2) \mathcal{O}) + o(\|\eps^2\|) \\
-% %     &= \frac1{2n} \sum_{i=1}^m \log \det \diag((I + \eps + \frac12 \eps^2) D^i(I + \eps + \frac12 \eps^2)^{\top}) + o(\|\eps^2\|) \\
-% %     &= \frac1{2n} \sum_{i=1}^m \log \det( \diag(D^i) + \diag(D^i \eps^{\top}) + \diag(\eps D^i) + \\ &\enspace \enspace \enspace \enspace \diag(\eps D^i \eps^{\top}) + \diag(\frac12 \eps^2 D^i) + \diag(\frac12 D^i (\eps^2)^{\top})) + o(\|\eps^2\|)\\
-% %     &= \frac1{2n} \sum_{i=1}^m \log \det( \diag(D^i) + 2\diag(\eps D^i) + \diag(\eps D^i \eps^{\top}) + 2\diag(\frac12 \eps^2 D^i)) + o(\|\eps^2\|)\\
-% %     &= \loss(\mathcal{O}) + \frac1{2n} \sum_{i=1}^m \log \det( I + 2\frac{\diag(\eps D^i)}{\diag(D^i)} + \frac{\diag(\eps D^i \eps^{\top})}{\diag(D^i)} + 2\frac{\diag(\frac12 \eps^2 D^i)}{\diag(D^i)}) + o(\|\eps^2\|) \\
-% %     &= \loss(\mathcal{O}) + \frac1{2n} \sum_{i=1}^m \tr \log( I + 2\frac{\diag(\eps D^i)}{\diag(D^i)} + \frac{\diag(\eps D^i \eps^{\top})}{\diag(D^i)} + 2\frac{\diag(\frac12 \eps^2 D^i)}{\diag(D^i)}) + o(\|\eps^2\|) \\
-% %     &= \loss(\mathcal{O}) + \frac1{2n} \sum_{i=1}^m \tr( 2\frac{\diag(\eps D^i)}{\diag(D^i)} + \frac{\diag(\eps D^i \eps^{\top})}{\diag(D^i)} \\ &\enspace \enspace \enspace \enspace + 2\frac{\diag(\frac12 \eps^2 D^i)}{\diag(D^i)} - 2(\frac{\diag(\eps D^i)}{\diag(D^i)})^2) + o(\|\eps^2\|) \\
-% %     &= \loss(\mathcal{O}) + \frac1{2n} \sum_{i=1}^m  \sum_k \left[ \sum_l 2\frac{\eps_{kl} D^i_{lk}}{D^i_{kk}} + \sum_{lm} \frac{\eps_{kl} D^i_{lm} \eps_{km}}{D^i_{kk}} \right.\\  &\left.\enspace \enspace \enspace \enspace + \sum_{lm}\frac{ \eps_{kl} \eps_{lm} D^i_{mk}}{D^i_{kk}} - 2\sum_{lm} \frac{ \eps_{kl}D^i_{lk} \eps_{km}D^i_{mk}}{(D^i_{kk})^2} \right] + o(\|\eps^2\|)
-% % \end{align}
-% % By identification we get
-% % \begin{align}
-% %     &G_{kl} = \frac1{n} \sum_i \frac{D^i_{lk}}{D^i_{kk}}
-% %     &H_{klmn} = \frac1{n} \sum_i (\delta_{km} \frac{D^i_{ln}}{D^i_{kk}} + \delta_{lm}\frac{D^i_{nk}}{D^i_{kk}} - 2 \delta_{km} \frac{D^i_{lk} D^i_{nk}}{(D^i_{kk})^2})
-% % \end{align}
-
-% % \begin{align}
-% %     &G_{kl} = \frac1{n} \sum_i \frac{D^i_{lk}}{D^i_{kk}}
-% %     &H_{klmn} = \frac1{n} \sum_i (\delta_{km} \frac{D^i_{ln}}{D^i_{kk}} + \delta_{lm}\frac{D^i_{nk}}{D^i_{kk}} - 2 \delta_{km} \frac{D^i_{lk} D^i_{nk}}{(D^i_{kk})^2})
-% % \end{align}
-% % We approximate the Hessian by replacing $D^i_{lk}$ by $D^i_{kk} \delta_{lk}$. This approximation is exact when the unmixed covariances are truly diagonal. The approximated Hessian is given by
-% % $\hat{H}_{klmn} = \frac1{n} \sum_i (\delta_{km} \delta_{ln} \frac{D^i_{ll}}{D^i_{kk}} + \delta_{lm} \delta_{kn} - 2 \delta_{kmln})$.
-% % Using the fact that $\eps$ is a skew-symmetric matrix
-
-% % Let us call $\hat{D^i} = \frac1{n} \sum_i D^i$.
-% % \begin{align}
-% % \langle G , \eps \rangle + \frac12 \langle \eps , \hat{H} \eps \rangle &= \sum_{kl} \eps_{kl} G_{kl} + \frac12 \sum_{klmn} \hat{H}_{klmn} \eps_{kl} \eps_{mn} \\
-% % &= \sum_{kl} G_{kl} \eps_{kl} + \frac12 \left[\sum_{kl} \frac{\hat{D}^i_{ll}}{\hat{D}^i_{kk}} \eps_{kl}^2 + \sum_{kl}\eps_{kl} \eps_{lk} - 2\sum_k \eps_{kk} \right]
-% % \end{align}
-% % Using the fact that $\eps$ is anti-symmetric gives:
-% % \begin{align}
-% % \langle G , \eps \rangle + \langle \eps , \hat{H} \eps \rangle
-% % &= \sum_{k} \sum_{l < k} (G_{kl} - G_{lk}) \eps_{kl} + \frac12(\sum_{k} \sum_{l < k} (\frac{\hat{D}^i_{ll}}{\hat{D}^i_{kk}} + \frac{\hat{D}^i_{kk}}{\hat{D}^i_{ll}}) \eps_{kl}^2 -\sum_{k} \sum_{l < k}2\eps_{kl}^2) \\
-% % &= \sum_{k} \sum_{l < k} (G_{kl} - G_{lk}) \eps_{kl} + \frac12(\sum_{k} \sum_{l < k} \left[\frac{\hat{D}^i_{ll}}{\hat{D}^i_{kk}} + \frac{\hat{D}^i_{kk}}{\hat{D}^i_{ll}} - 2\right] \eps_{kl}^2)
-% % \end{align}
-% % So updates are given by
-% % $\mathcal{O} \leftarrow \exp(J) \mathcal{O}$ where $J_{kl} = \frac{G_{kl} - G_{lk}}{\frac{\hat{D}^i_{ll}}{\hat{D}^i_{kk}} + \frac{\hat{D}^i_{kk}}{\hat{D}^i_{ll}} - 2}$.
-
-
-% \section{Derivation of fixed point updates for scalings}
-% \label{app:fixedpoint}
-% \begin{align}
-% L((\Phi_i)_{i=1}^m)= \sum_i \sum_{j \neq i} \| \Phi_i \diag(Y_{ij}) \Phi_j - I_p \|_F^2
-% \end{align}
-% The gradient is given by
-% \begin{align}
-% \partialfrac{\Phi_i}{L} = 2\sum_{j \neq i} (\Phi_i \diag(Y_{ij}) \Phi_j - I_p) \Phi_j
-% \end{align}
-% Therefore we get
-% \begin{align}
-% &\partialfrac{\Phi_i}{L} = 0 \\
-% &\iff 2\sum_{j \neq i} (\Phi_i \diag(Y_{ij}) \Phi_j - I_p) \Phi_j = 0 \\
-% &\iff \Phi_i \sum_{j \neq i} \diag(Y_{ij}) \Phi_j^2 - \sum_{j \neq i} \Phi_j = 0 \\
-% &\iff \Phi_i = \frac{\sum_{j \neq i} \Phi_j}{\sum_{j \neq i} \diag(Y_{ij}) \Phi_j^2}
-% \end{align}
-
-% % \section{Derivation of log-likelihood}
-% % \label{likelihood_derivation}
-
-
-% % and the log-likelihood writes:
-% % \begin{align}
-% %   \mathcal{L} = &\sum_{i=1}^m\left(-\log|W_i| + \frac12 \log |\Sigma_i|\right) + \frac12 \log(|\sum_{i=1}^m \Sigma_i^{-1} + I|) + \frac12 (\sum_{i=1}^m \langle \yb_i , \Sigma_i^{-1} \yb_i \rangle \\&  - \frac12 \langle \left(\sum_{i=1}^m \Sigma_i^{-1} + I \right)^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) , \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \rangle)
-% % \end{align}
-% % which yields the expected formula.
-
-% \section{EM E-step and M-step for ShICA with Gaussian components}
-%   \paragraph{Notations} We define the usual scalar product for matrices $\langle A , B\rangle = \tr(A^{\top} B)$
-%   \subsection{E-step}
-%   \label{conditional_density}
-%   The complete likelihood is given by
-% \begin{equation}
-%   p(\xb, \sbb) = \prod_i p(\xb_i | \sbb) p(\sbb)=  \prod_i (|W_i| \Ncal(\yb_i; \sbb, \Sigma_i)) \Ncal(\sbb; 0, I_k)
-% \end{equation}
-
-% The likelihood writes
-% \begin{align}
-%   p(\xbu) &= \int_{\sbb} \prod_{i=1}^m \left(|W_i| \Ncal(\yb_i; \sbb, \Sigma_i) \right) \Ncal(\sbb; 0, I_k) d \sbb \\
-% \end{align}
-
-% Denoting $P = (\sum_{i=1}^m \Sigma_i^{-1} + I)$ we can write
-% \begin{align}
-%   &\sum_{i=1}^m \langle \yb_i - \sbb, \Sigma_i^{-1} (\yb_i - \sbb) \rangle + \langle \sbb , \sbb \rangle \\
-%   &=  \sum_{i=1}^m \langle \yb_i , \Sigma_i^{-1} \yb_i\rangle + \langle \sbb ,(\sum_{i=1}^m \Sigma_i^{-1} + I) \sbb \rangle  -2 \langle \sbb ,\sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \rangle \\
-%   &=  \sum_{i=1}^m \left(\langle \yb_i , \Sigma_i^{-1} \yb_i\rangle \right)  +\langle \sbb  - P^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) , P (\sbb - P^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right)) \rangle   \\&- \langle P^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) , \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \rangle 
-% \end{align}
-%  Therefore we get
-%  \begin{align}
-%      p(\sbb | \xb) &= \frac{p(\xb, \sbb)}{p(\xb)} \\
-%      &= \frac{\exp(-\frac12 \langle \sbb  - P^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) , P (\sbb - P^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right)) \rangle)}{\int_\sbb \exp(-\frac12  \langle \sbb  - P^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) , P (\sbb - P^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right)) \rangle )d \sbb} \\
-%      &= \mathcal{N}(\sbb; P^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right), P^{-1})
-%  \end{align}
-% so 
-% \begin{align}
-%   &\sbb|\xb \sim \Ncal( \EE[\sbb|\xb], \VV[\sbb | \xb]) \\
-%   & \text{where } \enspace \EE[\sbb|\xb]= \left(\sum_{i=1}^m \Sigma_i^{-1}  + I \right)^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \text{ and } \VV[\sbb|\xb]= (\sum_{i=1}^m \Sigma_i^{-1}  + I)^{-1} \label{MMSE}
-% \end{align}
-
-% \subsection{M-step}
-% The function to minimize in the M-step is then given by:
-% \begin{align}
-%   \Jcal &= -\log p(\xb, \sbb) \\
-%   &= \sum_{i=1}^m \log(|\Sigma_i|) + \frac12 \tr(\Sigma_i^{-1} \left[(\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb]\right]) + c
-% \end{align}
-% where $c$ does not depend on $\Sigma_i$
-
-% Therefore we get closed-form updates for $\Sigma_i$: 
-% \begin{align}
-% \Sigma_i \leftarrow  \diag((\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb])
-% \end{align}
-% Plugging in the closed-form formula for $\EE[\sbb|\xb]$ and $\VV[\sbb|\xb]$ we get updates that only depends on the covariances $\hat{C_{ij}} = \EE[\xb_i \xb_j^{\top}]$.
-% \begin{align*}
-% \Sigma_i \leftarrow \diag(\hat{C_{ii}} - 2 \VV[\sbb | \xb]  \sum_{j=1}^m \Sigma_j^{-1} \hat{C}_{ji}  + \VV[\sbb | \xb]  \sum_{j = 1}^m \sum_{l = 1}^m \left(\Sigma_j^{-1} \hat{C}_{jl} \Sigma_l^{-1} \right) \VV[\sbb | \xb] + \VV[\sbb | \xb])
-% \end{align*}
-
-
-% \section{EM E-step and M-step for ShICA with non-Gaussian components}
-% \label{app:emestep}
-
-% \paragraph{Notations} We define the usual scalar product for matrices $\langle A , B\rangle = \tr(A^{\top} B)$
-%   \subsection{E-step}
-%   The complete likelihood is given by
-% \begin{align}
-%   p(\xb, \sbb) &= \prod_i p(\xb_i | \sbb) p(\sbb) \\
-%   &=  \sum_{\alpha \in \{\frac12, \frac32\}} p(\xb, \sbb | \alpha) 
-% \end{align}
-% where 
-% \[
-% p(\xb, \sbb | \alpha)  = \prod_i (|W_i| \Ncal(\yb_i; \sbb, \Sigma_i)) \Ncal(\sbb; 0, \alpha I_k)
-% \]
-
-% We denote $P_{\alpha} = (\sum_{i=1}^m \Sigma_i^{-1} + \frac1{\alpha}I), R_{\alpha} =  ((\sum_{i=1}^m \Sigma_i^{-1})^{-1} + \alpha I)$ and $\bar{\yb} = \frac{\sum_i \Sigma_i^{-1} \yb_i}{\sum_i \Sigma_i^{-1}}$. We introduce the constants $c_1, \dots c_3$ that are independent of $\alpha$ and $\sbb$.
-% We have:
-% \begin{align}
-%   p(\xb, \sbb | \alpha) &= \frac{c_1}{|\alpha I|}\exp(-\frac12(\sum_{i=1}^m \langle \yb_i - \sbb, \Sigma_i^{-1} (\yb_i - \sbb) \rangle + \frac1{\alpha}\langle \sbb , \sbb \rangle)) \\
-%   &= \frac{c_1}{|\alpha I|} \exp(-\frac12(\sum_{i=1}^m \langle \yb_i - \sbb + \bar{\yb} - \bar{\yb}, \Sigma_i^{-1} (\yb_i - \sbb + \bar{\yb} - \bar{\yb}) \rangle + \frac1{\alpha}\langle \sbb , \sbb \rangle)) \\
-%   &= \frac{c_1}{|\alpha I|} \exp(-\frac12(\sum_{i=1}^m \langle \yb_i - \bar{\yb}, \Sigma_i^{-1} (\yb_i - \bar{\yb}) \rangle + \sum_{i=1}^m \langle \bar{\yb} - \sbb, \Sigma_i^{-1} (\bar{\yb}- \sbb) \rangle + \frac1{\alpha}\langle \sbb , \sbb \rangle)) \\
-%   &= \frac{c_2}{|\alpha I|} \exp(-\frac12( \langle \bar{\yb} - \sbb, \sum_{i=1}^m  \Sigma_i^{-1} (\bar{\yb}- \sbb) \rangle + \frac1{\alpha}\langle \sbb , \sbb \rangle)) \\
-%   &= \frac{c_2}{|\alpha I|} \exp(-\frac12( \langle \bar{\yb}, \sum_{i=1}^m  \Sigma_i^{-1} \bar{\yb} \rangle +
-%   \langle \sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, P_{\alpha} (\sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1} \bar{\yb}) \rangle \nonumber
-%    \\& \enspace - \langle P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, \sum_i \Sigma_i^{-1}\bar{\yb} \rangle)) \\
-%      &= \frac{c_2}{|\alpha I|} \exp(-\frac12( \langle \bar{\yb}, (\sum_{i=1}^m  \Sigma_i^{-1} -  \sum_{i=1}^m  \Sigma_i^{-1} P_{\alpha}^{-1} \sum_{i=1}^m  \Sigma_i^{-1}) \bar{\yb} \rangle + \nonumber \\
-%   & \enspace \langle \sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, P_{\alpha} (\sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1} \bar{\yb}) \rangle)) \\
-%   &= \frac{c_2}{|\alpha I|} \exp(-\frac12( \langle \bar{\yb}, R_{\alpha}^{-1} \bar{\yb} \rangle + \langle \sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, P_{\alpha} (\sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1} \bar{\yb}) \rangle)) \label{app:51}  \\
-%   &= c_3 \mathcal{N}(\bar{y}; 0, R_{\alpha}) \mathcal{N}(\sbb, P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, P_{\alpha}^{-1}) \label{app:52}
-% \end{align}
-% In equation~\eqref{app:51}, we use the Woodburry matrix identity
-% $(A + B)^{-1} = A^{-1} - A^{-1} (A^{-1} + B^{-1})^{-1} A^{-1}$ with $A = (\sum_i \Sigma_i^{-1})^{-1}$ and $B = \alpha I$.
-
-% In equation~\eqref{app:52}, we use: $|\alpha I | \propto |R_{\alpha}||P_{\alpha}^{-1}|$. Indeed we have:
-% \begin{align}
-% &(\sum_{i=1}^m \Sigma_i^{-1} + \frac1{\alpha}I) ((\sum_i \Sigma_i^{-1})^{-1} \alpha I) = \alpha I + (\sum_i \Sigma_i^{-1})^{-1} \\
-% &\implies P_{\alpha}((\sum_i \Sigma_i^{-1})^{-1} \alpha I) = R_{\alpha} \\
-% & \implies |P_{\alpha}||\alpha I||(\sum_i \Sigma_i^{-1})^{-1}| = |R_{\alpha}| \\
-% & \implies |\alpha I | \propto |R_{\alpha}||P_{\alpha}^{-1}|
-% \end{align}
-
-
-%  Therefore we get
-%  \begin{align}
-%      p(\sbb | \xb) &= \frac{\sum_{\alpha} \mathcal{N}(\bar{y}; 0, R_{\alpha}) \mathcal{N}(\sbb, P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, P_{\alpha}^{-1})}{\sum_{\alpha} \mathcal{N}(\bar{y}; 0, R_{\alpha})} \\
-%  \end{align}
-% so 
-
-%  \begin{align}
-%   &\sbb|\xb \sim \frac{\sum_{\alpha \in \{\frac12, \frac32 \}}\theta_{\alpha} \Ncal( \eb_{\alpha}, V_{\alpha})}{\sum_{\alpha \in \{\frac12, \frac32 \}}\theta_{\alpha}} \\
-%   & \text{where } \enspace \eb_{\alpha}= \left(\sum_{i=1}^m \Sigma_i^{-1}  + \frac1{\alpha}I \right)^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \text{ and } V_{\alpha} = (\sum_{i=1}^m \Sigma_i^{-1}  + \frac1{\alpha}I)^{-1} \\
-%   & \text{and } \enspace \theta_{\alpha} = \mathcal{N}((\sum_{i=1}^m \Sigma_i^{-1})^{-1} \Sigma_i^{-1} \yb_i; 0, (\alpha I + \sum_{i=1}^m \Sigma_i^{-1})^{-1})
-% \end{align}
-% Therefore we get $\EE[\sbb | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32
-%     \}}\theta_{\alpha} \eb_{\alpha}}{\sum_{\alpha \in
-%     \{\frac12, \frac32 \}}\theta_{\alpha}}$ and $\VV[\sbb | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32
-%     \}}\theta_{\alpha} \vb_{\alpha}}{\sum_{\alpha \in
-%     \{\frac12, \frac32 \}}\theta_{\alpha}}$
+ Therefore we get
+\begin{align}
+	&\EE[\sbb | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32
+  \}}\theta_{\alpha} \eb_{\alpha}}{\sum_{\alpha \in
+  \{\frac12, \frac32 \}}\theta_{\alpha}} \\
+  &\VV[\sbb | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32
+    \}}\theta_{\alpha} \vb_{\alpha}}{\sum_{\alpha \in
+    \{\frac12, \frac32 \}}\theta_{\alpha}}
+\end{align}
     
 
-% \subsection{M-step}
-% The function to minimize in the M-step is then given by:
-% \begin{align}
-%   \Jcal &= -\log p(\xb, \sbb) \\
-%   &= \sum_{i=1}^m - \log(|W_i|) + \log(|\Sigma_i|) + \frac12 \tr(\Sigma_i^{-1} \left[(\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb]\right]) + c
-% \end{align}
-% where $c$ does not depend on $\Sigma_i$ or $W_i$
+\subsection{M-step}
+The function to minimize in the M-step is then given by:
+\begin{align}
+  \Jcal &= -\log p(\xb, \sbb) \\
+  &= \sum_{i=1}^m - \log(|W_i|) + \log(|\Sigma_i|) + \\& \enspace \enspace \frac12 \tr(\Sigma_i^{-1} \left[(\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb]\right]) + c
+\end{align}
+where $c$ does not depend on $\Sigma_i$ or $W_i$
 
-% Therefore we get closed-form updates for $\Sigma_i$: 
-% \begin{align}
-% \Sigma_i \leftarrow  \diag((\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb])
-% \end{align}
+Therefore we get closed-form updates for $\Sigma_i$: 
+\begin{align}
+\Sigma_i \leftarrow  \diag((\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb])
+\end{align}
 
-% % and the approximated Hessian $\widehat{\mathcal{H}^{W_i}}$
-% We update $W_i$ by performing a quasi-Newton step. 
-% % The gradient $\mathcal{G}^{W_i}$, the Hessian $\mathcal{H}^{W_i}$  are given by
-% % $\mathcal{G}((I + \epsilon)W_i) = C(W_i) + \langle \epsilon | \mathcal{G}^{W_i} \rangle +
-% % \frac12 \langle \epsilon | \mathcal{H}^{W_i} \epsilon \rangle$ so
-% % \begin{align*}
-% %   &\mathcal{G}^{} = -I + (\Sigma_i)^{-1}(\yb_i - \mathbb{E}[\sbb|\xb])(\yb_i)^{\top} , \enspace \mathcal{H}^{W_i}_{a, b, c, d} = \delta_{a, c} \frac{y_{ib} y_{id}}{\Sigma_i_a}, \enspace \widehat{\mathcal{H}^{W_i}_{a, b, c, d}} =  \delta_{a, c} \delta_{b, d}\frac{(y_{ib})^2}{\Sigma_i_a}
-% % \end{align*}
-% % where the Hessian approximation is exact when the unmixed data have truly independent components.
-
-% We use the relative gradient $\mathcal{G}^{W_i}$ and $\mathcal{H}^{W_i}$ defined
-% by \\
-% $\mathcal{J}(W_i + \varepsilon W_i) = \mathcal{J}(W_i) + \langle
-%  \varepsilon|\mathcal{G}^{W_i}\rangle + \frac12 \langle
-%  \varepsilon|\mathcal{H}^{W_i} \varepsilon \rangle$.
-
-%  We get:
-%  \begin{align}
-%    \mathcal{J}(W_i + \varepsilon W_i) &= \sum_{i=1}^m \left[ -\log(|W_i|) -\log(|I_k + \varepsilon|) - \log(\mathcal{N}(\yb_i + \varepsilon \yb_i; \sbb; \Sigma_i)) \right] + const \\
-%                                       &= \mathcal{J}(W_i) - \tr(\varepsilon) + \frac12 \tr(\varepsilon^2) \\& \enspace \enspace + \frac12 \left[\langle \varepsilon \yb_i| (\Sigma_i)^{-1} (\yb_i - \sbb) \rangle + \langle (\yb_i - \sbb)| (\Sigma_i)^{-1} \varepsilon \yb_i \rangle + \langle \varepsilon \yb_i| (\Sigma_i)^{-1} \varepsilon \yb_i \rangle \right] \\ & \enspace + o(\|\varepsilon\|^2) \\
-%    &= \mathcal{J}(W_i) - \sum_a \varepsilon_{a, a} + \frac12 \sum_{a, b} \varepsilon_{a,b} \varepsilon_{b, a} \\& \enspace \enspace + \sum_{a, b} \varepsilon_{a, b} \left[(\Sigma_i)^{-1}(\yb_i - \sbb) (\yb_i)^{\top} \right]_{a, b} + \frac12 \sum_{a, b} \varepsilon_{a, b} \left[(\Sigma_i)^{-1} \varepsilon \yb_i (\yb_i)^{\top}\right]_{a, b} \\ & \enspace + o(\|\varepsilon\|^2) \\
-%    &= \mathcal{J}(W_i) - \sum_a \varepsilon_{a, a} + \frac12 \sum_{a, b} \varepsilon_{a,b} \varepsilon_{b, a} \\& \enspace \enspace + \sum_{a, b} \varepsilon_{a, b} \left[(\Sigma_i)^{-1}(\yb_i - \sbb) (\yb_i)^{\top} \right]_{a, b} + \frac12 \sum_{a, b, d} \varepsilon_{a, b} (\Sigma_i)^{-1}_{a, a} \varepsilon_{a, d} \left[\yb_i (\yb_i)^{\top}\right]_{d, b} \\ & \enspace + o(\|\varepsilon\|^2) \\
-%  \end{align}
-
-%  So:
-%  \begin{equation}
-%  \mathcal{G}^{W_i}_{a, b} =  -\delta_{a,b} + \left[(\Sigma_i)^{-1} (\yb_i - \sbb)(\yb_i)^{\top}\right]_{a, b}
-%  \end{equation}
-%  and
-%  \begin{equation}
-%  \mathcal{H}^{W_i}_{a, b, c, d} = \delta_{a, d}\delta_{b, c} + \delta_{a, c} \frac{y_{ib} y_{id}}{\Sigma_{ia}}
-%  \end{equation}
- 
-%  We approximate the Hessian by
-%  \begin{align}
-%  \widehat{\mathcal{H}^{W_i}_{a, b, c, d}} = \delta_{ad} \delta_{bc} + \delta_{ac} \delta_{bd}\frac{(y_{ib})^2}{\Sigma_{ia}}
-% \end{align}
+% and the approximated Hessian $\widehat{\mathcal{H}^{W_i}}$
+We update $W_i$ by performing a quasi-Newton step. 
+% The gradient $\mathcal{G}^{W_i}$, the Hessian $\mathcal{H}^{W_i}$  are given by
+% $\mathcal{G}((I + \epsilon)W_i) = C(W_i) + \langle \epsilon | \mathcal{G}^{W_i} \rangle +
+% \frac12 \langle \epsilon | \mathcal{H}^{W_i} \epsilon \rangle$ so
+% \begin{align*}
+%   &\mathcal{G}^{} = -I + (\Sigma_i)^{-1}(\yb_i - \mathbb{E}[\sbb|\xb])(\yb_i)^{\top} , \enspace \mathcal{H}^{W_i}_{a, b, c, d} = \delta_{a, c} \frac{y_{ib} y_{id}}{\Sigma_i_a}, \enspace \widehat{\mathcal{H}^{W_i}_{a, b, c, d}} =  \delta_{a, c} \delta_{b, d}\frac{(y_{ib})^2}{\Sigma_i_a}
+% \end{align*}
 % where the Hessian approximation is exact when the unmixed data have truly independent components.
 
-% Updates for $W_i$ are then given by
-% $W_i \leftarrow (I - \rho (\widehat{\mathcal{H}^{W_i}})^{-1} \mathcal{G}^{W_i}) W_i$, 
-% where $\rho$ is chosen by backtracking line-search.
-% We alternate between computing the statistics $\mathbb{E}[\sbb|\xb]$ and
-% $\Var[\sbb|\xb]$ (E-step) and updates of parameters $\Sigma_i$ and $W_i$ for $i=1 \dots m$ (M-step).
+We use the relative gradient $\mathcal{G}^{W_i}$ and $\mathcal{H}^{W_i}$ defined
+by
+\begin{align}
+\mathcal{J}(W_i + \varepsilon W_i) = \mathcal{J}(W_i) + \langle
+ \varepsilon|\mathcal{G}^{W_i}\rangle + \frac12 \langle
+ \varepsilon|\mathcal{H}^{W_i} \varepsilon \rangle
+\end{align}
+
+ We get:
+ \begin{align}
+   \mathcal{J}(W_i + \varepsilon W_i) &= \sum_{i=1}^m \bigg[ -\log(|W_i|) -\log(|I_k + \varepsilon|) \nonumber \\&- \log(\mathcal{N}(\yb_i + \varepsilon \yb_i; \sbb; \Sigma_i)) \bigg] + const \\
+                                      &= \mathcal{J}(W_i) - \tr(\varepsilon) + \frac12 \tr(\varepsilon^2) \nonumber \\& \enspace \enspace + \frac12 \bigg[\langle \varepsilon \yb_i| (\Sigma_i)^{-1} (\yb_i - \sbb) \rangle + \nonumber \\& \enspace \enspace \langle (\yb_i - \sbb)| (\Sigma_i)^{-1} \varepsilon \yb_i \rangle + \langle \varepsilon \yb_i| (\Sigma_i)^{-1} \varepsilon \yb_i \rangle \bigg] \nonumber \\ & \enspace + o(\|\varepsilon\|^2) \\
+                                      &= \mathcal{J}(W_i) - \sum_a \varepsilon_{a, a} + \frac12 \sum_{a, b} \varepsilon_{a,b} \varepsilon_{b, a} \nonumber \\& \enspace \enspace + \sum_{a, b} \varepsilon_{a, b} \left[(\Sigma_i)^{-1}(\yb_i - \sbb) (\yb_i)^{\top} \right]_{a, b} \nonumber \\& \enspace \enspace + \frac12 \sum_{a, b} \varepsilon_{a, b} \left[(\Sigma_i)^{-1} \varepsilon \yb_i (\yb_i)^{\top}\right]_{a, b} \nonumber \\ & \enspace + o(\|\varepsilon\|^2) \\
+                                      &= \mathcal{J}(W_i) - \sum_a \varepsilon_{a, a} + \frac12 \sum_{a, b} \varepsilon_{a,b} \varepsilon_{b, a} \nonumber \\& \enspace \enspace + \sum_{a, b} \varepsilon_{a, b} \left[(\Sigma_i)^{-1}(\yb_i - \sbb) (\yb_i)^{\top} \right]_{a, b} + \nonumber \\& \enspace \enspace \frac12 \sum_{a, b, d} \varepsilon_{a, b} (\Sigma_i)^{-1}_{a, a} \varepsilon_{a, d} \left[\yb_i (\yb_i)^{\top}\right]_{d, b} \nonumber \\ & \enspace + o(\|\varepsilon\|^2)
+ \end{align}
+
+ So:
+ \begin{equation}
+ \mathcal{G}^{W_i}_{a, b} =  -\delta_{a,b} + \left[(\Sigma_i)^{-1} (\yb_i - \sbb)(\yb_i)^{\top}\right]_{a, b}
+ \end{equation}
+ and
+ \begin{equation}
+ \mathcal{H}^{W_i}_{a, b, c, d} = \delta_{a, d}\delta_{b, c} + \delta_{a, c} \frac{y_{ib} y_{id}}{\Sigma_{ia}}
+ \end{equation}
+ 
+ We approximate the Hessian by
+ \begin{align}
+ \widehat{\mathcal{H}^{W_i}_{a, b, c, d}} = \delta_{ad} \delta_{bc} + \delta_{ac} \delta_{bd}\frac{(y_{ib})^2}{\Sigma_{ia}}
+\end{align}
+where the Hessian approximation is exact when the unmixed data have truly independent components.
+
+Updates for $W_i$ are then given by
+$W_i \leftarrow (I - \rho (\widehat{\mathcal{H}^{W_i}})^{-1} \mathcal{G}^{W_i}) W_i$, 
+where $\rho$ is chosen by backtracking line-search.
+We alternate between computing the statistics $\mathbb{E}[\sbb|\xb]$ and
+$\Var[\sbb|\xb]$ (E-step) and updates of parameters $\Sigma_i$ and $W_i$ for $i=1 \dots m$ (M-step).
 
 
 
-% \section{fMRI pre-processing pipeline}
-% \label{app:preprocessing}
-% All datasets are resampled and  masked using the brain mask available at \url{http://cogspaces.github.io/assets/data/hcp_mask.nii.gz}. Data are detrended and standardized so that they have zero mean and unit variance.  
+\section{Additional experiments}
+\subsection{Separation performance}
+\label{app:separation}
+\subsubsection{Separation performance in function of non-Gaussianity}
+We generate data according to model~\eqref{eq:model}. Components $\sbb$ are generated using $s_j = d(x)$ with $d(x) = x |x|^{\alpha - 1}$ and $x \sim \mathcal{N}(0, 1)$.   
+Mixing matrices $A_i$ are generated by sampling their coefficients from a standardized Gaussian law. The number of samples is fixed to $n=10^5$ and we vary $\alpha$ between $0.8$ and $1.2$. Each experiment is repeated 40 times using different seeds in the random number generator. We use $p=4$ components and $m=5$ views. We display in Fig~\ref{exp:separatingpower} the mean Amari distance across subjects. The experiment is repeated $100$ times using different seeds. We report the median result and error bars  represent the first and last deciles.
+ When $\alpha$ is close to 1 (components are almost Gaussian), ShICA-J, ShICA-ML and multiset CCA can separate components well (but multiset CCA reaches higher amari distance than ShICA). In this regime, MultiViewICA yields much higher amari distance than ShICA-J, ShICA-ML or Multiset CCA but is still better than CanICA which cannot separate components at all.
+ As non-Gaussianity ($\alpha$) increases, ICA based methods yield better results but ShICA-ML yields uniformly lower amari distance.
+\begin{figure}
+\centering
+  \includegraphics[width=0.8\textwidth]{./figures/amvica/synthetic_gaussian_source.pdf}
+  \caption{\textbf{ Separation performance in function of non-Gaussianity} Separation performance of algorithms for sub-Gaussian $\alpha < 1$ and super-Gaussian $\alpha > 1$ components}
+  \label{exp:separatingpower}
+\end{figure}
+\subsubsection{Performance of MultiViewICA on the experiments of Figure~\ref{exp:rotation}}
+In the Fig~\ref{exp:rotation2}, we give the performance of MultiViewICA on the same experiment as in Fig~\ref{exp:rotation}.
+As we can see, MultiViewICA can separate Gaussian components to some extent and therefore does not completely fail when Gaussian and non-Gaussian components are present. However MVICA is a lot less reliable than ShICA-ML: MVICA is uniformly worse than ShICA-ML and the error bars are very large showing that for some seeds it gives poor results.
 
-% When reconstructing the BOLD signal of missing subjects, data are preprocessed with a 6~mm smoothing.
-% In the timesegment matching experiment, we use unsmoothed data except for the sherlock dataset for which the available data are already smoothed.
-% Multiple acquisitions (called runs) are necessary to build the datasets. Each run lasts approximately 10 minutes.
-
-% Sherlock data are available at \url{http://arks.princeton.edu/ark:/88435/dsp01nz8062179}. The precise preprocessing pipeline is described in~\cite{chen2017shared}.
-% The data are split manually into 4 runs of $395$ timeframes and one run of $396$ timeframes so that cross validation can be performed. Subject 5 is removed because of missing data.
-
-% Forrest data are downloaded from OpenfMRI~\cite{poldrack2013toward}. Data are acquired with a 7T scanner with an isotropic spatial resolution of 1~mm and then resampled to a spatial resolution of 3~mm. Details about the acquisition and the task performed are available at ~\url{http://studyforrest.org}. Subject 10 is discarded as not all runs are available at the time of writing. Run 8 is discarded as it is missing in some subjects.
-
-% Raiders and Gallant dataset pertains to the Individual Brain Charting dataset. These data were acquired using a 3T scanner and resampled to an isotropic spatial resolution of 3~mm. More information is available in~\cite{ibc}. Gallant dataset is refered to as clips in~\cite{ibc}. Data are available at \url{https://openneuro.org/datasets/ds00268}. Datasets gallant and raiders are preprocessed using FSL \url{http://fsl.fmrib.ox.ac.uk/fsl} using  slice  time  correction,  spatial  realignment,  co-registration  to  the  T1  image  and  affine  transformation  of  the  functional  volumes  to  a  template  brain (MNI). 
-
-% A brief summary of the characteristics of the datasets is available in Table~\ref{tab:dataset}
-% \begin{table}
-%     \centering
-%     \begin{tabular}{c|c|c|c|c}
-%         \textbf{Dataset} & \textbf{Duration} & $m$& \textbf{  Description} \\
-%         \hline
-%          Sherlock & 50 min & 16 & Movie watching (BBC TV show "Sherlock") \\
-%          Forrest & 110 min & 12 & Auditory version "Forrest Gump" \\
-%          Gallant & 130 min & 12 & various short video clips \\
-%          Raiders & 110 min & 11 & Movie watching ("Raiders of the lost ark")
-%     \end{tabular}
-%     \caption{Information about datasets (name, duration, number of subjects $m$ and short description)}
-%     \label{tab:dataset}
-% \end{table}
-
-
-% \section{Additional experiments}
-% \subsection{Separation performance}
-% \label{app:separation}
-% \subsubsection{Separation performance in function of non-Gaussianity}
-% We generate data according to model~\eqref{eq:model}. Components $\sbb$ are generated using $s_j = d(x)$ with $d(x) = x |x|^{\alpha - 1}$ and $x \sim \mathcal{N}(0, 1)$.   
-% Mixing matrices $A_i$ are generated by sampling their coefficients from a standardized Gaussian law. The number of samples is fixed to $n=10^5$ and we vary $\alpha$ between $0.8$ and $1.2$. Each experiment is repeated 40 times using different seeds in the random number generator. We use $p=4$ components and $m=5$ views. We display in Fig~\ref{exp:separatingpower} the mean Amari distance across subjects. The experiment is repeated $100$ times using different seeds. We report the median result and error bars  represent the first and last deciles.
-%  When $\alpha$ is close to 1 (components are almost Gaussian), ShICA-J, ShICA-ML and multiset CCA can separate components well (but multiset CCA reaches higher amari distance than ShICA). In this regime, MultiViewICA yields much higher amari distance than ShICA-J, ShICA-ML or Multiset CCA but is still better than CanICA which cannot separate components at all.
-%  As non-Gaussianity ($\alpha$) increases, ICA based methods yield better results but ShICA-ML yields uniformly lower amari distance.
-% \begin{figure}
-% \centering
-%   \includegraphics[width=0.8\textwidth]{./figures/amvica/synthetic_gaussian_source.pdf}
-%   \caption{\textbf{ Separation performance in function of non-Gaussianity} Separation performance of algorithms for sub-Gaussian $\alpha < 1$ and super-Gaussian $\alpha > 1$ components}
-%   \label{exp:separatingpower}
-% \end{figure}
-% \subsubsection{Performance of MultiViewICA on the experiments of Figure~\ref{exp:rotation}}
-% In the Fig~\ref{exp:rotation2}, we give the performance of MultiViewICA on the same experiment as in Fig~\ref{exp:rotation}.
-% As we can see, MultiViewICA can separate Gaussian components to some extent and therefore does not completely fail when Gaussian and non-Gaussian components are present. However MVICA is a lot less reliable than ShICA-ML: MVICA is uniformly worse than ShICA-ML and the error bars are very large showing that for some seeds it gives poor results.
-
-% \begin{figure}
-% \centering
-%   \includegraphics[width=\textwidth]{./figures/amvica/identifiability2.pdf}
-%   \caption{\textbf{Separation performance}: Algorithms are fit on data following model~\ref{eq:model} \textbf{(a)} Gaussian components with noise diversity \textbf{(b)} Non-Gaussian components without noise diversity \textbf{(c)} Half of the components are Gaussian with noise diversity, the other half is non-Gaussian without noise diversity. }
-%   \label{exp:rotation2}
-% \end{figure}
-
-% % \begin{figure}
-% %   \includegraphics[width=0.5\textwidth]{./figures/synthetic_gaussian_source_50_samples.pdf}
-% % \end{figure}
-
-% \subsection{fMRI timesegment matching experiment}
-% \label{app:timesegment}
-% We benchmark ShICA on four different real fMRI datasets via a timesegment matching experiment similar to the one in~\cite{chen2015reduced}. We use full brain data and describe the preprocessing pipeline in Appendix~\ref{app:preprocessing}.
-% We split the data into a train and test set and algorithms are fitted on the train set.
-% On the test set, we estimate the shared components from all subjects but one and select a target timesegment containing $9$ consecutive samples in the shared components. We try to localize this timesegment from the components of the left-out subject using a maximum correlation classifier (all possible windows of $9$ consecutive timeframes are considered in the left-out subject excluding the ones partially overlapping with the correct timesegment).
-% The left panel in Fig~\ref{exp:timesegment} shows that ShICA-ML, MultiViewICA and ShICA-J yield almost equal accuracy and outperform other methods by a large margin. The right panel in Fig~\ref{exp:timesegment} shows that ShICA-J is much faster to fit than MultiViewICA or ShICA-ML.
-
-% We would like to highlight here that these experiments are not exactly the same as in~\cite{chen2015reduced} as we use full brain data and they use regions of interest. The code used for this experiment is very similar to the tutorial in \url{https://brainiak.org/tutorials/11-SRM/}. We use the SRM implementation in Brainiak~\cite{kumar2020brainiak}. Also note that the Raiders dataset is different from the one used in~\cite{chen2015reduced} as it involves different subjects and data were acquired in a different neuro-imaging center.
+\begin{figure}
+\centering
+  \includegraphics[width=\textwidth]{./figures/amvica/identifiability2.pdf}
+  \caption{\textbf{Separation performance}: Algorithms are fit on data following model~\ref{eq:model} \textbf{(a)} Gaussian components with noise diversity \textbf{(b)} Non-Gaussian components without noise diversity \textbf{(c)} Half of the components are Gaussian with noise diversity, the other half is non-Gaussian without noise diversity. }
+  \label{exp:rotation2}
+\end{figure}
 
 % \begin{figure}
-%     \centering
-%     \includegraphics[width=0.45\textwidth]{./figures/amvica/timesegment_matching.pdf}
-%     \includegraphics[width=0.45\textwidth]{./figures/amvica/timesegment_matching_timings.pdf}
-%     \caption{\textbf{Timesegment matching experiment}: (left) Accuracy (right) Fitting time (in seconds)}
-%     \label{exp:timesegment}
+%   \includegraphics[width=0.5\textwidth]{./figures/synthetic_gaussian_source_50_samples.pdf}
 % \end{figure}
 
-% \subsection{MEG Phantom experiment}
-% \label{app:phantom}
-% \subsubsection{Phantom Elektra}
-%     Dipoles in $m=32$ various locations are emitting the same signal.
-%     Signal magnitude can be either very high, high or low, leading to 3 datasets: a very clean one, a clean one and a noisy one. These datasets are available as part of the Brainstorm application~\cite{tadel2011brainstorm}. We preprocess the data using Maxwell filtering and low-pass filtering as done in the MNE tutorial \url{https://mne.tools/0.17/auto_tutorials/plot_brainstorm_phantom_elekta.html} and only consider data recorded by the magnetometers.
-%     We use the very clean dataset to recover the true signal by PCA with 1
-%     component. Then we reduce the noisy dataset by applying view specific PCA with $k=20$ components and algorithms are applied on the reduced data. We select the component that is closer to the true one and compute the L2 norm between the predicted component and the true one after normalization.
-%     Then we attempt to recover the position of each dipole by performing dipole fitting on the mixing operator of each view (using only the column corresponding to the true component). The localization error is defined as the mean l2 distance between the true localization and the predicted localization where the mean is computed across dipoles. 
-%     Each epoch corresponds to 301 samples and 20 epochs are available in total. We vary the number of epochs between 2 and 18 and display in Fig~\ref{exp:meg_phantom} the reconstruction error and the localization error in function of the number of epochs used.
-%     ShICA-ML outperforms other methods. ShICA-J gives satisfying results while being much faster.
+\subsection{fMRI timesegment matching experiment}
+\label{app:timesegment}
+We benchmark ShICA on four different real fMRI datasets via a timesegment matching experiment similar to the one in~\cite{chen2015reduced}. We use full brain data and describe the preprocessing pipeline in Appendix~\ref{app:preprocessing}.
+We split the data into a train and test set and algorithms are fitted on the train set.
+On the test set, we estimate the shared components from all subjects but one and select a target timesegment containing $9$ consecutive samples in the shared components. We try to localize this timesegment from the components of the left-out subject using a maximum correlation classifier (all possible windows of $9$ consecutive timeframes are considered in the left-out subject excluding the ones partially overlapping with the correct timesegment).
+The left panel in Fig~\ref{exp:timesegment} shows that ShICA-ML, MultiViewICA and ShICA-J yield almost equal accuracy and outperform other methods by a large margin. The right panel in Fig~\ref{exp:timesegment} shows that ShICA-J is much faster to fit than MultiViewICA or ShICA-ML.
+
+We would like to highlight here that these experiments are not exactly the same as in~\cite{chen2015reduced} as we use full brain data and they use regions of interest. The code used for this experiment is very similar to the tutorial in \url{https://brainiak.org/tutorials/11-SRM/}. We use the SRM implementation in Brainiak~\cite{kumar2020brainiak}. Also note that the Raiders dataset is different from the one used in~\cite{chen2015reduced} as it involves different subjects and data were acquired in a different neuro-imaging center.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.45\textwidth]{./figures/amvica/timesegment_matching.pdf}
+    \includegraphics[width=0.45\textwidth]{./figures/amvica/timesegment_matching_timings.pdf}
+    \caption{\textbf{Timesegment matching experiment}: (left) Accuracy (right) Fitting time (in seconds)}
+    \label{exp:timesegment}
+\end{figure}
+
+\subsection{MEG Phantom experiment}
+\label{app:phantom}
+\subsubsection{Phantom Elektra}
+    Dipoles in $m=32$ various locations are emitting the same signal.
+    Signal magnitude can be either very high, high or low, leading to 3 datasets: a very clean one, a clean one and a noisy one. These datasets are available as part of the Brainstorm application~\cite{tadel2011brainstorm}. We preprocess the data using Maxwell filtering and low-pass filtering as done in the MNE tutorial \url{https://mne.tools/0.17/auto_tutorials/plot_brainstorm_phantom_elekta.html} and only consider data recorded by the magnetometers.
+    We use the very clean dataset to recover the true signal by PCA with 1
+    component. Then we reduce the noisy dataset by applying view specific PCA with $k=20$ components and algorithms are applied on the reduced data. We select the component that is closer to the true one and compute the L2 norm between the predicted component and the true one after normalization.
+    Then we attempt to recover the position of each dipole by performing dipole fitting on the mixing operator of each view (using only the column corresponding to the true component). The localization error is defined as the mean l2 distance between the true localization and the predicted localization where the mean is computed across dipoles. 
+    Each epoch corresponds to 301 samples and 20 epochs are available in total. We vary the number of epochs between 2 and 18 and display in Fig~\ref{exp:meg_phantom} the reconstruction error and the localization error in function of the number of epochs used.
+    ShICA-ML outperforms other methods. ShICA-J gives satisfying results while being much faster.
     
-%     \subsubsection{Phantom Sinusoidal components}
-%     For completeness, we display the results obtained on another MEG dataset where the true component is a known sinusoidal and $m=8$ different locations are considered for the dipoles. We vary the number of epochs between 2 and 16 and display in Fig~\ref{exp:meg_phantom_neurips} the reconstruction error and the localization error as a function of the number of epochs used. ShICA-ML outperforms other methods. ShICA-J gives satisfying results while being much faster.
+    \subsubsection{Phantom Sinusoidal components}
+    For completeness, we display the results obtained on another MEG dataset where the true component is a known sinusoidal and $m=8$ different locations are considered for the dipoles. We vary the number of epochs between 2 and 16 and display in Fig~\ref{exp:meg_phantom_neurips} the reconstruction error and the localization error as a function of the number of epochs used. ShICA-ML outperforms other methods. ShICA-J gives satisfying results while being much faster.
     
-% \begin{figure}
-% \centering
-%   \includegraphics[width=0.7\textwidth]{./figures/amvica/meg_phantom.pdf}
-%   \caption{\textbf{MEG Phantom (Elektra)}: (left) L2 distance between the predicted and actual component (middle) Mean error (in mm) between predicted and actual dipoles localization (right) Fitting time (in seconds)}
-% \label{exp:meg_phantom}
-% \end{figure}
+\begin{figure}
+\centering
+  \includegraphics[width=0.7\textwidth]{./figures/amvica/meg_phantom.pdf}
+  \caption{\textbf{MEG Phantom (Elektra)}: (left) L2 distance between the predicted and actual component (middle) Mean error (in mm) between predicted and actual dipoles localization (right) Fitting time (in seconds)}
+\label{exp:meg_phantom}
+\end{figure}
 
-% \begin{figure}
-% \centering
-%   \includegraphics[width=0.7\textwidth]{./figures/amvica/meg_phantom_neurips.pdf}
-%   \caption{\textbf{MEG Phantom Sinusoidal components}: (left) L2 distance between the predicted and actual component (middle) Mean error (in mm) between predicted and actual dipoles localization (right) Fitting time (in seconds)}
-% \label{exp:meg_phantom_neurips}
-% \end{figure}
+\begin{figure}
+\centering
+  \includegraphics[width=0.7\textwidth]{./figures/amvica/meg_phantom_neurips.pdf}
+  \caption{\textbf{MEG Phantom Sinusoidal components}: (left) L2 distance between the predicted and actual component (middle) Mean error (in mm) between predicted and actual dipoles localization (right) Fitting time (in seconds)}
+\label{exp:meg_phantom_neurips}
+\end{figure}
 
-% \subsection{CamCAN MEG components}
-% We consider the CamCAN dataset used to produce Fig~4. We use $m=496$ subjects and fit ShICA-ML with $p=10$ components. We localize the components of each subject using sLoreta~\cite{pascual2002standardized}. Then components are registered to a common brain and averaged. Thresholded maps are displayed below along with the time courses of each component. Components obtained with ShICA-ML highlight the ventral visual cortex and auditive cortex. The results suggest that the response of the auditive cortex is faster and lasts a shorter time than the response of the ventral visual cortex.
+\subsection{CamCAN MEG components}
+We consider the CamCAN dataset used to produce Fig~4. We use $m=496$ subjects and fit ShICA-ML with $p=10$ components. We localize the components of each subject using sLoreta~\cite{pascual2002standardized}. Then components are registered to a common brain and averaged. Thresholded maps are displayed below along with the time courses of each component. Components obtained with ShICA-ML highlight the ventral visual cortex and auditive cortex. The results suggest that the response of the auditive cortex is faster and lasts a shorter time than the response of the ventral visual cortex.
 
-% % In contrast, maps obtained with CanICA are very similar and miss the activation in the auditory cortex.
-% % \subsubsection{Components obtained with ShICA-ML}
-% {\centering
-% \includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_0.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_0.pdf} \\
-% \includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_1.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_1.pdf} \\
-% \includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_2.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_2.pdf} \\
-% \includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_3.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_3.pdf} \\
-% \includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_4.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_4.pdf} \\
-% \includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_5.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_5.pdf} \\
-% \includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_6.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_6.pdf} \\
-% \includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_7.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_7.pdf} \\
-% \includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_8.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_8.pdf} \\
-% \includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_9.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_9.pdf} \\
-% }
+% In contrast, maps obtained with CanICA are very similar and miss the activation in the auditory cortex.
+% \subsubsection{Components obtained with ShICA-ML}
+{\centering
+\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_0.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_0.pdf} \\
+\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_1.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_1.pdf} \\
+\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_2.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_2.pdf} \\
+\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_3.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_3.pdf} \\
+\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_4.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_4.pdf} \\
+\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_5.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_5.pdf} \\
+\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_6.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_6.pdf} \\
+\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_7.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_7.pdf} \\
+\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_8.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_8.pdf} \\
+\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_montage_9.png}\includegraphics[width=0.4\textwidth]{./figures/amvica/amvica_camcan_source_9.pdf} \\
+}
