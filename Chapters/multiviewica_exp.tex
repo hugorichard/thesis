@@ -1,4 +1,6 @@
-In this section, we empirically verify through extensive experiments on fMRI and
+In chapter~\ref{ch:mvica1}, we have introduced MultiViewICA and presented its
+theoretical properties.
+In this chapter, we empirically verify through extensive experiments on fMRI and
 MEG data that MultiView ICA improves component identification with respect to competing methods, suggesting that the expressiveness and robustness of this model make it a useful tool for multivariate neural signal analysis.
 
 \section{Experimental setting}
@@ -69,8 +71,7 @@ Multiview ICA has uniformly better performance than the other algorithms, which 
 \section{Reconstructing the BOLD signal of missing subjects}
 We first benchmark GroupICA methods through their ability to reconstruct the
 BOLD signal of a left-out subject.
-The experimental setting is the same as in the reconstruction experiment in the
-FastSRM chapter (see section~\ref{sec:srm:reconstruction}).
+The experimental setting is the same as in section~\ref{sec:srm:reconstruction}.
 
  In Figure~\ref{fig:reconstruction}
 (top) we report the mean $R^2$ score inside region of interest.
@@ -182,6 +183,7 @@ In component 3, there exists a similarity however less striking than with the tw
 
 %\subsection{MEG experiments}
 \section{Phantom MEG data}
+\label{sec:mvica:phantom}
 We demonstrate the usefulness of our approach on MEG data.
 %
 The first experiment uses data collected with a realistic head phantom, which is a plastic device mimicking real electrical brain components.
@@ -256,13 +258,24 @@ of the activity towards the ventral regions and higher level visual areas.
     \label{fig:meg}
 \end{figure}
 
-\vspace{-11pt}
 %
 %
-% \section{Conclusion}
-% \label{sec:disc}
-% \input{sec/conclusion}
+
+
+\section{Conclusion}
+In this chapter, we demonstrated the usefulness of MultiView ICA for neuroimaging group studies both on fMRI and MEG data, where it outperforms other methods.
 %
+A limiting aspect in MultiView ICA is its assumption that the noise
+variance is the same across subjects. This is limiting because it does not
+properly model between-subjects variability.
+%
+In the next chapter, we propose an extension of MultiView ICA with a more realistic
+noise model.
+
+% In the experiments on fMRI data, we used temporal ICA in order to make use of the fact that subjects were exposed to the same stimuli. However, applying MultiViewICA on transposed data would carry out spatial ICA. Therefore MultiViewICA can be readily used to analyse different kind of neuroimaging data such as resting state data. 
+% %
+% Our method is not specific to neuroimaging data and could be relevant to other observational sciences like genomics or astrophysics where ICA is already widely used.
+% 
 %
 %\section{Conclusions}
 %\label{sec:conclusions}

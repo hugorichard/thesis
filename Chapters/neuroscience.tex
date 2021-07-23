@@ -1,4 +1,9 @@
 \section{Functional magnetic resonance imaging (fMRI)}
+Task fMRI:
+As a non-invasive brain imaging technique, task fMRI records brain
+activity while participants are
+performing specific cognitive tasks.
+
 \subsection{Principle}
 \begin{itemize}
 \item 1990 Ogawa observed BOLD effect
@@ -21,7 +26,20 @@
 \subsubsection{Block design}
 Describe block design setting and GLM model
 \subsubsection{GLM model}
+Univariate statistical methods, such as general linear models (GLMs)
+\cite{friston1995analysis} have been successfully applied to
+identifying the brain regions involved in specific tasks.
+% 
 Describe seed based resting state as well as atlas based resting state.
+
+\subsubsection{Decoding}
+However such methods do not capture well correlations and interactions between brain-wide measurements.
+By contrast, classifiers trained 
+to \emph{decode} brain maps, i.e to discriminate between specific stimulus or task types~\cite{shirer_decoding_2012,varoquaux_how_2014,loula_decoding_2018}, take these correlations into account. 
+% 
+The same framework is also popular for individual imaging-based diagnosis.
+
+% 
 \subsection{An example of unsupervised design: analysis of resting state data}
 
 \section{Magneto electro encephalography (MEG)}

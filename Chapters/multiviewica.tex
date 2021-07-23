@@ -1,9 +1,8 @@
-In the previous section, we have introduced a fast version of the shared
-response model. While this provides a useful dimension reduction framework, it
-assumes orthogonality of the mixing matrices which is not biologically
+In chapter~\ref{ch:fastsrm1} and chapter~\ref{ch:fastsrm2}, we have introduced a fast version of the shared
+response model (SRM). While SRM provides a useful dimension reduction framework, it assumes orthogonality of the mixing matrices which is not biologically
 plausible.
 
-In this section, we propose a novel group ICA method called \emph{MultiView ICA}.
+In this chapter, we propose a novel group ICA method called \emph{MultiView ICA}.
 In contrast to most Group ICA methods, MultiViewICA is grounded in a principled
 probabilistic model of the problem and comes with statistical guarantees such as
 asymptotic efficiency.
@@ -262,5 +261,14 @@ Deep Learning methods, such as convolutional auto-encoders (CAE), can also be us
 Lastly, IVA based methods (see section~\ref{sec:IVA}) do not specifically model
 the shared response which is the quantity of interest in this work.
 
-In the next section, we evaluate the performance of MultiView ICA on synthetic
+\section{Conclusion}
+In this chapter, we have proposed a novel unsupervised algorithm that reveals latent sources observed through different views. Using an independence assumption, 
+we have demonstrated that the model is identifiable.
+% 
+In contrast to previous approaches, the proposed model leads to a closed-form likelihood, which we then optimize efficiently using a dedicated alternate quasi-Newton approach.
+% 
+Our approach enjoys the statistical guarantees of maximum-likelihood theory, while still being tractable.
+% 
+
+In the next chapter, we evaluate the performance of MultiView ICA on synthetic
 data, on EEG and fMRI data and compare its performance to other GroupICA methods.

@@ -184,21 +184,23 @@ A first approach is to use existing deterministic atlases for fMRI data such as
 ~\cite{schaefer2017local} or~\cite{bellec2010multi}. As theses atlases
 attempt to reduce the dimension of fMRI signals without losing too much signal,
 there is hope for the inertia to be small.
-The clustering approach
-of~\cite{hoyos2018recursive} is also appealing as it is optimized to give low
+RENA, the clustering approach
+of~\cite{hoyos2018recursive}, is also appealing as it is optimized to give low
 inertia while the cost of finding the deterministic atlas is low (computing $U_i$ only costs
 $\bigO(vn)$). As the number $r$ of regions increases, the inertia decreases
 and the approximation becomes better and better. An other possibility is to
 perform a PCA with a number of components $r < n$.
 
 The approaches previously described attempt to approximate $U_i$ by a
-deterministic atlas. Another possibility is to approximate directly $\zb_i$.
+deterministic atlas. Another possibility is to approximate directly $\zb_i$ via
+random projection.
 Let us call $X_i \in \RR^{v,
-  n}$ our data matrix. Following~\cite{mahoney2016lecture} (section 15.1), we
+  n}$ our data matrix. Following~\cite{mahoney2016lecture} (section 14.4), we
 can approximate $X_i^{\top} X_i$ by $\tilde{C} = \sum_{j \in \mathcal{J}} \frac1{p_j r} \xb_{ij}^{\top} \xb_{ij}$ where $\xb_{ij}$ is the $j$-th line of
   $X_i$ and $\mathcal{J}$ is a set of $r$ indexes such that $\mathcal{J}$ contains
-  index $j$ with probability $p_j = \frac{\|\xb_{ij}\|^2}{\|X_i
-    \|^2_F}$. Computing an approximation of $X_i^{\top} X_i$ is interesting
+  index $j$ with probability $p_j$. The most simple choice is $p_j=\frac1{v}$
+  which we use in our implementations. Other choices are possible, we refer the reader to section 15
+  of~\cite{mahoney2016lecture} for more details.  Computing an approximation of $X_i^{\top} X_i$ is interesting
   because the SVD of $X_i^{\top} X_i$ allows us to recover the reduced data
   $Z_i$ up to an irrelevant sign indeterminacy. 
   If spatial maps $A_i$ are needed, they can be recovered from the data using the formula

@@ -7,11 +7,62 @@ are obtained by sampling their coefficient from a standardized normal distributi
 Lastly, the covariance of the shared response $\Sigma_s$ is diagonal and the
 diagonal values are obtained by sampling from a Dirichlet distribution with
 parameter $(1 \dots 1)$.
+The number of voxels is fixed to $v=125~000$. The number of samples is given by
+$n=1000$. We use $m=10$ subjects and $p=50$ components.
 
-As the deterministic SRM algorithm is only identifiable up to an arbitrary
-rotation we measure the distance between the true component $S \in \RR^{p, n}$ and
-the predicted component $\hat{S} \in \RR^{p, n}$ by the quantity:
-$min_{A \in \RR^{p, p}} \|A \hat{S} - S \|^2_F =  \|S \hat{S}^{\dagger}\hat{S} - S \|^2_F$.
+We benchmark different implementations of deterministic SRM and probabilistic
+SRM in terms of fitting time and performance. The basic SRM described in
+section~\ref{sec:probabilisticsrm} and~\ref{sec:deterministicsrm} is refered to
+as \emph{NONE} because no atlas is used. 
+\emph{OPTIMAL} is the FastSRM algorithm with optimal atlas which is provably
+equivalent to using no atlas. \emph{ReNA} uses the fast clustering approach
+of~\cite{hoyos2018recursive} with a number of regions is equal to the number of
+components: $r=n$. \emph{PROJ} is the random projection approach that
+approximates the optimal reduced data using only $r=5n$ voxels. Lastly
+\emph{PCA} applies SRM algorithms to data reduced with a PCA using $r=p+1$ components.
+
+For any number of iterations between 1 and 100.
+We measure the performance of an algorithm by computing the error between the true component $S \in \RR^{p, n}$ and
+the predicted component $\hat{S} \in \RR^{p, n}$ using the quantity:
+$\mathrm{mse}(\hat{S}, S) = min_{A \in \RR^{p, p}} \|A \hat{S} - S \|^2_F =  \|S
+\hat{S}^{\dagger}\hat{S} - S \|^2_F$. This way of measuring errors is
+insensitive to the indeterminacies in DetSRM.
+We measure the fitting time in seconds.
+Lastly, we measure convergence by computing the gradient $\el_{\infty}$ norm in
+case of DetSRM given by $\max(\abs(G))$ where $G$ is the gradient. For ProbSRM
+algorithms the convergence is given by the distance between consecutive values of the loss.
+
+Results are plotted in figure~\ref{fig:srm:synthetic_gradient}. 
+We see empirically the the optimal approach is equivalent to using no atlas in
+terms of performance. Among approximate methods, the projection
+method yields the best results but are quite far away from optimal results.
+In general probabilistic methods gives a much better fit than their deterministic
+counterpart which shows the superiority of likelihood based methods.
+In terms of fitting time, we see that atlas based methods spend most of the time
+computing the reduced representation but their total fitting time depends only
+weakly on the number of iterations performed. When no atlas is used, the number
+of iteration has a very strong impact on performance. The approximate methods
+\emph{RENA} and \emph{PROJ} are much faster than other methods but
+the \emph{PROJ} one yields much better results. The \emph{PCA} method is
+almost as slow as the \emph{OPTIMAL} one while giving much worse results.
+Comparing the use of an \emph{OPTIMAL} atlas to using \emph{NONE}, we see that
+using the optimal atlas is faster as long as the number of iterations is greater
+than $30$.
+Looking at the convergence curves, we see that even after $100$ iterations, algorithms did
+not fully converge. This means that in practice a much larger number of
+iterations is needed which justifies why the \emph{OPTIMAL} atlas method is better.
+Lastly, when the time budget is very tight, using an approximate atlas with the
+\emph{PROJ} method is a better choice than
+using SRM with less iterations. 
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{figures/srm/synthetic_gradient.pdf}
+  \caption{\textbf{Benchmark of SRM algorithms on synthetic data: } Performance,
+    fitting time and convergence of SRM algorithms (left) Deterministic SRM
+    (right) Probabilistic SRM}
+  \label{fig:srm:synthetic_gradient}
+\end{figure}
 
 
 
@@ -49,6 +100,9 @@ We use 5-Fold cross-validation across runs: the training set contains 80\% of th
 %
 The mean accuracy is reported in Figure~\ref{fig:timesegment} (bottom). 
 %
+
+We would like to highlight here that these experiments are not exactly the same as in~\cite{chen2015reduced} as we use full brain data and they use regions of interest. The code used for this experiment is very similar to the tutorial in \url{https://brainiak.org/tutorials/11-SRM/}. We use the SRM implementation in Brainiak~\cite{kumar2020brainiak}. Also note that the Raiders dataset is different from the one used in~\cite{chen2015reduced} as it involves different subjects and data were acquired in a different neuro-imaging center.
+
 \textbf{Reconstructing the BOLD signal of missing subjects}
 \label{sec:srm:reconstruction}
 

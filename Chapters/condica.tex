@@ -1,70 +1,37 @@
-% \begin{abstract}
-%   Advances in computational cognitive neuroimaging research are
-%   related to the availability of large amounts of labeled brain
-%   imaging data, but such data are scarce and expensive to generate.
-%   While powerful data generation mechanisms, such as Generative Adversarial Networks (GANs),  have been designed  in the last decade for computer vision, such improvements have not yet carried over to brain imaging.
-%   %
-%   A likely reason is that GANs training is ill-suited to the noisy, high-dimensional and small-sample data available in functional neuroimaging.
-%   %
-%   In this paper, we introduce Conditional Independent Components Analysis (Conditional ICA): a fast functional Magnetic Resonance Imaging (fMRI) data augmentation technique, that leverages abundant resting-state data to create condica by sampling from an ICA decomposition. We then propose a mechanism to condition the generator on classes observed with few samples.
-%   We first show that the generative mechanism is successful at
-%   synthesizing data indistinguishable from observations, and that it yields   gains in classification accuracy in brain decoding problems. In particular
-%   it outperforms GANs while being much easier to optimize and interpret. Lastly, Conditional ICA enhances classification accuracy in eight
-%   datasets without further parameter tuning.
+Chapters~\ref{ch:mvica1},~\ref{ch:mvica2},~\ref{ch:shica} and
+\ref{ch:shica2} use ICA based methods to learn shared responses from different
+subjects performing the same task.
+In this chapter we present an ICA based method to achieve data augmentation in fMRI images.
 
-
-
-% \end{abstract}
-
-\section{Introduction}
-
-As a non-invasive brain imaging technique, task fMRI records brain
-activity while participants are
-performing specific cognitive tasks.
-
-Univariate statistical methods, such as general linear models (GLMs)
-\cite{friston1995analysis} have been successfully applied to
-identifying the brain regions involved in specific tasks.
+  Advances in computational cognitive neuroimaging research are
+  related to the availability of large amounts of labeled brain
+imaging data, since classifiers used to decode brain maps have large
+sample-complexity.
 %
-However such methods do not capture well correlations and interactions between brain-wide measurements.
-
-By contrast, classifiers trained 
-to \emph{decode} brain maps, i.e to discriminate between specific stimulus or task types~\cite{shirer_decoding_2012,varoquaux_how_2014,loula_decoding_2018}, take these correlations into account. 
-%
-The same framework is also popular for individual imaging-based diagnosis.
-
-%
-However, the large sample-complexity of these classifiers currently limits their accuracy.
+However such data are scarce.
 %
 
 To tackle this problem, data generation is an attractive approach, as
 it could potentially compensate for the shortage of data.
 Generative Adversarial Networks (GANs) are promising generative
-models~\cite{goodfellow2014generative}.
+models~\cite{goodfellow2014generative} designed for computer vision.
 % 
-However, GANs are ill-suited to the noisy, high-dimensional and
+However, such improvements have not yet carried over to brain imaging. A likely
+reason is that GANs are ill-suited to the noisy, high-dimensional and
 small-sample data available in functional neuroimaging. 
-%
+% 
 Furthermore the training of GANs is notoriously unstable and there are many hyper-parameters to tune.
-%
+% 
+
+  In this work, we introduce Conditional ICA: a novel data augmentation technique using ICA together with conditioning mechanisms to generate surrogate brain imaging data and improve image classification performance.
+  % 
+  Conditional ICA starts from a generative model of resting state data (unconditional model), that is fine-tuned into a conditional model that can generate task data. 
+  % 
+  This way, the generative model for task data benefits from the abundant
+  resting state data and can be trained with few labeled samples.
 
 
-In this work, we introduce Conditional ICA: a novel data augmentation technique using ICA together with conditioning mechanisms to generate surrogate brain imaging data and improve image classification performance.
 %
-Conditional ICA starts from a generative model of resting state data (unconditional model), that is fine-tuned into a conditional model that can generate task data. 
-%
-This way, the generative model for task data benefits from the abundant
-resting state data and can be trained with few labeled samples.
-%
-We first show that the generative model of resting state data shipped in Conditional
-ICA produces samples that neither linear nor non-linear classifiers are able to distinguish.
-%
-Then we benchmark Conditional ICA as a generative model of task data against
-various augmentation methods including GANs and conditional GANs~\cite{mirza2014conditional} on their
-ability to improve classification accuracy on a large task fMRI dataset. We find that Conditional ICA yields highest accuracy improvements.
-Lastly, we show on 8 different datasets that the use of Conditional ICA results in systematic improvements in classification accuracy ranging from 1\% to 5\%.
-
-
 \begin{figure}
 \centerline{\includegraphics[width=1\textwidth]{condica/conceptual_figure_1_v6_redim.pdf}}
 \caption{\textbf{Conditional ICA approach.} Our method aims to
@@ -80,14 +47,7 @@ Lastly, we show on 8 different datasets that the use of Conditional ICA results 
 
 \section{Methods}
 
-\paragraph{Notations}
-We write matrices as bold capital letters, vectors as bold small letters.
-$X^{\dagger}$ refers to the Moore-Penrose pseudo inverse of matrix $X$,
-, $\tr(X)$ refers to the trace of matrix $X$ and
-$I_k$ refers to the identity matrix in $\mathbb{R}^{k, k}$. $\mathbf{0}_k$ refers to
-the null vector in $\mathbb{R}^k$.
-
-\paragraph{Spatial Dimension reduction.} 
+\subsection{Spatial Dimension reduction.} 
 The outline of the proposed approach is presented in Fig.\ref{Fig0}.
 %
 While brain maps are high-dimensional, they span a smaller space than that of
@@ -100,8 +60,8 @@ atlas \cite{dadi_fine-grain_2020}, i.e. with $p=1024$ components.
 The choice of dimension reduction technique generally has an impact on the
 results. However we consider this question to be out of the scope of the current study and leave this to future work.
 
-\paragraph{Unconditional generative model (resting state data generation)}
-Given a large-scale resting-state dataset $X^{rest}$ in $\mathbb{R}^{p,n}$ where $n$ is the number of condica (samples) and $p=1024$ the number of components in the atlas, let us consider how to learn its distribution.
+\subsection{Unconditional generative model (resting state data generation)}
+Given a large-scale resting-state dataset $X^{rest}$ in $\mathbb{R}^{p,n}$ where $n$ is the number of data (samples) and $p=1024$ the number of components in the atlas, let us consider how to learn its distribution.
 %
 Assuming a Gaussian distribution is standard in this setting, yet, as
 shown later, it misses key distributional features.
@@ -135,27 +95,27 @@ thus a latent structure among the marginals of the component distribution has to
 by $\mathcal{N}(\zero_k, \Lambda^{rest})$ where $\Lambda^{rest}$ is a definite positive matrix.
 
 $\Lambda^{rest}$ can easily be learned from a standard shrunk covariance
-estimator: $\Lambda^{rest} = SSigma^{rest} (1 - \alpha) + \alpha \tr(SSigma^{rest}) I_k$ where
+estimator: $\Lambda^{rest} = \Sigma^{rest} (1 - \alpha) + \alpha \tr(\Sigma^{rest}) I_k$ where
 $\alpha$ is given by the Ledoit-Wolf formula \cite{ledoit2004well} and
-$SSigma^{rest}$ is the empirical covariance of $Z^{rest}$.
+$\Sigma^{rest}$ is the empirical covariance of $Z^{rest}$.
 
 Our encoding model for rest data is therefore given by \\ 
 $Z^{rest} =
 q^{rest}(W^{rest} X^{rest})$ and we assume that the the
 distribution of $Z^{rest}$ is $\mathcal{N}(\zero_k, \Lambda_k)$.
 The generative model is given by the pseudo inverse of the encoding model:
-$\tilde{X}^{rest} = (W^{rest})^{\dagger} (q^{rest})^{-1}(\eps)$ where $\eps \sim
+$\tilde{\xb}^{rest} = (W^{rest})^{\dagger} (q^{rest})^{-1}(\epsilonb)$ where $\epsilonb \sim
 \mathcal{N}(\zero_k, \Lambda^{rest})$. 
 
 
-\paragraph{Conditional generative model (generative model for task data)}
+\subsection{Conditional generative model (generative model for task data)}
 While resting state datasets have a large number of samples ($10^4 \sim 10^5$), task datasets   have a small number of samples ($10 \sim 10^2$). As a result, there are too few samples to learn high quality unmixing matrices. 
 %
 Therefore, using  the unmixing matrix $W^{rest}$ learned from the resting state data, we rely on the following nonlinear generative model for brain maps in a certain class $c$:
 \begin{equation}
-  \xb_c = (W^{rest})^{\dagger} q^{-1}(\eps)
+  \xb_c = (W^{rest})^{\dagger} q^{-1}(\epsilonb)
 \end{equation}
-with $\eps \sim \mathcal{N}(\mub_c, \Lambda)$.
+with $\epsilonb \sim \mathcal{N}(\mub_c, \Lambda)$.
 
 In order to maximize the number of samples used to learn the parameters of the
 model, we assume that the quantile transform $q$ and the latent covariance
@@ -196,12 +156,11 @@ dataset on which we train classifiers.}
 In image processing, data augmentation is part of standard toolboxes and
 typically includes operations like cropping, rotation, translation.
 %
-On fMRI data these methods do not make much sense as brain condica are not invariant to such transformations.
+On fMRI data these methods do not make much sense as brain data are not invariant to such transformations.
 %
-More advanced techniques~\cite{zhuang2019fmri}%\cite{sandfort2019data}
+More advanced techniques~\cite{zhuang2019fmri} %\cite{sandfort2019data}
 are based on generative models such as GANs or variatonal
-auto-encoders~\cite{kingma2013auto}. Although GAN-based method are powerful they are slow and difficult to train~\cite{arjovsky_wasserstein_2017}. In
-appendix Table~\ref{app:runningtime:tab}, we show that Conditional ICA is several orders of magnitude faster than GAN-based methods.
+auto-encoders~\cite{kingma2013auto}. Although GAN-based method are powerful they are slow and difficult to train~\cite{arjovsky_wasserstein_2017}.
 
 Our method is not an adversarial procedure, however it relates to other
 powerful generative models such as variatonal
@@ -214,8 +173,14 @@ while the reconstruction error defined by the difference in l2 norm
 $\|d(e(\xb)) - \xb\|^2_2$ must remain small.
 Lastly, another classical generative model related to ours is normalizing
 flows.  We note that when $W^{rest}$ is squared (no dimension reduction in ICA), the decoding operator $d$ is invertible (its inverse is $e$) making our
-model an instance of normalizing flows. 
+model an instance of normalizing flows~\cite{rezende2015variational}. 
 %
 A great property is thus the simplicity and reduced cost of data generation.
 
+\section{Conclusion}
+In this chapter, we introduced Conditional ICA, a fast generative model for rest
+and task data. Conditional ICA is essentially a linear generative model with
+pointwise non-linearity, which makes it cheap, easy to instantiate on new data,
+and to introspect.
+In the next chapter, we look at the performance of Conditional ICA on fMRI data.
 
