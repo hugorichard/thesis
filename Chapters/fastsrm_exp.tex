@@ -2,7 +2,7 @@
 \subsection{Comparing Fitting time and performance of FastSRM and
   SRM on synthetic data}
 We generate data $\xb_i$ according to the model of Probabilistic SRM. We sample the value of the subject specific noise level from a normal
-distribution: $\sigma_i \sim \Ncal(0, 0.1)$. The coefficients of the mixing matrices $A_i$
+distribution: $\sigma_i \sim \Ncal(0, 0.1)$. The mixing matrices $A_i$
 are obtained by sampling their coefficient from a standardized normal distribution.
 Lastly, the covariance of the shared response $\Sigma_s$ is diagonal and the
 diagonal values are obtained by sampling from a Dirichlet distribution with
@@ -19,7 +19,7 @@ equivalent to using no atlas. \emph{ReNA} uses the fast clustering approach
 of~\cite{hoyos2018recursive} with a number of regions is equal to the number of
 components: $r=n$. \emph{PROJ} is the random projection approach that
 approximates the optimal reduced data using only $r=5n$ voxels. Lastly
-\emph{PCA} applies SRM algorithms to data reduced with a PCA using $r=p+1$ components.
+\emph{PCA} applies SRM algorithms to data reduced with a PCA using $r=p+1$ components \textbf{XXX Why  + 1 ?}.
 
 For any number of iterations between 1 and 100.
 We measure the performance of an algorithm by computing the error between the true component $S \in \RR^{p, n}$ and
@@ -29,11 +29,11 @@ $\mathrm{mse}(\hat{S}, S) = min_{A \in \RR^{p, p}} \|A \hat{S} - S \|^2_F =  \|S
 insensitive to the indeterminacies in DetSRM.
 We measure the fitting time in seconds.
 Lastly, we measure convergence by computing the gradient $\el_{\infty}$ norm in
-case of DetSRM given by $\max(\abs(G))$ where $G$ is the gradient. For ProbSRM
+case of DetSRM given by $\max(\abs{G})$ where $G$ is the gradient. For ProbSRM
 algorithms the convergence is given by the distance between consecutive values of the loss.
 
 Results are plotted in figure~\ref{fig:srm:synthetic_gradient}. 
-We see empirically the the optimal approach is equivalent to using no atlas in
+We empirically see that the optimal approach is equivalent to using no atlas in
 terms of performance. Among approximate methods, the projection
 method yields the best results but are quite far away from optimal results.
 In general probabilistic methods gives a much better fit than their deterministic
@@ -41,7 +41,7 @@ counterpart which shows the superiority of likelihood based methods.
 In terms of fitting time, we see that atlas based methods spend most of the time
 computing the reduced representation but their total fitting time depends only
 weakly on the number of iterations performed. When no atlas is used, the number
-of iteration has a very strong impact on performance. The approximate methods
+of iterations has a very strong impact on performance. The approximate methods
 \emph{RENA} and \emph{PROJ} are much faster than other methods but
 the \emph{PROJ} one yields much better results. The \emph{PCA} method is
 almost as slow as the \emph{OPTIMAL} one while giving much worse results.
@@ -60,7 +60,7 @@ using SRM with less iterations.
   \includegraphics[width=\textwidth]{figures/srm/synthetic_gradient.pdf}
   \caption{\textbf{Benchmark of SRM algorithms on synthetic data: } Performance,
     fitting time and convergence of SRM algorithms (left) Deterministic SRM
-    (right) Probabilistic SRM}
+    (right) Probabilistic SRM. \textbf{XXX Develop a little bit}}
   \label{fig:srm:synthetic_gradient}
 \end{figure}
 
@@ -71,6 +71,7 @@ using SRM with less iterations.
 \textbf{fMRI data and preprocessing} 
 We evaluate the performance of our approach on four different fMRI datasets.
 %
+\textbf{XXX It would be mroe logical to present the datasets before.}
 The \emph{sherlock} dataset~\cite{chen2017shared} contains recordings of 16 subjects watching an episode of the BBC TV show "Sherlock" (50 mins).
 %
 The \emph{forrest} dataset~\cite{hanke2014high} was collected while 19 subjects were listening to an auditory version of the film "Forrest Gump" (110 mins).
@@ -84,11 +85,13 @@ The \emph{raiders-full} dataset~\cite{ibc} is an extension of the \emph{raiders}
 Like \cite{zhang2016searchlight}, we used full brain data. The rest of the preprocessing is identical to \cite{chen2017shared}. See \ref{preprocessing} for a detailed description of the datasets and preprocessing steps. Unless stated otherwise we use spatially unsmoothed data, except for the \emph{sherlock} dataset, for which the available data are already preprocessed with a 6\,mm spatial smoothing. All datasets are built from successive acquisitions called \emph{runs} that typically last 10 minutes each.
 %
 
-\textbf{Between subjects time-segment matching} 
+\textbf{Between subjects time-segment matching} \textbf{XXX}
 \label{timesegment_expe}
+%
+\textbf{XXX Deserved more explanations: whay is it used ? Bhy is it a good metric ?}
 We reproduce the time-segment matching experiment in
 \cite{chen2015reduced}. 
-We split the runs into a train and test set. After fitting the model on the training set, we apply the forward operator of each subject on the test set yielding individual components matrices. We estimate the shared responses by averaging the individual components of each subjects but one.  We select a target time-segment (9 consecutive timeframes) in the shared responses and try to localize the corresponding time segment in the components of the left-out subject using a maximum-correlation classifier.
+We split the runs into a train and test set. After fitting the model on the training set, we apply the forward operator \textbf{XXX Undefined so far} of each subject on the test set yielding individual components matrices. We estimate the shared responses by averaging the individual components of each subjects but one.  We select a target time-segment (9 consecutive timeframes) in the shared responses and try to localize the corresponding time segment in the components of the left-out subject using a maximum-correlation classifier.
 This is a standard evaluation of SRM-like methods also used in  \cite{chen2015reduced}, \cite{guntupalli2018computational}, \cite{Nastase741975} or
 \cite{zhang2016searchlight}.
 %
@@ -101,14 +104,14 @@ We use 5-Fold cross-validation across runs: the training set contains 80\% of th
 The mean accuracy is reported in Figure~\ref{fig:timesegment} (bottom). 
 %
 
-We would like to highlight here that these experiments are not exactly the same as in~\cite{chen2015reduced} as we use full brain data and they use regions of interest. The code used for this experiment is very similar to the tutorial in \url{https://brainiak.org/tutorials/11-SRM/}. We use the SRM implementation in Brainiak~\cite{kumar2020brainiak}. Also note that the Raiders dataset is different from the one used in~\cite{chen2015reduced} as it involves different subjects and data were acquired in a different neuro-imaging center.
+We would like to highlight here that these experiments are not exactly the same as in~\cite{chen2015reduced} as we use full brain data and they use regions of interest. The code used for this experiment is very similar to the tutorial in \url{https://brainiak.org/tutorials/11-SRM/}. We use the SRM implementation in Brainiak~\cite{kumar2020brainiak}. Also note that the Raiders dataset is different from the one used in~\cite{chen2015reduced}, as it involves different subjects, and because data were acquired in a different neuro-imaging center.
 
 \textbf{Reconstructing the BOLD signal of missing subjects}
 \label{sec:srm:reconstruction}
 
 We want to show that once unmixing matrices have been learned, they can be
 used to predict
-evoked responses across subjects, which can be useful to perform transfer learning~\cite{zhang2018transfer}.
+evoked responses across subjects, which can be useful to perform transfer learning~\cite{zhang2018transfer}. \textbf{XXX I don't see the point}
 %
 We split the data into three groups. First, we randomly choose $80\%$ of all runs from all subjects to form the training set.
 %
@@ -118,7 +121,7 @@ The left-out runs  of the remaining $20\%$ subjects form the validation set.
 %
 The compared algorithms are run on the training set and evaluated using the testing and validation sets.
 %
-After an algorithm is run on training data, it defines for each subject a \emph{forward operator} that maps individual data to the component space and a \emph{backward operator} that maps the component space to individual data. For instance in ICA the forward operator is the product of the dimensionality reduction projection and unmixing matrix.
+After an algorithm is run on training data, it defines for each subject a \emph{forward operator} that maps individual data to the component space and a \emph{backward operator} that maps the component space to individual data. For instance in ICA \textbf{XXXWhy are wa talking about ICA ?} the forward operator is the product of the dimensionality reduction projection and unmixing matrix.
 %
 We estimate the shared responses on the testing set by applying the forward operators on the testing data and averaging. Finally, we reconstruct the individual data from subjects in the validation set by applying the backward operators to the shared responses. We measure the difference between the true signal and the reconstructed one using voxel-wise $R^2$ score. The $R^2$ score between two series $\xb \in \bbR^n$ and $\yb \in \bbR^n$ is defined as
 $R^2(\xb, \yb) = 1 - \frac1{n\Var(\yb)}\sum_{t=1}^n (x_t - y_t)^2$, where $\Var(\yb) = \frac1n\sum_{t=1}^n (y_t - \frac1n \sum_{t'=1}^n y_{t'})^2$ is the empirical variance of $\yb$.
@@ -128,14 +131,14 @@ The experiment is repeated 25 times with random splits to obtain error bars.
 
 
 In this experiment we apply a 6\,mm spatial smoothing to all datasets. The $R^2$ score per
-voxel depends heavily on which voxel is considered. For example voxels in the
+voxel depends heavily on which voxels are considered. For example voxels in the
 visual cortex are better reconstructed in the \emph{sherlock} dataset than in
 the \emph{forrest} dataset.
 
-Performances are therefore given in terms of mean $R^2$ score inside a region of interest (ROI)
+Performances are therefore given in terms of mean $R^2$ score inside a regi\textbf{XXX}on of interest (ROI)
 in order to leave out regions where there is no useful information.
 
-In order to determine the ROIs, we focus on the R2 score per voxel between the BOLD signal reconstructed by ConcatICA and the actual bold signal. We run GroupICA with $10, 20$ and $50$ components and select the voxels that obtained a positive R2 score for all sets of components.
+In order to determine the ROIs, we focus on the R2 score per voxel between the BOLD signal reconstructed by ConcatICA \textbf{XXX ICA comes back ??} and the actual bold signal. We run GroupICA with $10, 20$ and $50$ components and select the voxels that obtained a positive R2 score for all sets of components.
 % 
 We discard voxels with an R2 score above 80\% as they visually correspond to artefacts and apply a binary opening using a unit cube as the structuring element. The chosen regions are plotted in figure~\ref{fig:roi}.
 
@@ -150,10 +153,10 @@ The ROI choice is driven by the performance of Concat ICA (more information
 available in appendix~\ref{brainmaps}.
 \subsubsection{Datasets}
 
-We use five fMRI datasets of subjects exposed to naturalistic stimuli. When needed, datasets are preprocessed with FSL \url{http://fsl.fmrib.ox.ac.uk/fsl} using slice time correction, spatial realignment, coregistration to the T1 image and affine transformation of the functional volumes to a template brain (MNI). Using nilearn \cite{abraham2014machine}, preprocessed data are resampled, masked (using a full brain mask available at \url{http://cogspaces.github.io/assets/data/hcp_mask.nii.gz}), detrended and standardized after a 5 mm smoothing is applied.  
+We use five fMRI datasets of subjects exposed to naturalistic stimuli. When needed, datasets are preprocessed with FSL \url{http://fsl.fmrib.ox.ac.uk/fsl} using slice time correction, spatial realignment, coregistration to the T1 image and affine transformation of the functional volumes to a template brain (MNI). Using Nilearn \cite{abraham2014machine}, preprocessed data are resampled, masked (using a full brain mask available at \url{http://cogspaces.github.io/assets/data/hcp_mask.nii.gz}), detrended and standardized after a 5 mm smoothing is applied.  
 %
 \paragraph{SHERLOCK}
-In SHERLOCK dataset, 17 participants are watching "Sherlock" BBC TV show (episode 1). 
+In the SHERLOCK dataset, 17 participants are watching "Sherlock" BBC TV show (episode 1). 
 %
 These data are downloaded from \url{http://arks.princeton.edu/ark:/88435/dsp01nz8062179}. 
 %
@@ -163,11 +166,11 @@ More information including the preprocessing pipeline is available in \cite{sher
 %
 Subject 5 is removed because of missing data leaving us with 16 participants.
 %
-Although SHERLOCK data contains originally only 1 run, we split it into 4 runs of 395 timeframes and one run of 396 timeframes for the needs of our experiments. 
+Although SHERLOCK data contains originally only 1 run, we split it into 4 blocks of 395 timeframes and one block of 396 timeframes for the needs of our experiments. 
 
 
 \paragraph{FORREST}
-In FORREST dataset 20 participants are listening to an audio version of the movie Forrest Gump.
+In the FORREST dataset, 20 participants are listening to an audio version of the movie Forrest Gump.
 %
 FORREST data are downloaded from OpenfMRI \cite{poldrack2013toward}. 
 %
@@ -180,18 +183,18 @@ Subject 10 and run 8 are discarded because of missing data.
 We therefore use full brain data of 19 subjects split in 7 runs of respectively 451, 441, 438, 488, 462, 439 and 542 timeframes.
  
 \paragraph{RAIDERS}
-In RAIDERS dataset, 10 participants are watching the movie "Raiders of the lost ark".
+In the RAIDERS dataset, 10 participants are watching the movie "Raiders of the lost ark".
 % 
-The RAIDERS dataset pertains to the Individual Brain Charting dataset (\cite{ibc}).
+The RAIDERS dataset pertains to the Individual Brain Charting dataset (\cite{ibc}).\textbf{XXX}
 % 
-They acquired at NeuroSpin using a 3T scanner with an isotropic spatial resolution of 3 mm.
+They were acquired at NeuroSpin using a 3T scanner with an isotropic spatial resolution of 1.5 mm.
 % 
 The RAIDERS dataset reproduces the protocol described in \cite{haxby2011common}.
 %
 We use full brain data of 10 subjects split in 9 runs of respectively 374, 297, 314, 379, 347, 346, 350, 353 and 211 timeframes.
 
 \paragraph{CLIPS}
-In CLIPS dataset, 10 participants are exposed to short clips. 
+In the CLIPS dataset, 10 participants are exposed to short clips. 
 %
 The CLIPS dataset also pertains to the Individual Brain Charting dataset (\cite{ibc}).
 %
@@ -215,6 +218,7 @@ A summary about the size of each dataset is available in Table~\ref{tab:dataset_
 \label{sec:app_expts}
 \subsection{Dataset description and preprocessing}
 \label{preprocessing}
+\textbf{XXX Hum this repeats the rpevious section}
 The full brain mask used to select brain regions is available in the Python package associated with the paper.
 
 \paragraph{Sherlock}
@@ -426,14 +430,15 @@ As we can see, no matter which atlas is chosen, FastSRM matches ProbSRM's perfor
 \caption{\textbf{Fitting time of FastSRM, ProbSRM and DetSRM} We compare the fitting time of ProbSRM, DetSRM and FastSRM with different atlases in function of the number of components used. Atlases tested are MODL with 512 and 1024 parcels, Basc with 444 parcels and Shaeffer with 800 parcels. Datasets tested are SHERLOCK, RAIDERS, CLIPS and FORREST.
 \textbf{Left}: Fitting time (as a fraction of ProbSRM fitting time) averaged over the four datasets.
 \textbf{Right}: Fitting time (in seconds) for each of the four different datasets.
-FastSRM is about 5 times faster than ProbSRM.}
+FastSRM is about 5 times faster than ProbSRM.
+\textbf{XXX It is impossible to be sure of what we see hiven the 50 shades of green.}}
 \label{fig:fit_time}
 \end{figure}
 
 \subsection{Predicting age from spatial components}
 Because FastSRM is fast and memory efficient, it enables large-scale analysis of fMRI recordings of subjects exposed to the same naturalistic stimuli.
 %
-We use all 647 subjects of the CamCAN dataset and demonstrate the usefulness of FastSRM by showing that the spatial components it extracts from movie watching data are predictive of age.
+We use all 647 subjects of the CamCAN dataset and demonstrate the usefulness of FastSRM by showing that the spatial components that it extracts from movie watching data are predictive of age.
 %
 A key asset of FastSRM is that these spatial components can be visualized and therefore provide meaningful insights. 
 
