@@ -51,7 +51,7 @@ The performance of an algorithm is measured by the reconstruction error between 
 
 \begin{figure}
   \label{fig:synth}
-  \includegraphics[width=0.5\textwidth]{figures/mvica/distance_expe.pdf}
+  \includegraphics[width=0.5\textwidth]{figures/mvica/amari.pdf}
   \captionof{figure}{\textbf{Synthetic experiment}: reconstruction error of the algorithms on data following model~\eqref{eq:ica_model}.}
 \end{figure}
 
@@ -68,10 +68,121 @@ Multiview ICA has uniformly better performance than the other algorithms, which 
 %\subsection{fMRI experiments}
 %\label{sec:experiments}
 
-\section{Reconstructing the BOLD signal of missing subjects}
-We first benchmark GroupICA methods through their ability to reconstruct the
-BOLD signal of a left-out subject.
-The experimental setting is the same as in section~\ref{sec:srm:reconstruction}.
+
+\section{fMRI experiments}
+We use the \emph{Forrest} and \emph{Sherlock} datasets described in section~\ref{srm:datasets:fmri}.
+We also add two other datasets:
+
+The \emph{RAIDERS} dataset reproduces the protocal described
+in~\cite{haxby2011common}. 10 participants are watching the movie "Raiders
+of the lost ark". This dataset pertains to the Individual Brain Charting
+dataset~\cite{ibc}.
+% 
+Data 
+% 
+We use full brain data of 10 subjects split in 9 runs of respectively 374, 297, 314, 379, 347, 346, 350, 353 and 211 timeframes.
+%
+Note that the Raiders dataset is different from the one used in~\cite{chen2015reduced}, as it involves different subjects, and because data were acquired at NeuroSpin using a 3T scanner with an isotropic spatial resolution of 1.5 mm.
+The \emph{raiders-full} dataset~\cite{ibc} is an extension of the \emph{raiders} dataset where the first two scenes of the movie are shown twice (130 mins).
+
+The CLIPS dataset reproduces the protocol of original studies described in
+\cite{nishimoto2011reconstructing} and \cite{huth2012continuous}. 10
+participants are exposed to short clips. The data were acquired in 17 runs of 325 timeframes. 
+%
+The CLIPS dataset also pertains to the Individual Brain Charting dataset (\cite{ibc}) and reproduces .
+%
+At the time of writing, the CLIPS and RAIDERS dataset from the individual brain charting dataset \url{https://project.inria.fr/IBC/} are not yet public, but they will be in the future. Protocols on the visual stimuli presented are available in a dedicated repository on Github: \url{https://github.com/hbp-brain-charting/public_protocols}.
+
+A summary about the size of each dataset is available in Table~\ref{tab:dataset_desc}.
+\begin{table}
+	\begin{tabular}{|c|c|c|c|c|}
+		\hline
+		\textbf{Dataset} & \textbf{Subjects} & \textbf{Runs} & \textbf{Average run} & \textbf{Voxels} \\
+                     && & \textbf{length} & \textbf{(per subject)} \\
+                     && & \textbf{(in timeframes)} &  \\
+                     &$m$& $ $ & $n$ &$v$  \\
+		\hline
+		CLIPS & 10 & 17 & 325 & 212445\\ 
+		\hline
+		SHERLOCK & 16 & 5 & 395 & 212445 \\ 
+		\hline
+		RAIDERS & 10 & 9 & 330 & 212445 \\
+		\hline 
+		FORREST & 19 & 7 & 465 & 212445\\
+		\hline
+		CamCAN & 647 & 1 & 193 & 212445 \\
+		\hline
+	\end{tabular}
+  \caption{\textbf{Datasets description}}
+  \label{tab:dataset_desc2}
+\end{table}
+
+%
+%
+The preprocessing is the same as the one described in section~\ref{srm:datasets:fmri}.
+Unless stated otherwise we use spatially unsmoothed data, except for the \emph{sherlock} dataset, for which the available data are already preprocessed with a 6\,mm spatial smoothing.
+
+\subsection{Reconstructing the BOLD signal of missing subjects}
+\label{sec:srm:reconstruction}
+\label{reconstruction}
+We want to show that once unmixing matrices have been learned, they can be
+used to predict evoked responses across subjects. This can be used to perform
+missing data imputation when the sessions of some subjects are missing.
+In~\cite{zhang2018transfer}, the authors consider multiple fMRI datasets that
+share a subpart of their subjects and use the fact that some subjects are shared
+to transfer information across datasets. Our reconstruction experiment measures
+a related quantity: the methods ability to predict data of left-out subjects
+from other subjects.
+
+In this experiment we apply a 6\,mm spatial smoothing to all datasets. 
+We split the data into three groups. First, we randomly choose $80\%$ of all runs from all subjects to form the training set.
+%
+Then, we randomly choose $80\%$ of subjects and take the remaining $20\%$  runs as testing set.
+%
+The left-out runs  of the remaining $20\%$ subjects form the validation set.
+%
+The compared algorithms are run on the training set and evaluated using the testing and validation sets.
+%
+After an algorithm is run on training data, it defines for each subject a \emph{forward operator} that maps individual data to the component space and a \emph{backward operator} that maps the component space to individual data. For instance in ICA the forward operator is the product of the dimensionality reduction projection and unmixing matrix.
+%
+We estimate the shared responses on the testing set by applying the forward operators on the testing data and averaging. Finally, we reconstruct the individual data from subjects in the validation set by applying the backward operators to the shared responses. We measure the difference between the true signal and the reconstructed one using voxel-wise $R^2$ score. The $R^2$ score between two series $\xb \in \bbR^n$ and $\yb \in \bbR^n$ is defined as
+$R^2(\xb, \yb) = 1 - \frac1{n\Var(\yb)}\sum_{t=1}^n (x_t - y_t)^2$, where $\Var(\yb) = \frac1n\sum_{t=1}^n (y_t - \frac1n \sum_{t'=1}^n y_{t'})^2$ is the empirical variance of $\yb$.
+%
+The $R^2$ score is always smaller than $1$, and equals $1$ when $\xb= \yb$.
+The experiment is repeated 25 times with random splits to obtain error bars.
+
+An illustration of our reconstruction experiment is available in Figure~\ref{fig:experiment_reconstruction}.
+
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.24]{figures/srm/conceptual_figure41.png}
+  \caption{\textbf{Experiment — Reconstruct data from a left-out subject} All runs but one are used to compute spatial components for every subject (left).
+    % 
+    Then spatial components and data from the left-out run of all subjects but one are used to compute the shared response in the left-out run.
+    % 
+    At last, the shared response during the left-out run and  the spatial components of the test subject are used to predict the data of the test subject in the left-out run.
+    % 
+    The performance of the model is measured by comparing the prediction and true data using the $R^2$ score.}
+  \label{fig:experiment_reconstruction}
+\end{figure}
+
+
+The $R^2$ score per voxel depends heavily on which voxels are considered. For example voxels in the
+visual cortex are better reconstructed in the \emph{sherlock} dataset than in
+the \emph{forrest} dataset.
+
+Performances are therefore given in terms of mean $R^2$ score inside a region of interest (ROI) in order to leave out regions where there is no useful information.
+
+In order to determine the ROIs, we focus on the R2 score per voxel between the BOLD signal reconstructed by ConcatICA and the actual bold signal. We run ConcatICA with $10, 20$ and $50$ components and select the voxels that obtained a positive R2 score for all sets of components.
+% 
+We discard voxels with an R2 score above 80\% as they visually correspond to artefacts and apply a binary opening using a unit cube as the structuring element. The chosen regions are plotted in figure~\ref{fig:roi}.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{figures/mvica/reconstruction_score_roi.pdf}
+  \caption{\textbf{Data-driven choice of ROI} Chosen ROIs for the experiment: Reconstructing the BOLD signal of missing subjects.}
+  \label{fig:roi}
+\end{figure}
 
  In Figure~\ref{fig:reconstruction}
 (top) we report the mean $R^2$ score inside region of interest.
@@ -92,7 +203,7 @@ This demonstrates its ability to capture inter-subject variability, making it a 
 \end{figure}
 
 
-For completeness, we plot in Figure~\ref{fig:brainmaps}, for GroupICA, SRM and MultiViewICA, the R2 score per voxel using 50 components for datasets \emph{sherlock}, \emph{forrest}, \emph{raiders} and \emph{clips}. As could be anticipated from the task definition, \emph{forrest} obtains high reconstruction accuracy in the auditory cortices, while \emph{clips} shows good reconstruction in the visual cortex (occipital lobe mostly); the richer \emph{sherlock} and \emph{raiders} datasets yield good reconstructions in both domains, but also in other systems (language, motor).
+For completeness, we plot in Figure~\ref{fig:brainmaps}, for ConcatICA, SRM and MultiViewICA, the R2 score per voxel using 50 components for datasets \emph{sherlock}, \emph{forrest}, \emph{raiders} and \emph{clips}. As could be anticipated from the task definition, \emph{forrest} obtains high reconstruction accuracy in the auditory cortices, while \emph{clips} shows good reconstruction in the visual cortex (occipital lobe mostly); the richer \emph{sherlock} and \emph{raiders} datasets yield good reconstructions in both domains, but also in other systems (language, motor).
 %
 We also see visually see that data reconstructed by MultiViewICA are
 a better approximation of the original data than other methods.
@@ -100,18 +211,17 @@ a better approximation of the original data than other methods.
 This is particularly obvious for the \emph{clips} datasets where it is
 clear that voxels in the posterior part of the superior
 temporal sulcus are better recovered by MultiViewICA than by SRM or
-GroupICA.
+ConcatICA.
 
 \begin{figure}
   \centering
-  \includegraphics[width=\textwidth]{figures/mvica/reconstruction_score_fullbrain.pdf}
-  \caption{\textbf{Reconstructing the BOLD signal of missing subjects: Reconstruction R2 score per voxel} We plot for GroupICA, SRM and MultiViewICA, the R2 score per voxel using 50 components for datasets \emph{sherlock}, \emph{forrest}, \emph{raiders} and \emph{clips}. We visually see that data reconstructed by MultiViewICA are more faithful reproduction of the original data than other methods.}
+  \includegraphics[width=\textwidth]{figures/mvica/reconstruction_score_fullbrain.png}
+  \caption{\textbf{Reconstructing the BOLD signal of missing subjects: Reconstruction R2 score per voxel} We plot for ConcatICA, SRM and MultiViewICA, the R2 score per voxel using 50 components for datasets \emph{sherlock}, \emph{forrest}, \emph{raiders} and \emph{clips}. We visually see that data reconstructed by MultiViewICA are more faithful reproduction of the original data than other methods.}
   \label{fig:brainmaps}
 \end{figure}
 
-
-
-\section{Between subjects time-segment matching} 
+%
+\subsection{Between subjects time-segment matching} 
 We reproduce the time-segment matching experiment in
 section~\ref{sec:timesegment_expe}. 
 MultiView ICA yields a consistent and substantial improvement in accuracy compared to other methods on the four datasets. We see a marked improvement on the datasets sherlock and forrest. A possible explanation lies in the preprocessing pipeline. Sherlock data undergo a 6~mm spatial smoothing and Forrest data are acquired at a higher resolution (7T vs 3T for other data). This affects the signal to noise ratio.
@@ -123,13 +233,13 @@ choice of $\sigma$.
 Results are reported in Fig.~\ref{fig:supp_noise_sensitivity}. 
 \begin{figure}
   \centering
-  \includegraphics[width=0.6\textwidth]{figures/mvica/noise_sensitivity_reb.pdf}
+  \includegraphics[width=0.6\textwidth]{figures/mvica/noise_sensitivity.pdf}
   \caption{\textbf{Effect of the parameter $\sigma$}: We compute the accuracy of the multiview-ICA pipeline on the time-segment matching experiment for various values of the $\sigma$ hyperparameter over a grid. The accuracy varies only marginally with $\sigma$.}
   \label{fig:supp_noise_sensitivity}
 \end{figure}
 MultiviewICA performs consistently well for a wide range of noise parameter values, and only breaks at very high values. It supports the theoretical claim of Prop~\ref{prop:robust} that the noise parameter is of little importance.
 
-In appendix~\ref{sec:spatial_maps}, we plot the average forward operator across subjects of MultiView ICA and GroupICA with 5 components on the forrest, sherlock, raiders and clips datasets.
+In appendix~\ref{sec:spatial_maps}, we plot the average forward operator across subjects of MultiView ICA and ConcatICA with 5 components on the forrest, sherlock, raiders and clips datasets.
 
 
 \subsection{Between-runs time-segment matching}
@@ -214,9 +324,9 @@ We then compute the distance of the estimated dipole to the true dipole.
 %
 These metrics are reported in figure~\ref{fig:meg} when the number of epochs considered $N_e$ varies.
 %
-We also compare our method to the Bayesian Canonical Correlation Analysis (BCorrCA) of~\cite{kamronn2015multiview}.
-%
-On this task, BCorrCA is outperformed by ICA methods.
+% We also compare our method to the Bayesian Canonical Correlation Analysis (BCorrCA) of~\cite{kamronn2015multiview}.
+% %
+% On this task, BCorrCA is outperformed by ICA methods.
 %
 MultiView ICA requires fewer epochs to correctly reconstruct and localize the true component.
 %
@@ -248,7 +358,7 @@ of the activity towards the ventral regions and higher level visual areas.
 \begin{figure}
     \centering
 
-          \includegraphics[width=0.6\textwidth]{figures/mvica/phantom_new.pdf}
+          \includegraphics[width=0.6\textwidth]{figures/mvica/phantom.pdf}
           \includegraphics[width=0.6\textwidth]{figures/mvica/camcan_sources.pdf}
           \includegraphics[width=0.6\textwidth]{figures/mvica/montage_all.png}
     \caption{\emph{Top:} \textbf{Experiment on MEG Phantom data}. Reconstruction

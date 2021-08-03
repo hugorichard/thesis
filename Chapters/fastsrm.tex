@@ -1,10 +1,8 @@
-In the previous section, we have seen multiple unsupervised methods to perform
-shared response modeling.
-
-The shared response model~\cite{chen2015reduced} (SRM) is particularly
-interesting as it provides a principled way to reduce the
-dimension of fMRI data. This contrasts with ICA-like methods that do not
-incorporate dimension reduction in their model.
+In the previous chapter, we have seen multiple unsupervised methods to analyze
+multiview data such as fMRI data that are of very high dimension.
+When working with high dimensional data, the shared response model~\cite{chen2015reduced} (SRM) is particularly
+interesting as it provides a principled way to perform dimension reduction. Note that this
+contrasts with ICA-like methods that do not incorporate dimension reduction in their model.
 
 However SRM has initially been designed to work within regions of interest using
 only a few subjects. When using full brain data, computational costs are still
@@ -14,13 +12,10 @@ in memory.
 Fortunately, these high costs can be reduced. Intuitively, since the shared
 response lives in a reduced space, a compressed representation of the input is
 good-enough to find a suitable estimate.
-
 FastSRM implements this idea. It turns out that there exists an optimal
 compression of the input from which we can obtain exactly the same solution as
-if the full data is used. We also present experimental results using
-approximations of the optimal dimension reduction.
-
-FastSRM is scalable with the number of runs and subjects. Fitting time and memory requirements are reduced considerably, making it possible to fit FastSRM using a laptop in a reasonable amount of time.
+if the full data is used. We also present methods using approximations of the
+optimal dimension reduction trading accuracy for efficiency.
 
 \section{The FastSRM algorithm}
 The goal of deterministic srm (respectively probabilistic srm) is to recover mixing matrices $A_i$ and shared

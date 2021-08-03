@@ -1,5 +1,17 @@
-\section{Experiments}
-\subsection{Comparing Fitting time and performance of FastSRM and
+In the previous chapter we introduced the FastSRM algorithm, a framework to
+efficiently compute shared responses from the full brain data of multiple
+subjects. In this chapter, we
+investigate the practical benefits of FastSRM on synthetic and real fMRI data.
+FastSRM reduces the fitting time
+and memory requirements are reduced considerably, making it possible to compute
+shared responses using a laptop in a reasonable amount of time even on
+datasets that do not hold in RAM. The efficiency of FastSRM allows us to apply
+SRM on a large number of subjects. As an example, we apply FastSRM on 647
+subjects from the CamCAN dataset and study how the mixing matrices of the SRM
+model are predictive of age.
+
+
+\section{Comparing Fitting time and performance of FastSRM and
   SRM on synthetic data}
 We generate data $\xb_i$ according to the model of Probabilistic SRM. We sample the value of the subject specific noise level from a normal
 distribution: $\sigma_i \sim \Ncal(0, 0.1)$. The mixing matrices $A_i$
@@ -19,7 +31,10 @@ equivalent to using no atlas. \emph{ReNA} uses the fast clustering approach
 of~\cite{hoyos2018recursive} with a number of regions is equal to the number of
 components: $r=n$. \emph{PROJ} is the random projection approach that
 approximates the optimal reduced data using only $r=5n$ voxels. Lastly
-\emph{PCA} applies SRM algorithms to data reduced with a PCA using $r=p+1$ components \textbf{XXX Why  + 1 ?}.
+\emph{PCA} applies SRM algorithms to data reduced with a PCA using $r=p+1$
+components \textbf{XXX Why  + 1 ? Because of the noise variance I believe we can see ProbSRM as a
+  rank $k+1$ model of the data. In practice when the model holds and only $k$
+  components are used in the PCA, the noise variance goes to zero and we get numerical errors.}.
 
 For any number of iterations between 1 and 100.
 We measure the performance of an algorithm by computing the error between the true component $S \in \RR^{p, n}$ and
@@ -28,8 +43,8 @@ $\mathrm{mse}(\hat{S}, S) = min_{A \in \RR^{p, p}} \|A \hat{S} - S \|^2_F =  \|S
 \hat{S}^{\dagger}\hat{S} - S \|^2_F$. This way of measuring errors is
 insensitive to the indeterminacies in DetSRM.
 We measure the fitting time in seconds.
-Lastly, we measure convergence by computing the gradient $\el_{\infty}$ norm in
-case of DetSRM given by $\max(\abs{G})$ where $G$ is the gradient. For ProbSRM
+Lastly, we measure convergence by computing the gradient $\ell_{\infty}$ norm in
+case of DetSRM given by $\max(\mathrm{abs}(G))$ where $G$ is the gradient. For ProbSRM
 algorithms the convergence is given by the distance between consecutive values of the loss.
 
 Results are plotted in figure~\ref{fig:srm:synthetic_gradient}. 
@@ -60,299 +75,111 @@ using SRM with less iterations.
   \includegraphics[width=\textwidth]{figures/srm/synthetic_gradient.pdf}
   \caption{\textbf{Benchmark of SRM algorithms on synthetic data: } Performance,
     fitting time and convergence of SRM algorithms (left) Deterministic SRM
-    (right) Probabilistic SRM. \textbf{XXX Develop a little bit}}
+    (right) Probabilistic SRM.  As expected, the FastSRM with optimal atlas matches the performance of standard SRM algorithms and is faster when the number of
+    iterations is larger than 30. We can see that after 30 iterations,
+    convergence is far from being reached. PROJ is the best approximate atlas
+    yielding in the probabilistic case a similar solution than what would have
+    been obtained using 10 iterations of ProbSRM while being much faster.}
   \label{fig:srm:synthetic_gradient}
 \end{figure}
 
+\section{Experiments on fMRI data}
+\label{srm:datasets:fmri}
+We use three fMRI datasets of subjects exposed to naturalistic stimuli. When
+needed, datasets are preprocessed with FSL \url{http://fsl.fmrib.ox.ac.uk/fsl}
+using slice time correction, spatial realignment, coregistration to the T1 image
+and affine transformation of the functional volumes to a template brain (MNI).
+Using Nilearn \cite{abraham2014machine}, preprocessed data are resampled, masked
+(using a full brain mask available at
+\url{http://cogspaces.github.io/assets/data/hcp_mask.nii.gz}), detrended and
+standardized.
+
+In the \emph{SHERLOCK} dataset, 17 participants are watching "Sherlock" BBC TV show (episode 1). 
+% 
+These data are downloaded from \url{http://arks.princeton.edu/ark:/88435/dsp01nz8062179}. 
+% 
+Data were acquired using a 3T scanner with an isotropic spatial resolution of 3 mm. 
+% 
+More information including the preprocessing pipeline is available in \cite{sherlock}.
+% 
+Subject 5 is removed because of missing data leaving us with 16 participants.
+% 
+Although SHERLOCK data contains originally only 1 run, we split it into 4 blocks of 395 timeframes and one block of 396 timeframes for the needs of our experiments. 
+
+In the \emph{FORREST} dataset, 20 participants are listening to an audio version of the movie Forrest Gump.
+% 
+FORREST data are downloaded from OpenfMRI~\cite{poldrack2013toward}. 
+% 
+Data were acquired using a 7T scanner with an isotropic spatial resolution of 1 mm (see more details in \cite{hanke2014high}.
+% 
+More information about the forrest project can be found at \url{http://studyforrest.org}.
+% 
+Subject 10 and run 8 are discarded because of missing data.
+% 
+We therefore use full brain data of 19 subjects split in 7 runs of respectively 451, 441, 438, 488, 462, 439 and 542 timeframes.
 
 
+In the \emph{CamCAN} dataset, 647 participants aged from 18 to 88 years are watching Alfred Hitchcock's "Bang! You're Dead" (edited so that it lasts only 8 minutes).
+% 
+CamCAN consists of data obtained from the CamCAN repository (available at \url{http://www.mrc-cbu.cam.ac.uk/datasets/camcan/}) (see \cite{taylor2017cambridge} and \cite{shafto2014cambridge}).
+% 
+We use all available subjects and runs yielding 647 participants and 1 run of 193 timeframes.
 
 
-\textbf{fMRI data and preprocessing} 
-We evaluate the performance of our approach on four different fMRI datasets.
-%
-\textbf{XXX It would be mroe logical to present the datasets before.}
-The \emph{sherlock} dataset~\cite{chen2017shared} contains recordings of 16 subjects watching an episode of the BBC TV show "Sherlock" (50 mins).
-%
-The \emph{forrest} dataset~\cite{hanke2014high} was collected while 19 subjects were listening to an auditory version of the film "Forrest Gump" (110 mins).
-%
-The \emph{clips} dataset~\cite{ibc} was collected while 12 participants were exposed to short video clips (130 mins).
-%
-The \emph{raiders} dataset~\cite{ibc} was collected while 11 participants were watching the movie "Raiders of the Lost Ark" (110 mins).
-%
-The \emph{raiders-full} dataset~\cite{ibc} is an extension of the \emph{raiders} dataset where the first two scenes of the movie are shown twice (130 mins).
-%
-Like \cite{zhang2016searchlight}, we used full brain data. The rest of the preprocessing is identical to \cite{chen2017shared}. See \ref{preprocessing} for a detailed description of the datasets and preprocessing steps. Unless stated otherwise we use spatially unsmoothed data, except for the \emph{sherlock} dataset, for which the available data are already preprocessed with a 6\,mm spatial smoothing. All datasets are built from successive acquisitions called \emph{runs} that typically last 10 minutes each.
+Unless stated otherwise we use spatially unsmoothed data, except for the \emph{sherlock} dataset, for which the available data are already preprocessed with a 6\,mm spatial smoothing. All datasets are built from successive acquisitions called \emph{runs} that typically last 10 minutes each.
 %
 
-\textbf{Between subjects time-segment matching} \textbf{XXX}
+A summary about the size of each dataset is available in Table~\ref{tab:dataset_desc}.
+\begin{table}
+	\begin{tabular}{|c|c|c|c|c|}
+		\hline
+		\textbf{Dataset} & \textbf{Subjects} & \textbf{Runs} & \textbf{Average run} & \textbf{Voxels} \\
+                     && & \textbf{length} & \textbf{(per subject)} \\
+                     && & \textbf{(in timeframes)} &  \\
+                     &$m$& $ $ & $n$ &$v$  \\
+		\hline
+		SHERLOCK & 16 & 5 & 395 & 212445 \\ 
+		\hline
+		FORREST & 19 & 7 & 465 & 212445\\
+		\hline
+		CamCAN & 647 & 1 & 193 & 212445 \\
+		\hline
+	\end{tabular}
+  \caption{\textbf{Datasets description}}
+  \label{tab:dataset_desc}
+\end{table}
+
+\subsection{Comparing fitting time, memory usage and performance on a
+  timesegment matching experiment}
+\label{sec:timesegment_expe}
 \label{timesegment_expe}
-%
-\textbf{XXX Deserved more explanations: whay is it used ? Bhy is it a good metric ?}
-We reproduce the time-segment matching experiment in
-\cite{chen2015reduced}. 
-We split the runs into a train and test set. After fitting the model on the training set, we apply the forward operator \textbf{XXX Undefined so far} of each subject on the test set yielding individual components matrices. We estimate the shared responses by averaging the individual components of each subjects but one.  We select a target time-segment (9 consecutive timeframes) in the shared responses and try to localize the corresponding time segment in the components of the left-out subject using a maximum-correlation classifier.
-This is a standard evaluation of SRM-like methods also used in  \cite{chen2015reduced}, \cite{guntupalli2018computational}, \cite{Nastase741975} or
+The timesegment matching experiment is first introduced
+in~\cite{chen2015reduced}.
+In a nutshell, the time-segment matching accuracy measures the similarity between two multivariate time-series by trying to localize a time-segment in one time-series by correlation with the other.
+In the context of movie watching this measure has a lot of sense: if we split
+the movies in various parts and compute two representations of each part, it makes
+sense that the representation corresponding to the same parts are closer than
+the representation corresponding to different parts. 
+This explains why timesegment matching is a standard evaluation of SRM-like methods also used in  \cite{chen2015reduced}, \cite{guntupalli2018computational}, \cite{Nastase741975} or
 \cite{zhang2016searchlight}.
-%
+
+We now describe more precisely the experimental design.
+We split the runs into a train and test set. After fitting the model on the
+training set, we apply the unmixing matrices $W_i=A_i^{-1}$ of each subject on the test set yielding individual components matrices. We estimate the shared responses by averaging the individual components of each subjects but one.  We select a target time-segment (9 consecutive timeframes) in the shared responses and try to localize the corresponding time segment in the components of the left-out subject using a maximum-correlation classifier.
 The time-segment is said to be
 correctly classified if the correlation between the sample and target
 time-segment is higher than with any other time-segment (partially overlapping time windows are excluded).
-%
+% 
 We use 5-Fold cross-validation across runs: the training set contains 80\% of the runs and the test set 20\%, and repeat the experiment using all possible choices for left-out subjects. 
-%
+% 
 The mean accuracy is reported in Figure~\ref{fig:timesegment} (bottom). 
-%
-
-We would like to highlight here that these experiments are not exactly the same as in~\cite{chen2015reduced} as we use full brain data and they use regions of interest. The code used for this experiment is very similar to the tutorial in \url{https://brainiak.org/tutorials/11-SRM/}. We use the SRM implementation in Brainiak~\cite{kumar2020brainiak}. Also note that the Raiders dataset is different from the one used in~\cite{chen2015reduced}, as it involves different subjects, and because data were acquired in a different neuro-imaging center.
-
-\textbf{Reconstructing the BOLD signal of missing subjects}
-\label{sec:srm:reconstruction}
-
-We want to show that once unmixing matrices have been learned, they can be
-used to predict
-evoked responses across subjects, which can be useful to perform transfer learning~\cite{zhang2018transfer}. \textbf{XXX I don't see the point}
-%
-We split the data into three groups. First, we randomly choose $80\%$ of all runs from all subjects to form the training set.
-%
-Then, we randomly choose $80\%$ of subjects and take the remaining $20\%$  runs as testing set.
-%
-The left-out runs  of the remaining $20\%$ subjects form the validation set.
-%
-The compared algorithms are run on the training set and evaluated using the testing and validation sets.
-%
-After an algorithm is run on training data, it defines for each subject a \emph{forward operator} that maps individual data to the component space and a \emph{backward operator} that maps the component space to individual data. For instance in ICA \textbf{XXXWhy are wa talking about ICA ?} the forward operator is the product of the dimensionality reduction projection and unmixing matrix.
-%
-We estimate the shared responses on the testing set by applying the forward operators on the testing data and averaging. Finally, we reconstruct the individual data from subjects in the validation set by applying the backward operators to the shared responses. We measure the difference between the true signal and the reconstructed one using voxel-wise $R^2$ score. The $R^2$ score between two series $\xb \in \bbR^n$ and $\yb \in \bbR^n$ is defined as
-$R^2(\xb, \yb) = 1 - \frac1{n\Var(\yb)}\sum_{t=1}^n (x_t - y_t)^2$, where $\Var(\yb) = \frac1n\sum_{t=1}^n (y_t - \frac1n \sum_{t'=1}^n y_{t'})^2$ is the empirical variance of $\yb$.
-%
-The $R^2$ score is always smaller than $1$, and equals $1$ when $\xb= \yb$.
-The experiment is repeated 25 times with random splits to obtain error bars.
-
-
-In this experiment we apply a 6\,mm spatial smoothing to all datasets. The $R^2$ score per
-voxel depends heavily on which voxels are considered. For example voxels in the
-visual cortex are better reconstructed in the \emph{sherlock} dataset than in
-the \emph{forrest} dataset.
-
-Performances are therefore given in terms of mean $R^2$ score inside a regi\textbf{XXX}on of interest (ROI)
-in order to leave out regions where there is no useful information.
-
-In order to determine the ROIs, we focus on the R2 score per voxel between the BOLD signal reconstructed by ConcatICA \textbf{XXX ICA comes back ??} and the actual bold signal. We run GroupICA with $10, 20$ and $50$ components and select the voxels that obtained a positive R2 score for all sets of components.
 % 
-We discard voxels with an R2 score above 80\% as they visually correspond to artefacts and apply a binary opening using a unit cube as the structuring element. The chosen regions are plotted in figure~\ref{fig:roi}.
 
-\begin{figure}
-  \centering
-  \includegraphics[width=\textwidth]{figures/mvica/reconstruction_score_roi.pdf}
-  \caption{\textbf{Data-driven choice of ROI} Chosen ROIs for the experiment: Reconstructing the BOLD signal of missing subjects.}
-  \label{fig:roi}
-\end{figure}
+We would like to highlight here that these experiments are not exactly the same
+as in~\cite{chen2015reduced} as we use full brain data and they use regions of
+interest. However, the code used for this experiment is very similar to the tutorial in \url{https://brainiak.org/tutorials/11-SRM/}.
 
-The ROI choice is driven by the performance of Concat ICA (more information
-available in appendix~\ref{brainmaps}.
-\subsubsection{Datasets}
-
-We use five fMRI datasets of subjects exposed to naturalistic stimuli. When needed, datasets are preprocessed with FSL \url{http://fsl.fmrib.ox.ac.uk/fsl} using slice time correction, spatial realignment, coregistration to the T1 image and affine transformation of the functional volumes to a template brain (MNI). Using Nilearn \cite{abraham2014machine}, preprocessed data are resampled, masked (using a full brain mask available at \url{http://cogspaces.github.io/assets/data/hcp_mask.nii.gz}), detrended and standardized after a 5 mm smoothing is applied.  
-%
-\paragraph{SHERLOCK}
-In the SHERLOCK dataset, 17 participants are watching "Sherlock" BBC TV show (episode 1). 
-%
-These data are downloaded from \url{http://arks.princeton.edu/ark:/88435/dsp01nz8062179}. 
-%
-Data were acquired using a 3T scanner with an isotropic spatial resolution of 3 mm. 
-%
-More information including the preprocessing pipeline is available in \cite{sherlock}.
-%
-Subject 5 is removed because of missing data leaving us with 16 participants.
-%
-Although SHERLOCK data contains originally only 1 run, we split it into 4 blocks of 395 timeframes and one block of 396 timeframes for the needs of our experiments. 
-
-
-\paragraph{FORREST}
-In the FORREST dataset, 20 participants are listening to an audio version of the movie Forrest Gump.
-%
-FORREST data are downloaded from OpenfMRI \cite{poldrack2013toward}. 
-%
-Data were acquired using a 7T scanner with an isotropic spatial resolution of 1 mm (see more details in \cite{hanke2014high}.
-%
-More information about the forrest project can be found at \url{http://studyforrest.org}.
-%
-Subject 10 and run 8 are discarded because of missing data.
-%
-We therefore use full brain data of 19 subjects split in 7 runs of respectively 451, 441, 438, 488, 462, 439 and 542 timeframes.
- 
-\paragraph{RAIDERS}
-In the RAIDERS dataset, 10 participants are watching the movie "Raiders of the lost ark".
-% 
-The RAIDERS dataset pertains to the Individual Brain Charting dataset (\cite{ibc}).\textbf{XXX}
-% 
-They were acquired at NeuroSpin using a 3T scanner with an isotropic spatial resolution of 1.5 mm.
-% 
-The RAIDERS dataset reproduces the protocol described in \cite{haxby2011common}.
-%
-We use full brain data of 10 subjects split in 9 runs of respectively 374, 297, 314, 379, 347, 346, 350, 353 and 211 timeframes.
-
-\paragraph{CLIPS}
-In the CLIPS dataset, 10 participants are exposed to short clips. 
-%
-The CLIPS dataset also pertains to the Individual Brain Charting dataset (\cite{ibc}).
-%
-It reproduces the protocol of original studies described in \cite{nishimoto2011reconstructing} and \cite{huth2012continuous}.
-%
-In our experiments we use the data of 10 participants acquired in 17 runs of 325 timeframes.
-
-At the time of writing, the CLIPS and RAIDERS dataset from the individual brain charting dataset \url{https://project.inria.fr/IBC/} are not yet public, but they will be in the future. Protocols on the visual stimuli presented are available in a dedicated repository on Github: \url{https://github.com/hbp-brain-charting/public_protocols}. The informed consent of all subjects was obtained before scanning.
-
-\paragraph{CamCAN}
-In CamCAN dataset, 647 participants aged from 18 to 88 years are watching Alfred Hitchcock's "Bang! You're Dead" (edited so that it lasts only 8 minutes).
-%
-CamCAN consists of data obtained from the CamCAN repository (available at \url{http://www.mrc-cbu.cam.ac.uk/datasets/camcan/}) (see \cite{taylor2017cambridge} and \cite{shafto2014cambridge}).
-%
-We use all available subjects and runs yielding 647 participants and 1 run of 193 timeframes.
-
-A summary about the size of each dataset is available in Table~\ref{tab:dataset_desc}.
-
-
-\section{fMRI experiments}
-\label{sec:app_expts}
-\subsection{Dataset description and preprocessing}
-\label{preprocessing}
-\textbf{XXX Hum this repeats the rpevious section}
-The full brain mask used to select brain regions is available in the Python package associated with the paper.
-
-\paragraph{Sherlock}
-In \emph{sherlock} dataset, 17 participants are watching "Sherlock" BBC TV show (beginning of episode 1). 
-%
-These data are downloaded from \url{http://arks.princeton.edu/ark:/88435/dsp01nz8062179}. 
-%
-Data were acquired using a 3T scanner with an isotropic spatial resolution of 3 mm. 
-%
-More information including the preprocessing pipeline is available in~\cite{chen2017shared}.
-%
-Subject 5 is removed because of missing data leaving us with 16 participants.
-%
-Although \emph{sherlock} data are downloaded as a temporal concatenation of two runs, we split it manually into 4 runs of 395 timeframes and one run of 396 timeframes so that we can perform 5 fold cross-validation in our experiments.
-
-
-\paragraph{FORREST}
-In FORREST dataset 20 participants are listening to an audio version of the Forrest Gump  movie.
-%
-FORREST data are downloaded from OpenfMRI~\cite{poldrack2013toward}. 
-%
-Data were acquired using a 7T scanner with an isotropic spatial resolution of 1~mm (see more details in~\cite{hanke2014high}) and resampled to an isotropic spatial resolution of 3~mm.
-%
-More information about the forrest project can be found at \url{http://studyforrest.org}.
-%
-Subject 10 is discarded because not all runs available for other subjects were available for subject 10 at the time of writing.
-%
-Run 8 is discarded because it is not present in most subjects.
- 
-\paragraph{RAIDERS}
-In RAIDERS dataset, 11 participants are watching the movie "Raiders of the lost ark".
-% 
-The RAIDERS dataset belongs to the Individual Brain Charting dataset~\cite{ibc}.
-% 
-Data were acquired using a 3T scanner and resampled to an isotropic spatial resolution of 3~mm.
-% 
-The RAIDERS dataset reproduces the protocol described in~\cite{haxby2011common}.
-%
-Preprocessing details are described in~\cite{ibc}.
-
-\paragraph{CLIPS}
-In CLIPS dataset, 12 participants are exposed to short video clips. 
-%
-The CLIPS dataset also belongs to the Individual Brain Charting dataset (\cite{ibc}).
-%
-Data were acquired using a 3T scanner and resampled to an isotropic spatial resolution of 3~mm.
-%
-It reproduces the protocol of original studies described in \cite{nishimoto2011reconstructing} and \cite{huth2012continuous}.
-%
-Preprocessing details are described in~\cite{ibc}.
-
-At the time of writing, the CLIPS and RAIDERS dataset from the individual brain charting dataset \url{https://project.inria.fr/IBC/} are available at \url{https://openneuro.org/datasets/ds002685}.
-%
-Protocols on the visual stimuli presented are available in a dedicated repository on Github: \url{https://github.com/hbp-brain-charting/public_protocols}.
-
-
-\subsubsection{fMRI reconstruction: Evaluate the ability to recover BOLD signal on left-out runs}
-\label{reconstruction}
-
-When subjects are exposed to the same stimuli, SRM algorithms posit that the recorded fMRI data can be modeled as a product of two matrices, one of which is fixed across time but subject-specific (the spatial components) while the other varies across time but is common to all subjects (the shared response).
-%
-Under this framework, once spatial components are known, we can generate an accurate estimation of the data of one subject given the data of all others.
-%
-In this experiment we test whether we can recover data of a left-out subject using previous data of the same subject as well as data from other subjects. 
-We denote $\mathbf{X}^{(-s)}$ brain recordings of all runs but run $s$:
- \begin{equation*}
-	 \mathbf{X}^{(-s)} = 
-\begin{bmatrix}
-	\mathbf{X}^{(1)} \\
-	\vdots \\
-	\mathbf{X}^{(s-1)} \\
-	\mathbf{X}^{(s+1)} \\
-	\vdots \\
-	\mathbf{X}^{(m)}
-\end{bmatrix}
-\end{equation*}
-
-Similarly, $\mathbf{X}_i^{(-s)}$ refers to the brain recordings of subject $i$ using all runs but run $s$. The data from all subjects but $i$ acquired during run $s$ are denoted:
-\begin{equation*}
-	\mathbf{X}^{(s)}_{-i} = 
-\begin{bmatrix}
-	\mathbf{X}_1^{(s)} & \cdots & \mathbf{X}^{(s)}_{i-1} & \mathbf{X}^{(s)}_{i+1} & \cdots & \mathbf{X}^{(s)}_{n} 
-\end{bmatrix}
-\end{equation*}
-
-We evaluate our model using a cross validation scheme known as co-smoothing (see \cite{wu2018learning}). First, all brain recordings for all runs but one $\mathbf{X}^{(-s)}$ are used for learning subjects spatial components $\mathbf{W}^{(-s)}$. The exponent in $\mathbf{W}^{(-s)}$ indicates that these spatial components were learned using all runs but run $s$. 
-
-\begin{equation*}
-	\mathbf{W}^{(-s)}, \mathbf{S}^{(-s)} = SRM(\mathbf{X}^{(-s)})
-\end{equation*}
-
-Then we focus on the left-out run $s$ and use all subjects but one $\mathbf{X}^{(s)}_{-i}$ to compute a shared response for the left-out run $\mathbf{S}^{(s)}$.
-
-\begin{equation*}
-	\mathbf{S}^{(s)} = \frac{\sum_{z=1, z\neq i}^n \mathbf{X}^{(s)}_z\mathbf{W}^{(-s)^T}_z}{n - 1}
-\end{equation*}
-
-From $\mathbf{S}^{(s)}$ and $\mathbf{W}_i^{-s}$ we compute $\widetilde{\mathbf{X}}^{(s)}_i$ which stands as an estimate of brain activity of the left-out subject $i$ during the left-out run $s$.
-
-\begin{equation*}
-	\widetilde{\mathbf{X}}_i^{(s)} = \mathbf{W}^{(-s)}_i \mathbf{S}^{(s)}
-\end{equation*}
-
-
-\begin{figure}
-\centering
-\includegraphics[scale=0.24]{figures/srm/conceptual_figure41.png}
-\caption{\textbf{Experiment — Reconstruct data from a left-out subject} All runs but one are used to compute spatial components for every subject (left).
-  %
-  Then spatial components and data from the left-out run of all subjects but one are used to compute the shared response in the left-out run.
-  %
-  At last, the shared response during the left-out run and  the spatial components of the test subject are used to predict the data of the test subject in the left-out run.
-  %
-  The performance of the model is measured by comparing the prediction and true data using the $R^2$ score.}
-\label{fig:experiment_reconstruction}
-\end{figure}
-
-
-An illustration of our reconstruction experiment is available in Figure~\ref{fig:experiment_reconstruction}.
-%
-The performance is measured voxel-wise using the $R^2$ score between $\widetilde{\mathbf{X}}_i^{(s)}$ and $\mathbf{X}_i^{(s)}$ as a similarity measure.
-For any two time-courses $x \in \mathbb{R}^t$ and $y \in \mathbb{R}^t$ we define the $R^2$ score by:
-
-\[
-	R^2(x, y) = 1 - \frac{\sum_{z=1}^t (x[z] - y[z])^2}{\sum_{z=1}^t (y[z] - \overline{y}[z])^2} 
-\]
-
-Where $\overline{y} = \frac{1}{t}\sum_{z=1}^t y[z]$.
-%
-Following the leave-one-out cross validation scheme, all our experiments are done several times with a different left-out subject to reconstruct. 
-%
-We measure the average $R^2$ score across  all left-out subjects. Note that we obtain one such value per voxel.
-
-\subsubsection{Predict age from spatial components}
+\subsection{Predict age from spatial components}
 Since spatial components are subject-specific they should be predictive of subject-specific features such as age.
 %
 In this experiment we try to predict subject's age from movie-watching data using SRM algorithms.
@@ -383,59 +210,6 @@ The train and test sets are chosen randomly. 5 different choices for the train a
 \end{figure}
 
 
-\section{Results and Discussion}
-
-\subsection{fMRI Reconstruction}
-We perform the reconstruction experiment on the FORREST, CLIPS, RAIDERS and SHERLOCK datasets. We compare brainiak's implementation of ProbSRM / DetSRM to our implementation of FastSRM in terms of fitting time, memory usage and performance. In order to be fair, we do not use parallelization ($n_{jobs} = 1$) and we set the number of iterations to 10 ($n_{iter}=10$) which is ProbSRM's default. Note that the fitting time of ProbSRM is roughly proportional to the number of iterations while it has a limited impact on the fitting time of FastSRM. 
-
-
-We run our experiments on the full brain and report an $R^2$ score per voxel.
-%
-However we measure the performance in terms of mean $R^2$ score inside a region of interest (in order to leave out regions where there is no useful information).
-%
-In order to determine the region of interest, we focus on the results of ProbSRM with $10, 20, 50$ and $100$ components and keep only the intersection of regions where the $R^2$ score is above $0.05$.
-%
-This means of selecting regions favors ProbSRM. For completeness, full brain $R^2$ images obtained on the four datasets with ProbSRM and FastSRM using $20$ components averaged across subjects are available in Figure~\ref{fig:example_r2}.
-
-In Figure~\ref{fig:mean_r2_score}, we plotted the mean $R^2$ score against the number of components ($k$) for ProbSRM, DetSRM and FastSRM algorithm with different atlases.
-%
-The $R^2$ score tends to increase with the number of components (which is what is expected as more information can be retrieved when the number of components is high).
-%
-FastSRM matches the performance of ProbSRM and DetSRM. This holds for any atlas we chose (BASC (444 parcels), SHAEFFER (800 parcels), MODL (512 and 1024 parcels)) and for all datasets we tried (SHERLOCK, RAIDERS, CLIPS and FORREST). 
-
-In Figure~\ref{fig:fit_time}, we compare the running time of FastSRM, DetSRM and ProbSRM on the four different datasets.
-%
-FastSRM is on average (across datasets) about 5 times faster.
-%
-On the FORREST dataset, we compute a shared response in about 3 minutes when it takes about 20 minutes with ProbSRM or DetSRM.
-
-In Figure~\ref{fig:memory_usage}, we compare the memory (RAM) consumption of FastSRM, DetSRM and ProbSRM on the four different datasets.
-%
-FastSRM is 20 to 40 times more memory friendly than ProbSRM and 10 to 20 times more memory friendly than DetSRM. On the FORREST dataset the memory usage of FastSRM is between 1 and 3 Go depending on the number of components and the atlas used. Most modern laptops meet these requirements. On the same dataset memory consumption is about 80 Go for ProbSRM and 40 Go for DetSRM which is manageable but costly for small labs.
-%
-Overall FastSRM yields same performance as ProbSRM and DetSRM while being much faster and using far less memory. We also show that the atlas used to reduce the data only has a minor impact on performance.
-
-\begin{figure}
-\centering
-\includegraphics[scale=0.34]{figures/srm/perfs.pdf}
-\caption{\textbf{Performance of the methods in an encoding test} We compare the performance (measured in terms of average $R^2$ score in a region of interest) of ProbSRM and FastSRM with different atlases in function of the number of components used. Atlases tested are MODL with 512 and 1024 parcels, Basc with 444 parcels and Shaeffer with 800 parcels. Datasets tested are SHERLOCK (top left), RAIDERS (top right), CLIPS (bottom left) and FORREST (bottom right). 
-As we can see, no matter which atlas is chosen, FastSRM matches ProbSRM's performance.}
-\label{fig:mean_r2_score}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[scale=0.33]{figures/srm/fit_time.pdf}
-
-\caption{\textbf{Fitting time of FastSRM, ProbSRM and DetSRM} We compare the fitting time of ProbSRM, DetSRM and FastSRM with different atlases in function of the number of components used. Atlases tested are MODL with 512 and 1024 parcels, Basc with 444 parcels and Shaeffer with 800 parcels. Datasets tested are SHERLOCK, RAIDERS, CLIPS and FORREST.
-\textbf{Left}: Fitting time (as a fraction of ProbSRM fitting time) averaged over the four datasets.
-\textbf{Right}: Fitting time (in seconds) for each of the four different datasets.
-FastSRM is about 5 times faster than ProbSRM.
-\textbf{XXX It is impossible to be sure of what we see hiven the 50 shades of green.}}
-\label{fig:fit_time}
-\end{figure}
-
-\subsection{Predicting age from spatial components}
 Because FastSRM is fast and memory efficient, it enables large-scale analysis of fMRI recordings of subjects exposed to the same naturalistic stimuli.
 %
 We use all 647 subjects of the CamCAN dataset and demonstrate the usefulness of FastSRM by showing that the spatial components that it extracts from movie watching data are predictive of age.
@@ -469,8 +243,6 @@ We see that these spatial components evolve with age allowing us to visually ide
 It turns out that aging is mostly reflected in brain activity as a
 fading of activity in the spatial correlates of movie watching,
 particularly in the dorsal visual cortex.
-%
-%With FastSRM, we can see how networks involved in movie-watching evolve with age. 
 
 
 \begin{figure}
@@ -502,14 +274,15 @@ particularly in the dorsal visual cortex.
 
 
 
+\section{Results and Discussion}
+
 \subsection{Conclusion}
 As studies using naturalistic stimuli will tend to become more common and large within and across subjects, we need scalable models especially in terms of memory usage.
 %
 This is what FastSRM provides.
 %
-We show that while FastSRM matches the performance of ProbSRM or DetSRM, it is
-significantly faster and requires a lot less memory. While FastSRM's scalability relies on the use of atlases to compress the BOLD signal, we show that the precise choice of the atlas has only marginal effects on performance.
-
+We show that while FastSRM matches the performance of standard SRM implementations, it is
+significantly faster and requires a lot less memory.
 
 FastSRM allows large scale analysis of fMRI data of subjects exposed to naturalistic stimuli. As one example of such analysis, we show that it can be used to predict age from movie-watching data. Interestingly, although FastSRM is an unsupervised model, it extracts meaningful networks and as such constitutes a practical way of studying subjects exposed to naturalistic stimuli.
 
@@ -519,6 +292,3 @@ We also show that individual information can be extracted from the fMRI activity
 As a side note, we chose to keep the orthonormality assumptions of the original SRM model but slight modifications of our implementation of FastSRM would allow one to build more refined model promoting sparsity, non-negativity or smoothness of spatial components for example.
 
 The remaining difficulty with SRM is to interpret the spatio-temporal decomposition. Reverse correlation \cite{hasson2004intersubject} can be used to clarify the cognitive information captured in the shared response.
-
-Our code is freely available at \url{https://github.com/hugorichard/brainiak/tree/fastsrm}.
-

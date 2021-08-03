@@ -64,7 +64,7 @@ augmentation methods: \emph{ICA}, \emph{Covariance}, \emph{ICA + Covariance}, \e
 %
 When no augmentation method is applied we use the label \emph{Original}.
 
-The \emph{ICA} covariance method applies ICA to $X^{task}$ to generate unmixing matrices $W^{task}$ and
+The \emph{ICA} method applies ICA to $X^{task}$ to generate unmixing matrices $W^{task}$ and
 components $S^{task}=  W^{task} X^{task}$.
 %
 To generate a sample $\tilde{\xb}_c$ from class $c$, we sample
@@ -95,7 +95,9 @@ Gaussian noise $\tilde{\nb} \sim \mathcal{N}(0,\Sigma_R)$.
 %
 Samples are thus generated as $\tilde{\xb}_c + \tilde{\nb}$.
 
-The \emph{GANs} and \emph{CGANs}) methods rely on similar networks. The generator and discriminator have a mirrored architecture with 2 fully connected hidden layer of size (256 and 512).  The number of epochs, batch size, momentum and learning rate are set to 20k, 16, 0.9, 0.01 and we use the Leaky RELU activation function.
+\emph{GANs} are used in the unsupervised setting (resting state fMRI generation)
+while \emph{CGANs} can generate fake data from a given class (task fMRI
+generation). In the GANs or CGANs method, the generator and discriminator have a mirrored architecture with 2 fully connected hidden layer of size (256 and 512).  The number of epochs, batch size, momentum and learning rate are set to 20k, 16, 0.9, 0.01 and we use the Leaky RELU activation function.
 
 We evaluate the performance of augmentation methods through the use of classifiers: logistic regression (LogReg), linear
 discriminant analysis with Ledoit-Wold estimate of covariance (LDA) perceptron
@@ -158,8 +160,8 @@ Covariance   & 0.473 & 0.461 & 0.610 &  0.626
 ICA + Covariance   & 0.509 & 0.495 & 0.685 &  0.706
 \\
 GANs   & 0.501 & 0.498 & 0.592 &  0.607
-\\
-CGANs   & 0.498 &  0.493 & 0.579 & 0.604
+% \\
+% CGANs   & 0.498 &  0.493 & 0.579 & 0.604
 \\\hline
 \textbf{Conditional ICA}  & 0.503 & 0.489 & 0.512 &  0.523
 \\\hline\hline
@@ -206,7 +208,7 @@ gains.
     ICA                & 0.814 & 0.840 &  0.803 &0.778\\
     Covariance         & 0.895 & 0.876 &  0.819 &0.780\\
     ICA + Covariance   & 0.816 & 0.840 &  0.815 &0.780\\
-    GANs               & 0.877 & 0.863 &  0.771 &0.780\\
+    % GANs               & 0.877 & 0.863 &  0.771 &0.780\\
     CGANs              & 0.874 & 0.874 &   0.726&0.779 \\
     \hline                                      
       \textbf{Conditional ICA} &  \textbf{0.901} & \textbf{0.890} & \textbf{0.832} &  \textbf{0.783} \\
@@ -221,8 +223,8 @@ gains.
   \label{condica:tab3}
 \end{table}
 
-In table~\ref{app:runningtime:tab}, we give the running-time of GAN based
-methods and Conditional ICA. This shows that in contrasts to deep learning based
+In table~\ref{app:runningtime:tab}, we give the running-time of the CGAN
+method and Conditional ICA. This shows that in contrasts to deep learning based
 methods, the computational over-head induced by CondICA is very low.
 \begin{table}
   \begin{center}
@@ -230,8 +232,8 @@ methods, the computational over-head induced by CondICA is very low.
       \hline
       Methods & Running-time (secs)
       \\ \hline
-      GANs  & 12948.2 ($\approx$ 3,60 hr)
-      \\
+      % GANs  & 12948.2 ($\approx$ 3,60 hr)
+      % \\
       CGANs  & 11015.1 ($\approx$ 3,05 hr)
       \\
       \textbf{Conditional ICA}  & 62 s 
@@ -239,14 +241,15 @@ methods, the computational over-head induced by CondICA is very low.
       \hline
     \end{tabular}
   \end{center}
-  \caption{\textbf{Running time.} We display the running time of three methods used
-    to generate synthetic data. Conditional ICA is several orders of magnitude faster than
-    GANs or CGANs. In practice the computational over-head induced by Conditional ICA is negligible.}\label{app:runningtime:tab}
+  \caption{\textbf{Running time.} We display the running time of conditional ICA
+    and conditional GAN (CGANs) methods used
+    to generate synthetic task fMRI data . Conditional ICA is several orders of magnitude faster than
+    CGANs. In practice the computational over-head induced by Conditional ICA is negligible.}\label{app:runningtime:tab}
 \end{table}
 
-Lastly, we provide some visualization of fake examples produced by GANs, CGANs and Conditional ICA in figure~\ref{sec:visualization:fig}.
+Lastly, we provide some visualization of fake examples produced by CGANs and Conditional ICA in figure~\ref{sec:visualization:fig}.
 \begin{figure}
-  \centerline{\includegraphics[width=0.8\linewidth]{figures/condica/fake_real_viz_v3_redim_improved.png}}
+  \centerline{\includegraphics[width=0.8\linewidth]{figures/condica/fake_real_viz_v3_redim_improved2.png}}
   \caption{\textbf{Data generation visualization.} Visualization of real
     (Original) and synthetic brain maps from three generation methods:
     Conditional ICA, CGANs and GANS. Three cognitive tasks are shown (reward, punish and math).
