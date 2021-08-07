@@ -1,20 +1,20 @@
-In the previous chapter, we have seen multiple unsupervised methods to analyze
+In the previous chapter, we have decribed multiple unsupervised methods to analyze
 multiview data such as fMRI data that are of very high dimension.
 When working with high dimensional data, the shared response model~\cite{chen2015reduced} (SRM) is particularly
 interesting as it provides a principled way to perform dimension reduction. Note that this
 contrasts with ICA-like methods that do not incorporate dimension reduction in their model.
 
 However SRM has initially been designed to work within regions of interest using
-only a few subjects. When using full brain data, computational costs are still
+only few subjects. When using full brain data, computational costs are still
 high. Lastly, memory requirements are difficult to meet since the full dataset needs to hold
 in memory.
 
 Fortunately, these high costs can be reduced. Intuitively, since the shared
 response lives in a reduced space, a compressed representation of the input is
-good-enough to find a suitable estimate.
+good enough to find a suitable estimate.
 FastSRM implements this idea. It turns out that there exists an optimal
-compression of the input from which we can obtain exactly the same solution as
-if the full data is used. We also present methods using approximations of the
+compression of the input from which we can obtain the same solution as
+with the full data. We also present methods using approximations of the
 optimal dimension reduction trading accuracy for efficiency.
 
 \section{The FastSRM algorithm}
@@ -23,11 +23,11 @@ components $\sbb$ (respectively mixing matrices $A_i$, noise levels
 $\sigma_i$ and components covariance $\Sigma_s$). 
 Let us consider a set of view specific atlases $U_i \in \RR^{v, r}$ such that
 $U_i^{\top}U_i = I_r$.
-Data are reduced using $\zb_i = U_i^{\top} \xb_i$ and a SRM algorithm is applied
+Data are reduced using $\zb_i = U_i^{\top} \xb_i$ and an SRM algorithm is applied
 on data $\zb_i$ yielding parameters $A_i', \sbb$ (respectively $A_i',
 \sigma_i', \Sigma_s$). Then we set $A_i = U_i A'_i$ to recover the mixing matrices.
 As we will see in the next section, SRM algorithms may have to be slightly
-modified in order to obtain guaranties on the recovered parameters.
+modified in order to obtain guarantees on the recovered parameters.
 
 The figure~\ref{fig:srm:conceptual} illustrates this process.
 \begin{figure}
@@ -40,11 +40,11 @@ The figure~\ref{fig:srm:conceptual} illustrates this process.
 From a computational stand point, the dimension reduction provides
 a large reduction in memory usage. Indeed as the original data are seen only
 once, it is no longer necessary to keep the full dataset in memory (we can load
-data $\xb_i$ one view a time and similarly for the atlases $U_i$. Therefore the memory consumption is only in $\bigO(vn)$ which is lower than classical SRM algorithms by a factor of $m$. This yields a practical benefit: on most fMRI datasets, one no longer need a large cluster to run the shared response model but only a modern laptop.
+data $\xb_i$ one after the other and similarly for the atlases $U_i$. Therefore the memory consumption is only in $\bigO(vn)$ which is lower than classical SRM algorithms by a factor of $m$. This yields a practical benefit: on most fMRI datasets, one no longer need a large cluster to run the shared response model but only a modern laptop.
 Additionally, low memory consumption reduces the
 risk of thrashing~\cite{denning1968thrashing}, a phenomenon that causes large
 increase in computation time when the memory used is close to the total available
-memory in the harware.
+memory in the hardware.
 
 After preprocessing, the reduced representation $\zb_i$ is used instead of the
 original data $\xb_i$ yielding a time complexity of $\bigO(
@@ -58,7 +58,7 @@ a factor of $\frac{v}{r}$.
 In general, working with reduced data induces a discrepancy between the result
 of the traditional shared response model  and our FastSRM algorithm.
 In the next section, we show that there exists an optimal atlas in the sense
-that the traditional shared response model and FastSRM will yield the same
+that the traditional shared response model and FastSRM yield the same
 results whether it is applied on full data or on reduced data.
 
 \section{Optimal atlases}
@@ -80,6 +80,8 @@ equation~\eqref{eq:detsrm:Aiupdate} can be written:
 \begin{align}
   A_i &\leftarrow \Pcal(\xb_i \sbb^T)= U_{\xb_i}\Pcal(\zb_i \sbb^T)
 \end{align}
+\textbf{XXX what does $\Pcal()$ mean ?}
+
 
 Therefore we can look for $A_i$ as $A_i = U_{\xb_i} \tilde{A_i}$. $\tilde{A_i}$ is
 orthogonal. Indeed
@@ -94,7 +96,7 @@ Then, we use the fact that
   \|\xb_i - A_i \sbb \|^2 = \| U_{\xb_i}\zb_i - U_{\xb_i}\tilde{A_i} \sbb\|^2 = \| \zb_i - \tilde{A_i} \sbb \|^2
   \label{eq:equality:xy}
 \end{align}
-Therefore, there the solution of deterministic SRM on data $(\zb_i)_i$ and
+Therefore, the solution of deterministic SRM on data $(\zb_i)_i$ and
 $(\xb_i)_i$ are linked by the change of parameters $A_i = U_{\xb_i}A_i'$ and
 $\sbb = \sbb'$ where $A_i' = \tilde{A_i}$. This concludes the proof.
 \end{proof}
@@ -145,7 +147,7 @@ We have the following result:
     \sigma_i^2 \leftarrow \frac1{v} (\| \zb_i - \tilde{A_i} \EE[\sbb|\zb]\|^2 + \| \diag(\VV[\sbb | \zb]) \|^2)
   \end{align}
 
-  The trajectory of both algorithms are linked by $A_i = U_{\xb_i}A_i'$ where
+  The updates in both algorithms are linked  by $A_i = U_{\xb_i}A_i'$ where
   $A_i' = \tilde{A_i}$, $\sigma_i' =
   \sigma_i$ and $\Sigma_s'  = \Sigma_s$.
 
@@ -173,8 +175,9 @@ compute and such that projecting data on the atlas is a cheap operation.
 
 Deterministic atlases are interesting as they allow for fast data projection
 (computing $U_i \xb_i$ only costs $\bigO(v)$). Furthermore, they are thought to
-be more suited to fMRI data as they filter noise via smoothing (this argument is
+be well-suited to fMRI data as they reduce noise via smoothing (this argument is
 detailed in~\cite{hoyos2018recursive}).
+%
 A first approach is to use existing deterministic atlases for fMRI data such as 
 ~\cite{schaefer2017local} or~\cite{bellec2010multi}. As theses atlases
 attempt to reduce the dimension of fMRI signals without losing too much signal,
@@ -214,6 +217,7 @@ Let us consider data $\xb_i$ generated from deterministic SRM with
 mixing matrices $A_i$, shared response $\sbb$ and noise covariance $\sigma$.
 Then the parameters $A'_i = A_i \theta$ and $\sbb' = \theta^{\top} \sbb$ also
 generate $\xb_i$ according to the deterministic SRM model.
+\textbf{XXX I guess that $\theta$ is assumed orthogonal ?}
 
 Similarly, in the probabilistic SRM case, if data $\xb_i$ are generated from
 parameters $A_i$, $\Sigma_s$, $\sigma_i^2$ (where $\Sigma_s$ can be any positive
@@ -245,10 +249,10 @@ Then if $m\geq 3$, $A_i' = A_i P^{\top}$, $\Sigma_s'= P\Sigma_sP^{\top}$ and
   Therefore, by unicity of the singular value decomposition we have:
   $\Sigma'_s = P_i \Sigma_s P_j^{\top}$ and $A_i' = A_i P_i^{\top}$ and $A_j =
   A_j P_j^{\top}$ where $P_i$ and $P_j$ are sign and permutation matrices.
-  Since there is more than 3 subject, there exists subject $z$ such that
+  Since there are more than three subjects, there exists subject $z$ such that
   $\Sigma'_s = P_i \Sigma_s P_z^{\top}$ and therefore
   $P_i \Sigma_s P_z^{\top} =  P_i \Sigma_s P_j^{\top}$ and therefore $P_j =
-  P_z$. Therefore, all sign and permutations are the same and we call $P$ there
+  P_z$. Therefore, all sign and permutations are the same and we call $P$ their
   common value.
   Then we consider
   $\EE[\xb_i \xb_j^{\top}] = A_i \Sigma A_i^{\top} + \sigma I_v = A_i' \Sigma_s'
