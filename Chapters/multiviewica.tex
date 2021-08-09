@@ -1,9 +1,11 @@
-In chapter~\ref{ch:fastsrm1} and chapter~\ref{ch:fastsrm2}, we have introduced a fast version of the shared
-response model (SRM). While SRM provides a useful dimension reduction framework, it assumes orthogonality of the mixing matrices which is not biologically
+In chapter~\ref{ch:fastsrm1} and chapter~\ref{ch:fastsrm2}, we have
+introduced a fast version of the shared response model (SRM). While
+SRM provides a useful dimension reduction framework, it assumes
+orthogonality of the mixing matrices, which is not biologically
 plausible.
 
 In this chapter, we propose a novel group ICA method called \emph{MultiView ICA}.
-In contrast to most Group ICA methods, MultiViewICA is grounded in a principled
+In contrast to most Group ICA methods, MultiViewICA is grounded in a
 probabilistic model of the problem and comes with statistical guarantees such as
 asymptotic efficiency.
 
@@ -38,7 +40,7 @@ $\xb_i\in\bbR^p$  such that:
 %\bt{Matrices as bold letters ?} \pa{I find it understandable to have nothing but matrices in uppercase}
 where $\sbb \in \bbR^p$ are the shared independent components, $\nb_i \in \bbR^p$ is individual noise, $A_i \in \bbR^{p\times p}$ are the individual mixing matrices, assumed to be full-rank.
 %
-We assume that samples are observed i.i.d. For simplicity, we assume that the components share the same density $\delta$, so that the independence assumption is $p(\sbb) = \prod_{j=1}^p \delta(s_j)$. Finally, we assume that the noise is Gaussian decorrelated of variance $\sigma^2$, $\nb_i \sim \mathcal{N}(0, \sigma^2I_p)$, and that the noise is independent across subjects and independent from the components.
+We assume that samples are observed i.i.d. For simplicity, we assume that the components share the same density $\delta$, so that the independence assumption is $p(\sbb) = \prod_{j=1}^p \delta(s_j)$. Finally, we assume that the noise is Gaussian decorrelated with variance $\sigma^2$, $\nb_i \sim \mathcal{N}(0, \sigma^2I_p)$, and that the noise is independent across subjects and independent from the components.
 The assumption of additive white noise on the components models individual deviations from the shared components $\sbb$.
 It is equivalent to having noise on the sensors with covariance $\sigma^2 A_i \left(A_i\right)^{\top}$, i.e. a scaled version of the data covariance without noise.
 
@@ -104,7 +106,7 @@ Multiview ICA is then performed by minimizing $\loss$, and the estimated shared 
 The negative log-likelihood $\loss$ is quite simple, and importantly, can be computed easily given the parameters of the model and the data; it does not involve any intractable integral.
 %
 
-For one subject ($m=1$), $\loss(W_1)$ simplifies to the negative log-likelihood of ICA and we recover Infomax~\cite{bell1995information,cardoso1997infomax}, where the component log-pdf is replaced with the smoothened $f$.
+For one subject ($m=1$), $\loss(W_1)$ simplifies to the negative log-likelihood of ICA and we recover Infomax~\cite{bell1995information,cardoso1997infomax}, where the component log-pdf is replaced with the smoothed $f$.
 %
 
 \subsection{Alternate quasi-Newton method for MultiView ICA}
@@ -153,7 +155,7 @@ Newton's direction is then $-\left(\mathcal{H}_i\right)^{-1}G_i$. However, this 
 %
 These obstacles render the computation of Newton's direction impractical.
 %
-Luckily, if we assume that the signals in $\yb_i$ are independent, severall coefficients cancel, and the Hessian simplifies to the approximation
+Luckily, if we assume that the signals in $\yb_i$ are independent, several coefficients cancel, and the Hessian simplifies to the approximation
 %\bt{IIUC if the sources are independent this is not an approximation} \pa{It is an approximation because even if the sources are independent, you have $y_i = s^i$ only when $W_i$ is the true unmixing matrix, i.e. when the algo has converged}
 \begin{align}
     \label{eq:hessian_approx}
@@ -250,7 +252,7 @@ that can then be optimized by more efficient means.
 Note that in MultiView ICA, the noise can be interpreted as individual variability rather than sensor noise. %It offers a way to capture more structured noise as is often the case in brain signals.
 
 
-The SR-ICA approach of \cite{zhang2016searchlight} performs dimension reduction, merging and independent component estimation. It is therefore similar to our method.
+The SR-ICA approach of \cite{zhang2016searchlight} performs dimension reduction, merging \textbf{XXX you mean mixing ?} and independent component estimation. It is therefore similar to our method.
 However, they propose to modify the FastICA algorithm~\cite{hyvarinen1999fast} in a rather heuristic way, without specifying an optimization problem, let alone maximizing a likelihood. In the experiments on fMRI data in appendix~\ref{appendix_reproduce}, we obtain better performance with MultiView ICA than the reported performance of SR-ICA.
 
 One strength of our model is that we only assume that the mixing matrices are invertible and still enjoy identifiability whereas some other approaches impose additional constraints. For instance tensorial methods~\cite{beckmann2005tensorial} assume that the mixing matrices are the same up to diagonal scaling.
