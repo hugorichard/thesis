@@ -84,71 +84,9 @@ using SRM with less iterations.
 \end{figure}
 
 \section{Experiments on fMRI data}
-\label{srm:datasets:fmri}
-We use three fMRI datasets of subjects exposed to naturalistic stimuli. When
-needed, datasets are preprocessed with FSL \url{http://fsl.fmrib.ox.ac.uk/fsl}
-using slice time correction, spatial realignment, coregistration to the T1 image
-and affine transformation of the functional volumes to a template brain (MNI).
-Using Nilearn \cite{abraham2014machine}, preprocessed data are resampled, masked
-(using a full brain mask available at
-\url{http://cogspaces.github.io/assets/data/hcp_mask.nii.gz}), detrended and
-standardized.
-
-In the \emph{SHERLOCK} dataset, 17 participants are watching "Sherlock" BBC TV show (episode 1). 
-% 
-These data are downloaded from \url{http://arks.princeton.edu/ark:/88435/dsp01nz8062179}. 
-% 
-Data were acquired using a 3T scanner with an isotropic spatial resolution of 3 mm. 
-% 
-More information including the preprocessing pipeline is available in \cite{sherlock}.
-% 
-Subject 5 is removed because of missing data leaving us with 16 participants.
-% 
-Although SHERLOCK data contains originally only 1 run, we split it into 4 blocks of 395 timeframes and one block of 396 timeframes for the needs of our experiments. 
-
-In the \emph{FORREST} dataset, 20 participants are listening to an audio version of the movie Forrest Gump.
-% 
-FORREST data are downloaded from OpenfMRI~\cite{poldrack2013toward}. 
-% 
-Data were acquired using a 7T scanner with an isotropic spatial resolution of 1 mm (see more details in \cite{hanke2014high}.
-% 
-More information about the forrest project can be found at \url{http://studyforrest.org}.
-% 
-Subject 10 and run 8 are discarded because of missing data.
-% 
-We therefore use full brain data of 19 subjects split in 7 runs of respectively 451, 441, 438, 488, 462, 439 and 542 timeframes.
-
-
-In the \emph{CamCAN} dataset, 647 participants aged from 18 to 88 years are watching Alfred Hitchcock's "Bang! You're Dead" (edited so that it lasts only 8 minutes).
-% 
-CamCAN consists of data obtained from the CamCAN repository (available at \url{http://www.mrc-cbu.cam.ac.uk/datasets/camcan/}) (see \cite{taylor2017cambridge} and \cite{shafto2014cambridge}).
-% 
-We use all available subjects and runs yielding 647 participants and 1 run of 193 timeframes.
-
-
-Unless stated otherwise we use spatially unsmoothed data, except for the \emph{sherlock} dataset, for which the available data are already preprocessed with a 6\,mm spatial smoothing. All datasets are built from successive acquisitions called \emph{runs} that typically last 10 minutes each.
-%
-
-A summary about the size of each dataset is available in Table~\ref{tab:dataset_desc}.
-\begin{table}
-	\begin{tabular}{|c|c|c|c|c|}
-		\hline
-		\textbf{Dataset} & \textbf{Subjects} & \textbf{Runs} & \textbf{Average run} & \textbf{Voxels} \\
-                     && & \textbf{length} & \textbf{(per subject)} \\
-                     && & \textbf{(in timeframes)} &  \\
-                     &$m$& $ $ & $n$ &$v$  \\
-		\hline
-		SHERLOCK & 16 & 5 & 395 & 212445 \\ 
-		\hline
-		FORREST & 19 & 7 & 465 & 212445\\
-		\hline
-		CamCAN & 647 & 1 & 193 & 212445 \\
-		\hline
-	\end{tabular}
-  \caption{\textbf{Datasets description}}
-  \label{tab:dataset_desc}
-\end{table}
-
+We evaluate the performance of FastSRM on three fMRI datasets of subjects
+exposed to naturalistic stimuli: Sherlock, Forrest and CamCAN (more details
+about these datasets are available in section~\ref{srm:datasets:fmri}).
 \subsection{Comparing fitting time, memory usage and performance on a
   timesegment matching experiment}
 \label{sec:timesegment_expe}

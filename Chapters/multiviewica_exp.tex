@@ -6,7 +6,8 @@ MEG data that MultiView ICA improves component identification with respect to co
 \section{Experimental setting}
 \label{sec:expts}
 In the following, the noise parameter in MultiviewICA is always fixed to $\sigma =1$.
-We use the function $f(\cdot)= \log\cosh(\cdot)$, giving the non-linearity \textbf{XXX unclear why you call it non-linearity} $f'(\cdot) = \tanh(\cdot)$.
+We use the function $f(\cdot)= \log\cosh(\cdot)$, giving $f'(\cdot) =
+\tanh(\cdot)$ ($f'$ is called the learning function or non-linearity~\cite{hyvarinen1998independent}).
 We use the Infomax cost function~\cite{bell1995information} with the same non-linearity to run standard ICA, with the Picard algorithm~\cite{ablin2018faster} for fast and robust minimization of the cost function. Picard is applied with the default hyper-parameters.
 The code for MultiViewICA is available online at \url{https://github.com/hugorichard/multiviewica}.
 %
@@ -50,9 +51,10 @@ Each compared algorithm returns a sequence of estimated unmixing matrices $W_1, 
 The performance of an algorithm is measured by the reconstruction error between the estimated components and the true components.
 
 \begin{figure}
-  \label{fig:synth}
-  \includegraphics[width=0.5\textwidth]{figures/mvica/amari.pdf}
-  \captionof{figure}{\textbf{Synthetic experiment}: reconstruction error of the algorithms on data following model~\eqref{eq:ica_model}. \textbf{XXX make it self-contained}}
+  \includegraphics[width=0.5\textwidth]{figures/mvica/distance_expe.pdf}
+  \captionof{figure}{\textbf{Synthetic experiment}: reconstruction error of the
+    algorithms on data following model $\xb_i = A_i(\sbb + \nb_i)$.}
+  \label{fig:mvica:synth}
 \end{figure}
 
 %$\frac1M\sum_{i=1}^Md(W^iA^i)$, where $d(P)=\sum_{i=1}^n \left(\sum_{j=1}^n\frac{|p_{ij}|}{\max_{p} |p_{ip}|} - 1\right) + \sum_{j=1}^n \left(\sum_{i=1}^n\frac{|p_{ij}|}{\max_{p} |p_{pj}|} - 1\right)$.
@@ -61,70 +63,17 @@ The performance of an algorithm is measured by the reconstruction error between 
 %
 We use $m=10$ datasets, $p=15$ components and $n=1000$ samples. Each experiment is repeated with $100$ random seeds.
 %
-We vary the noise level in the data generation from $10^{-2}$ to $10$.
+We vary the noise level in the data generation from $10^{-2}$ to $10$ and
+display the performance of algorithms in Figure~\ref{fig:mvica:synth}.
 
 Multiview ICA has uniformly better performance than the other algorithms, which illustrates the strength of maximum-likelihood based methods. In accordance with results of section~\ref{sec:mvica}, it is able to separate the components even with misspecified noise parameter and component density.
 %
 %\subsection{fMRI experiments}
 %\label{sec:experiments}
 
-\textbf{XXX Refer explicitly to Fig \ref{fig:synth}}
-
 
 \section{fMRI experiments}
-We use the \emph{Forrest} and \emph{Sherlock} datasets described in section~\ref{srm:datasets:fmri}.
-We also add two other datasets:
-
-The \emph{RAIDERS} dataset reproduces the protocal described
-in~\cite{haxby2011common}. 10 participants are watching the movie "Raiders
-of the lost ark". This dataset pertains to the Individual Brain Charting
-dataset~\cite{ibc}.
-% 
-Data 
-% 
-We use full brain data of 10 subjects split in 9 runs of respectively 374, 297, 314, 379, 347, 346, 350, 353 and 211 timeframes.
-%
-Note that the Raiders dataset is different from the one used in~\cite{chen2015reduced}, as it involves different subjects, and because data were acquired at NeuroSpin using a 3T scanner with an isotropic spatial resolution of 1.5 mm.
-The \emph{raiders-full} dataset~\cite{ibc} is an extension of the \emph{raiders} dataset where the first two scenes of the movie are shown twice (130 mins).
-
-The CLIPS dataset reproduces the protocol of original studies described in
-\cite{nishimoto2011reconstructing} and \cite{huth2012continuous}. 10
-participants are exposed to short clips. The data were acquired in 17 runs of 325 timeframes. 
-%
-The CLIPS dataset also pertains to the Individual Brain Charting dataset (\cite{ibc}) and reproduces \textbf{XXX}.
-%
-At the time of writing, the CLIPS and RAIDERS dataset from the individual brain charting dataset \url{https://project.inria.fr/IBC/} are not yet public, but they will be in the future. Protocols on the visual stimuli presented are available in a dedicated repository on Github: \url{https://github.com/hbp-brain-charting/public_protocols}.
-
-\textbf{XXX in the framework of a PhD manuscript I find it better to dedicate a section to the daatset description (could be in the introduction) to avoid distilling it across experimental chapters.}
-
-A summary about the size of each dataset is available in Table~\ref{tab:dataset_desc}.
-\begin{table}
-	\begin{tabular}{|c|c|c|c|c|}
-		\hline
-		\textbf{Dataset} & \textbf{Subjects} & \textbf{Runs} & \textbf{Average run} & \textbf{Voxels} \\
-                     && & \textbf{length} & \textbf{(per subject)} \\
-                     && & \textbf{(in timeframes)} &  \\
-                     &$m$& $ $ & $n$ &$v$  \\
-		\hline
-		CLIPS & 10 & 17 & 325 & 212445\\ 
-		\hline
-		SHERLOCK & 16 & 5 & 395 & 212445 \\ 
-		\hline
-		RAIDERS & 10 & 9 & 330 & 212445 \\
-		\hline 
-		FORREST & 19 & 7 & 465 & 212445\\
-		\hline
-		CamCAN & 647 & 1 & 193 & 212445 \\
-		\hline
-	\end{tabular}
-  \caption{\textbf{Datasets description}}
-  \label{tab:dataset_desc2}
-\end{table}
-
-%
-%
-The preprocessing is the same as the one described in section~\ref{srm:datasets:fmri}.
-Unless stated otherwise we use spatially unsmoothed data, except for the \emph{sherlock} dataset, for which the available data are already preprocessed with a 6\,mm spatial smoothing.
+We use the \emph{Forrest}, \emph{Sherlock}, \emph{Raiders} and \emph{CLIPS} datasets described in section~\ref{srm:datasets:fmri}.
 
 \subsection{Reconstructing the BOLD signal of missing subjects}
 \label{sec:srm:reconstruction}
@@ -155,7 +104,7 @@ $R^2(\xb, \yb) = 1 - \frac1{n\Var(\yb)}\sum_{t=1}^n (x_t - y_t)^2$, where $\Var(
 The $R^2$ score is always smaller than $1$, and equals $1$ when $\xb= \yb$.
 The experiment is repeated 25 times with random splits to obtain error bars.
 
-An illustration of our reconstruction experiment is available in Figure~\ref{fig:experiment_reconstruction}.
+An illustration of our reconstruction experiment is available in Figure~\ref{fig:conceptual:reconstruction}.
 
 \begin{figure}
   \centering
@@ -167,7 +116,7 @@ An illustration of our reconstruction experiment is available in Figure~\ref{fig
     At last, the shared response during the left-out run and  the spatial components of the test subject are used to predict the data of the test subject in the left-out run.
     % 
     The performance of the model is measured by comparing the prediction and true data using the $R^2$ score.}
-  \label{fig:experiment_reconstruction}
+  \label{fig:conceptual:reconstruction}
 \end{figure}
 
 
@@ -188,7 +137,7 @@ We discard voxels with an R2 score above 80\% as they visually correspond to art
   \label{fig:roi}
 \end{figure}
 
- In Figure~\ref{fig:reconstruction} \textbf{XXX clash in fig labels ?}
+In Figure~\ref{fig:mvica:reconstruction}
 (top) we report the mean $R^2$ score within regions of interest.
 %
 MultiView ICA has similar or better performance than the other methods on all datasets.
@@ -202,8 +151,8 @@ This demonstrates its ability to capture inter-subject variability, making it a 
       missing subjects}. Mean $R^2$ score between reconstructed data and true
     data (higher is better). \emph{Bottom:} \textbf{Between subjects time-segment matching}. Mean
     classification accuracy. Error bars represent a 95 \% confidence interval over cross validation splits.}
-  \label{fig:reconstruction}
-  \label{fig:timesegment}
+  \label{fig:mvica:reconstruction}
+  \label{fig:mvica:timesegment}
 \end{figure}
 
 
@@ -226,9 +175,10 @@ ConcatICA.
 
 %
 \subsection{Between subjects time-segment matching} 
-We reproduce the time-segment matching experiment in
-section~\ref{sec:timesegment_expe}. 
-MultiView ICA yields a consistent and substantial improvement in accuracy compared to other methods on the four datasets. We see a marked improvement on the  sherlock and forrest datasets \textbf{XXX refer explicitly to the figure}. A possible explanation lies in the preprocessing pipeline. Sherlock data undergo a 6~mm spatial smoothing and Forrest data are acquired at a higher resolution (7T vs 3T for other data). This affects the signal to noise ratio.
+We reproduce the time-segment matching experiment described in
+section~\ref{sec:timesegment_expe} and display the results in
+Figure~\ref{fig:mvica:timesegment} (bottom). 
+MultiView ICA yields a consistent and substantial improvement in accuracy compared to other methods on the four datasets. We see a marked improvement on the  sherlock and forrest datasets. A possible explanation lies in the preprocessing pipeline. Sherlock data undergo a 6~mm spatial smoothing and Forrest data are acquired at a higher resolution (7T vs 3T for other data). This affects the signal to noise ratio.
 %
 
 In order to investigate the practical impact of the choice of hyper-parameter
@@ -298,21 +248,10 @@ In component 3, there exists a similarity however less striking than with the tw
 %\subsection{MEG experiments}
 \section{Phantom MEG data}
 \label{sec:mvica:phantom}
-We demonstrate the usefulness of our approach on MEG data.
-%
-The first experiment uses data collected with a realistic head phantom, which is a plastic device mimicking real electrical brain components.
-%
-Eight current dipoles positioned at different locations can be switched on or off.
-%
-We view each dipole as a subject and therefore have $m=8$.
-%
-We only consider the 102 magnetometers.
-%
-An epoch corresponds to 3\,s of MEG signals where a dipole is switched on for 0.4\,s with an oscillation at 20\,Hz and a peak-to-peak amplitude of 200\,nAm.
-%
-This yields a matrix of size $p\times n$ where $p=102$ is the number of sensors, and $n$ is the number of time samples.
-%
-We have access to $100$ epochs per dipole.
+We demonstrate the usefulness of our approach on MEG data using the
+\emph{Sinusoidal Phantom MEG} dataset where $m=8$ dipoles at different locations
+produce a known sinusoidal oscillation (more details in
+section~\ref{sec:meg:datasets}). 100 epochs are available.
 %
 For each dipole, we chose $N_e=2, \dots, 16$ epochs at random among our set of 100 epochs and concatenate them in the temporal dimension.
 %
@@ -335,8 +274,11 @@ These metrics are reported in figure~\ref{fig:meg} when the number of epochs con
 MultiView ICA requires fewer epochs to correctly reconstruct and localize the true component.
 %
 
-\section{Experiment on Cam-CAN dataset}
-Finally, we apply MultiView ICA on the Cam-CAN dataset~\cite{taylor2017cambridge}. We use the magnetometer data from the MEG of $200$ subjects.
+\section{Experiment on CamCAN dataset}
+Finally, we apply MultiView ICA on the CamCAN
+dataset~\cite{taylor2017cambridge}. A detailed description of the CamCAN dataset
+is available in section~\ref{sec:meg:datasets}. We use the magnetometer data from the MEG of
+$200$ subjects chosen randomly.
 %
 Each subject is repeatedly presented an audio-visual stimulus. 
 %

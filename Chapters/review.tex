@@ -172,9 +172,16 @@ across views. We assume the number of features $v$ to be much larger than the
 number of components $p$: $v >> p$.
 
 The conceptual figure~\ref{fig:srm:conceptual_figure} illustrates an 
-application of shared response modeling to fMRI data. The mixing
+application of the shared response model to fMRI data. The mixing
 matrices are spatial topographies specific to each subjects while the shared
 components give the common timecourses.
+
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.3]{figures/srm/conceptual_figure31.png}
+  \caption{\textbf{Shared response model}: The raw fMRI data are modeled as a weighted combination of subject-specific spatial components with additive noise. The weights are shared between subjects and constitute the shared response to the stimuli.}
+  \label{fig:srm:conceptual_figure}
+\end{figure}
 
 In~\cite{chen2015reduced, anderson2016enabling}, two versions of the shared response model are
 introduced which we now present.

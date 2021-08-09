@@ -80,7 +80,8 @@ equation~\eqref{eq:detsrm:Aiupdate} can be written:
 \begin{align}
   A_i &\leftarrow \Pcal(\xb_i \sbb^T)= U_{\xb_i}\Pcal(\zb_i \sbb^T)
 \end{align}
-\textbf{XXX what does $\Pcal()$ mean ?}
+where $\Pcal$ is the projection on the Stiefel manifold: $\Pcal(M) = M
+(M^{\top}M)^{-\frac12}$.
 
 
 Therefore we can look for $A_i$ as $A_i = U_{\xb_i} \tilde{A_i}$. $\tilde{A_i}$ is
@@ -215,14 +216,15 @@ only recover unmixing matrices up to an arbitrary rotation.
 
 Let us consider data $\xb_i$ generated from deterministic SRM with
 mixing matrices $A_i$, shared response $\sbb$ and noise covariance $\sigma$.
-Then the parameters $A'_i = A_i \theta$ and $\sbb' = \theta^{\top} \sbb$ also
-generate $\xb_i$ according to the deterministic SRM model.
-\textbf{XXX I guess that $\theta$ is assumed orthogonal ?}
+Then, deterministic SRM with parameters $A'_i = A_i \theta$ and $\sbb' = \theta^{\top} \sbb$ where
+$\theta \in \RR^{k, k}$ is an orthogonal matrix also
+generate $\xb_i$.
 
-Similarly, in the probabilistic SRM case, if data $\xb_i$ are generated from
+Similarly, in the probabilistic SRM case, if data $\xb_i$ are generated from the
+probabilistic SRM model with 
 parameters $A_i$, $\Sigma_s$, $\sigma_i^2$ (where $\Sigma_s$ can be any positive
-matrix) then $A_i\theta$, $\theta^{\top}
-\Sigma_s \theta$, $\sigma_i^2$ also generate $\xb_i$.
+matrix) then the probabilistic SRM model with parameters $A_i\theta$, $\theta^{\top} \Sigma_s \theta$, $\sigma_i^2$  where
+$\theta \in \RR^{k, k}$ is an orthogonal matrix also generate $\xb_i$.
 
 Then, we show that if the covariance of the components are diagonal, under some
 assumptions probabilistic SRM is identifiable:
@@ -255,9 +257,8 @@ Then if $m\geq 3$, $A_i' = A_i P^{\top}$, $\Sigma_s'= P\Sigma_sP^{\top}$ and
   P_z$. Therefore, all sign and permutations are the same and we call $P$ their
   common value.
   Then we consider
-  $\EE[\xb_i \xb_j^{\top}] = A_i \Sigma A_i^{\top} + \sigma I_v = A_i' \Sigma_s'
-  {A_i'}^{\top} + {\sigma^2}' I_v = A_i \Sigma_s
-  {A_i}^{\top} + {\sigma^2}' I_v$
+  $\EE[\xb_i \xb_j^{\top}] = A_i \Sigma A_i^{\top} + \sigma^2 I_v = A_i' \Sigma_s'
+  {A_i'}^{\top} + {\sigma^2}' I_v$
   so we get ${\sigma^2}' = {\sigma^2}$
 \end{proof}
 

@@ -236,7 +236,7 @@ As expected from the theoretical study, the performance of the algorithm is bare
 
 \section{Related Work}
 In contrast to ConcatICA (see section~\ref{sec:canicaandconcatica}),
-MultiView ICA maximizes a likleihood, which brings statistical guarantees like
+MultiView ICA maximizes a likelihood, which brings statistical guarantees like
 consistency or asymptotic efficiency. Furthermore MultiViewICA finds individual
 and shared independent components in a single step. This differs from ConcatICA or
 GroupICA that require additional steps when individual components are needed
@@ -252,7 +252,8 @@ that can then be optimized by more efficient means.
 Note that in MultiView ICA, the noise can be interpreted as individual variability rather than sensor noise. %It offers a way to capture more structured noise as is often the case in brain signals.
 
 
-The SR-ICA approach of \cite{zhang2016searchlight} performs dimension reduction, merging \textbf{XXX you mean mixing ?} and independent component estimation. It is therefore similar to our method.
+The SR-ICA approach of \cite{zhang2016searchlight} performs dimension reduction,
+merging of individual data and independent component estimation. It is therefore similar to our method.
 However, they propose to modify the FastICA algorithm~\cite{hyvarinen1999fast} in a rather heuristic way, without specifying an optimization problem, let alone maximizing a likelihood. In the experiments on fMRI data in appendix~\ref{appendix_reproduce}, we obtain better performance with MultiView ICA than the reported performance of SR-ICA.
 
 One strength of our model is that we only assume that the mixing matrices are invertible and still enjoy identifiability whereas some other approaches impose additional constraints. For instance tensorial methods~\cite{beckmann2005tensorial} assume that the mixing matrices are the same up to diagonal scaling.

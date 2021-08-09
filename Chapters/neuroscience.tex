@@ -22,6 +22,97 @@ performing specific cognitive tasks.
 \item Coregistration to the T1 image
 \item Affine transformation of the functional volumes to a template brain (MNI)
 \end{itemize}
+\subsection{fMRI Datasets}
+\label{srm:datasets:fmri}
+In this subsection we provide examples of fMRI datasets. These datasets will be
+used to evaluate the methods developed in this thesis.
+Datasets are preprocessed with FSL \url{http://fsl.fmrib.ox.ac.uk/fsl} using slice time correction, spatial realignment, coregistration to the T1 image and affine transformation of the functional volumes to a template brain (MNI).
+Using Nilearn \cite{abraham2014machine}, preprocessed data are resampled, masked
+(using a full brain mask available at \url{http://cogspaces.github.io/assets/data/hcp_mask.nii.gz}), detrended and standardized.
+
+In the \emph{SHERLOCK} dataset, 17 participants are watching "Sherlock" BBC TV show (episode 1). 
+% 
+These data are downloaded from \url{http://arks.princeton.edu/ark:/88435/dsp01nz8062179}. 
+% 
+Data were acquired using a 3T scanner with an isotropic spatial resolution of 3 mm. 
+% 
+More information including the preprocessing pipeline is available in \cite{sherlock}.
+% 
+Subject 5 is removed because of missing data leaving us with 16 participants.
+% 
+Although SHERLOCK data contains originally only 1 run, we split it into 4 blocks of 395 timeframes and one block of 396 timeframes for the needs of our experiments. 
+
+In the \emph{FORREST} dataset, 20 participants are listening to an audio version of the movie Forrest Gump.
+% 
+FORREST data are downloaded from OpenfMRI~\cite{poldrack2013toward}. 
+% 
+Data were acquired using a 7T scanner with an isotropic spatial resolution of 1 mm (see more details in \cite{hanke2014high}.
+% 
+More information about the forrest project can be found at \url{http://studyforrest.org}.
+% 
+Subject 10 and run 8 are discarded because of missing data.
+% 
+We therefore use full brain data of 19 subjects split in 7 runs of respectively 451, 441, 438, 488, 462, 439 and 542 timeframes.
+
+
+In the \emph{CamCAN} dataset, 647 participants aged from 18 to 88 years are watching Alfred Hitchcock's "Bang! You're Dead" (edited so that it lasts only 8 minutes).
+% 
+CamCAN consists of data obtained from the CamCAN repository (available at \url{http://www.mrc-cbu.cam.ac.uk/datasets/camcan/}) (see \cite{taylor2017cambridge} and \cite{shafto2014cambridge}).
+% 
+We use all available subjects and runs yielding 647 participants and 1 run of 193 timeframes.
+
+
+The \emph{RAIDERS} dataset reproduces the protocal described
+in~\cite{haxby2011common}. 10 participants are watching the movie "Raiders
+of the lost ark". This dataset pertains to the Individual Brain Charting
+dataset~\cite{ibc}.
+% 
+Data 
+% 
+We use full brain data of 10 subjects split in 9 runs of respectively 374, 297, 314, 379, 347, 346, 350, 353 and 211 timeframes.
+%
+Note that the Raiders dataset is different from the one used in~\cite{chen2015reduced}, as it involves different subjects, and because data were acquired at NeuroSpin using a 3T scanner with an isotropic spatial resolution of 1.5 mm.
+The \emph{raiders-full} dataset~\cite{ibc} is an extension of the \emph{raiders} dataset where the first two scenes of the movie are shown twice (130 mins).
+
+The CLIPS dataset reproduces the protocol of original studies described in
+\cite{nishimoto2011reconstructing} and \cite{huth2012continuous}. 10
+participants are exposed to short clips. The data were acquired in 17 runs of 325 timeframes. 
+%
+The CLIPS dataset also pertains to the Individual Brain Charting dataset
+(\cite{ibc}).
+%
+At the time of writing, the CLIPS and RAIDERS dataset from the individual brain charting dataset \url{https://project.inria.fr/IBC/} are not yet public, but they will be in the future. Protocols on the visual stimuli presented are available in a dedicated repository on Github: \url{https://github.com/hbp-brain-charting/public_protocols}.
+
+Unless stated otherwise we use spatially unsmoothed data, except for the
+\emph{sherlock} dataset, for which the available data are already preprocessed
+with a 6\,mm spatial smoothing. All datasets are built from successive
+acquisitions called \emph{runs}. The repetition time (TR) is 2s for all datasets
+except for the Sherlock dataset where the TR is 1.5s.
+%
+
+A summary about the size of each dataset is available in Table~\ref{tab:dataset_desc2}.
+\begin{table}
+	\begin{tabular}{|c|c|c|c|c|}
+		\hline
+		\textbf{Dataset} & \textbf{Subjects} & \textbf{Runs} & \textbf{Average run} & \textbf{Voxels} \\
+                     && & \textbf{length} & \textbf{(per subject)} \\
+                     && & \textbf{(in timeframes)} &  \\
+                     &$m$& $ $ & $n$ &$v$  \\
+		\hline
+		CLIPS & 10 & 17 & 325 & 212445\\ 
+		\hline
+		SHERLOCK & 16 & 5 & 395 & 212445 \\ 
+		\hline
+		RAIDERS & 10 & 9 & 330 & 212445 \\
+		\hline 
+		FORREST & 19 & 7 & 465 & 212445\\
+		\hline
+		CamCAN & 647 & 1 & 193 & 212445 \\
+		\hline
+	\end{tabular}
+  \caption{\textbf{Datasets description}}
+  \label{tab:dataset_desc2}
+\end{table}
 \subsection{A classical supervised experimental setting to map brain functions}
 \subsubsection{Block design}
 Describe block design setting and GLM model
@@ -79,3 +170,20 @@ a specific frequency.
 \subsection{Source localization: forward and inverse models}
 Talk about how source localization is done in MEG. Insist on the fact that it is
 rather slow so that in the next section we can make the link with ICA
+\subsection{MEG datasets}
+\label{sec:meg:datasets}
+In this section, we give example of MEG datasets. These examples are used in
+the rest of the thesis to evaluate the methods developed.
+
+The \emph{Sinusoidal Phantom MEG} dataset uses data collected with a realistic head phantom, which is a plastic device mimicking real electrical brain components.
+% 
+Eight current dipoles positioned at different locations can be switched on or off.
+% 
+We only consider the 102 magnetometers.
+% 
+An epoch corresponds to 3\,s of MEG signals where a dipole is switched on for 0.4\,s with an oscillation at 20\,Hz and a peak-to-peak amplitude of 200\,nAm.
+% 
+We have access to $100$ epochs per dipole.
+
+The \emph{CamCAN} dataset contains the MEG data of 647 different subjects
+exposed to an audio-visual stimuli. 
