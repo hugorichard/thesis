@@ -1,4 +1,99 @@
+In the previous chapter, we introduced some background on statistics and
+optimization.
+In this chapter, we present the necessary background on the data used in this
+thesis.
+In our experiments we use functional-resonance imaging (fMRI) or
+magnetoencephalograpy (MEG) data. As will be seen in this chapter, these two modalities have very different
+characteristics.
+
 \section{Functional magnetic resonance imaging (fMRI)}
+This section is heavily inspired by the handbook of
+Poldrack~\cite{poldrack2011handbook}.
+
+\subsection{The BOLD signal and hemodynamic response}
+The story of fMRI begins with the discovery of the blood-oxygen-level-dependent
+(BOLD) imaging discovered in 1990 by Ogawa~\cite{ogawa1990brain}. When neurons
+fire, they consume oxygen and therefore, the level of oxygen in blood changes.
+Since oxygenated and deoxygenated blood (oxyhemoglobin
+and deoxyhemoglobin) do not have the same magnetic susceptibility, changes in
+the oxygen level in blood can be tracked by a magnetic resonance imaging (MRI) scanner.
+
+When a short stimuli occur, the change in the relative change in the MRI signal (BOLD
+signal) is not instantaneous. The typical response to a stimuli follows the
+curve displayed in figure~\ref{fig:hrf}. This response is rather slow (it may lats \emph{20s}) compared to the temporal scale of neurons which is on the order of \emph{ms}.
+Luckily, the shape of the hemodynamic response does not vary much across time
+and therefore the BOLD signal is often seen as the result of the convolution of activation with the hemodynamic response.
+
+\subsection{Spatial and temporal resolution of fMRI data}
+In our view, the success of fMRI is due to its advantages compared to positron
+emission topography (PET) that uses radioactive tracers to follow glucose or water levels.
+While PET has a spatial resolution of a few
+centimeters, fMRI has a spatial resolution of a few millimeters. As a result, a voxel in an fMRI image typically encompass several hundreds thousands of neurons.
+In addition, while taking an image with PET takes about a minute, it takes on the order of 2s to produce an fMRI image.
+Lastly, fMRI is safe and does involve being exposed to radioactive tracers as in PET.
+
+\subsection{Experimental designs}
+In \emph{resting state} fMRI, subjects are instructed to lie still in the scanner without further instruction.
+These kind of data can be used to extract networks that highlight the regions that tend to co-activate.
+This contrasts with \emph{task} fMRI, where subjects have specific instructions.
+In task fMRI, two types of experimental design are widespread.
+Bloc designs are widespread designs particularly suited to modalities with low temporal resolutions (such as PET). In bloc designs, subjects are exposed to continuous stimuli that last of a rather long period of time before it switches to another.
+This contrasts with event related designs that are only suited to modalities with a short enough time resolution. In event related design, a sequence of short event are presented and separated by a time window (inter-stimulus interval).
+When the inter-stimulus interval is shorter than the length of the hemodynamic response, we talk about ``fast'' even related designs.
+Lastly, in \emph{naturalist fMRI}, subjects are instructed to watch a movie
+or listen to an audio track. Such kind of stimuli are called \emph{naturalistic stimuli} and constitue a middle ground between resting state and task fMRI as activations are time locked while the environment is not as controlled as in a typical task fMRI setting.
+In this thesis, we use mostly \emph{naturalistic fMRI} to benchmark our methods.
+
+\subsection{Preprocessing}
+The fMRI signal is particularly noisy. Several techniques are used to reduce the noise and enhance the quality of the data.
+
+\subsubsection{Distortion correction}
+In the MRI scanner, a constant magnetic field is applied. However, in areas
+where air and tissue meet, the magnetic field is distorted leading to errors in
+the localization of voxels near the sinus or ears. However, most scanners come
+with a map quantifying the distance that each voxel has been shifted. By
+inverting the map, we can recover the correct location of voxels.
+
+
+\subsubsection{Slice timing correction}
+Images are acquired in slices, one slice at a time so that different voxels are acquired at different times.
+In order to correct for this effect, a reference slice is chosen and other slices are interpolated so that all the voxels can be considered to have been acquired at the same time. 
+
+\subsubsection{Motion correction}
+Head motion causes massive distortion of the signal. They are corrected by chosen a reference image and apply rigid body transformations so that other images match the orientation and localization of the reference image.
+
+\subsubsection{Spatial smoothing}
+Spatial smoothing blurs the image by application of a Gaussian kernel with a given width (in mm). When the signal of interest has a large spatial extend, smoothing increase the signal to noise ratio. 
+Smoothing is also used as a way to decrease between subject variability.
+However, in our experiment, we usually don't apply smoothing as our methods are able to deal with subject variability without having to discard higher frequencies.
+
+\subsubsection{Spatial normalization}
+Each subject has a brain of different size and of different shape.
+The goal of spatial normalization is to align the subjects in order to reduce anatomical variability.
+The most widespread technique is to align all images on a template image. The
+template image used is based on an atlas developed at the Montreal Neurological
+Institute (MNI atlas) where 305 images were aligned based on anatomical features, averaged and then re-aligned to the mean image based on an affine registration model.
+Then an affine linear registration is applied. Typically, fMRI images of each subject are aligned on a high dimensional anatomical image of the same subject (this step is called \emph{coregistration}) and then the anatomical image is aligned to the MNI atlas. The two transformations are then composed to project fMRI data to the MNI space.
+
+\subsection{Analyzing task fMRI data via the general linear model}
+In this section, we describe one the most popular framework for analyzing fMRI data known as the general linear model.
+
+
+
+
+
+
+
+
+
+
+\subsection{Preprocessing}
+
+
+This technique is now widely used 
+
+
+
 Task fMRI:
 As a non-invasive brain imaging technique, task fMRI records brain
 activity while participants are
