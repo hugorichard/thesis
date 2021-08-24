@@ -1,7 +1,7 @@
-Chapters~\ref{ch:mvica1},~\ref{ch:mvica2},~\ref{ch:shica} and
-\ref{ch:shica2} use ICA based methods to learn shared responses from different
+In chapters~\ref{ch:mvica1},~\ref{ch:mvica2},~\ref{ch:shica} and
+\ref{ch:shica2}, we have used ICA-based methods to learn shared responses from different
 subjects performing the same task.
-In this chapter we present an ICA based method to achieve data augmentation in fMRI images.
+In this chapter we present an ICA-based method to achieve data augmentation for fMRI data.
 
   Advances in computational cognitive neuroimaging research are
   related to the availability of large amounts of labeled brain
@@ -92,7 +92,7 @@ from actual rest data.
 
 We hypothesize that this is because independence does not hold, and
 thus a latent structure among the marginals of the component distribution has to be taken into account. Therefore we assume that the distribution of $\zb^{rest}$ is given
-by $\mathcal{N}(\zero_k, \Lambda^{rest})$ where $\Lambda^{rest}$ is a definite positive matrix.
+by $\mathcal{N}(\zero_k, \Lambda^{rest})$ where $\Lambda^{rest}$ is a positive definite matrix.
 
 $\Lambda^{rest}$ can easily be learned from a standard shrunk covariance
 estimator: $\Lambda^{rest} = \Sigma^{rest} (1 - \alpha) + \alpha \tr(\Sigma^{rest}) I_k$ where
@@ -131,9 +131,7 @@ The approach proceeds by learning a temporal ICA of rest data $X^{rest} \in
 independent components and unmixing matrix $W^{rest} \in \mathbb{R}^{k, p}$.
 %
 Applying the unmixing matrix to the task data, we obtain samples in the component
-space $S^{task} \in \mathbb{R}^{k, n}$.
-%
-Afterwards, we map $S^{task}$ to a normal distribution, yielding $Z^{task} \in
+space that we map to a normal distribution, yielding $Z^{task} \in
 \mathbb{R}^{k, n}$. 
 %
 Then, we estimate the covariance $\Lambda \in \mathbb{R}^{k, k}$ (all classes are assumed to have the
@@ -172,7 +170,7 @@ function in the variational auto-encoder is given by $d(\zb) =
 while the reconstruction error defined by the difference in l2 norm
 $\|d(e(\xb)) - \xb\|^2_2$ must remain small.
 Lastly, another classical generative model related to ours is normalizing
-flows.  We note that when $W^{rest}$ is squared (no dimension reduction in ICA), the decoding operator $d$ is invertible (its inverse is $e$) making our
+flows.  We note that when $W^{rest}$ is square (no dimension reduction in ICA), the decoding operator $d$ is invertible (its inverse is $e$) making our
 model an instance of normalizing flows~\cite{rezende2015variational}. 
 %
 A great property is thus the simplicity and reduced cost of data generation.

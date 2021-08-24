@@ -1,4 +1,4 @@
-In the previous chapter, we have introduced Conditional ICA, a fast generative
+In the previous chapter, we have introduced Conditional ICA, an efficient generative
 model for task and rest fMRI data.
 In this chapter, we first show that the generative model of resting state data shipped in Conditional ICA produces samples that neither linear nor non-linear classifiers are able to distinguish.
 % 
@@ -253,6 +253,7 @@ Lastly, we provide some visualization of fake examples produced by CGANs and Con
   \caption{\textbf{Data generation visualization.} Visualization of real
     (Original) and synthetic brain maps from three generation methods:
     Conditional ICA, CGANs and GANS. Three cognitive tasks are shown (reward, punish and math).
+    \textbf{XXX figure is ugly. Can you redo it ?}
   }
   \label{sec:visualization:fig}
 \end{figure}
@@ -309,7 +310,7 @@ components. In all experiments we used $k=900$ components.
 
 
 \section{Conclusion}
-Conditional ICA produces samples that cannot be distinguished from true actual rest by linear as well as non-linear classifiers, showing that it captures higher-order statistics than naive ICA-based generators.
+Conditional ICA produces samples that cannot be distinguished from actual rest fMRI data by linear as well as non-linear classifiers, showing that it captures higher-order statistics than naive ICA-based generators.
 %
 When Conditional ICA is used as a data augmentation method, it yields consistent
 improvement in classification accuracy: on 8 tasks fMRI datasets, we observe

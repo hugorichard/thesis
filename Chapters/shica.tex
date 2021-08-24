@@ -326,7 +326,7 @@ EM~\cite{neal1998view, dempster1977maximum}. Derivations are available in Append
     \begin{align}
       &\eb_{\alpha}= \left(\sum_{i=1}^m \Sigma_i^{-1}  + \frac1{\alpha}I \right)^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \\
       &V_{\alpha} = (\sum_{i=1}^m \Sigma_i^{-1}  + \frac1{\alpha}I)^{-1} \\
-      &\theta_{\alpha} = \mathcal{N}((\sum_{i=1}^m \Sigma_i^{-1})^{-1} \Sigma_i^{-1} \yb_i; 0, \alpha I + (\sum_{i=1}^m \Sigma_i^{-1})^{-1})
+      &\theta_{\alpha} = \mathcal{N} \left( \left( \sum_{i=1}^m \Sigma_i^{-1} \right)^{-1} \Sigma_i^{-1} \yb_i; 0, \alpha I + (\sum_{i=1}^m \Sigma_i^{-1})^{-1} \right)
     \end{align}
     with $\yb_i = W_i \xb_i$.
 Noise updates are in closed-form and given by:
@@ -351,8 +351,8 @@ is an approximation of the Hessian of the negative complete log-likelihood and
 We alternate between computing the statistics $\mathbb{E}[\sbb|\xb]$, 
 $\mathbb{V}[\sbb|\xb]$ (E-step) and updates of parameters $\Sigma_i$ and $W_i$ for $i=1 \dots m$ (M-step). Let us highlight that our EM algorithm and in particular the E-step resembles the one used in~\cite{moulines1997maximum}. However because they assume noise on the sensors and not on the components, their formula for $\EE[\sbb| \xb]$ involves a sum with $2^p$ terms whereas we have only $2$ terms. The resulting method is called ShICA-ML.
 
-\paragraph{Minimum mean square error estimates in ShICA}
-In ShICA-J as well as in ShICA-ML, we have a closed-form for the expected components given the data $\EE[\sbb | \xb]$, shown in equation~\eqref{mmse1} and~\eqref{mmse2} respectively. This provides minimum mean square error estimates of the shared components, and is an important benefit of explicitly modelling shared components in a probabilistic framework.
+\paragraph{Minimum mean squared error estimates in ShICA}
+In ShICA-J as well as in ShICA-ML, we have a closed-form for the expected components given the data $\EE[\sbb | \xb]$, shown in equation~\eqref{mmse1} and~\eqref{mmse2} respectively. This provides minimum mean squared error estimates of the shared components, and is an important benefit of explicitly modelling shared components in a probabilistic framework.
 \section{Related Work}
 ShICA combines theory and methods coming from different branches of ``component analysis''. It can be viewed as a GroupICA method, as an extension of Multiset CCA, as an Independent Vector Analysis method or, crucially, as an extension of SRM. In the setting studied here, ShICA improves upon all existing methods.
 
@@ -370,7 +370,7 @@ a closed form E-step and has to rely on a first order approximation.
 
 ShICA-J uses the Multiset CCA presented in section~\ref{sec:mcca} which is one of the fastest as it reduces to solving a generalized eigenvalue problem. The fact that CCA solves a well defined probabilistic model has first been studied in~\cite{bach2005probabilistic} where it is shown that CCA is identical to multiple battery factor analysis~\cite{browne1980factor} (restricted to 2 views). This latter formulation differs from our model in that the noise is added on the sensors and not on the components which makes the model unidentifiable. Identifiable variants and
 generalizations can be obtained by imposing sparsity on the mixing matrices such as in~\cite{archambeau2008sparse, klami2014group, witten2009extensions} or non-negativity~\cite{DELEUS2011143}.
-Lastly, the work in~\cite{li2009joint} exhibits a set of sufficient (but not necessary) conditions under which a well defined model can be learnt by the formulation of Multiset CCA used in ShICA-J. The set of conditions we exhibit in this work are necessary and sufficient. We further emphasize that basic Multiset CCA provides a poor estimator as explained in section~\ref{sec:samplingnoise}.
+Lastly, the work in~\cite{li2009joint} exhibits a set of sufficient (but not necessary) conditions under which a well defined model can be learnt by the formulation of Multiset CCA used in ShICA-J. The set of conditions we exhibit in this work are necessary and sufficient. We further emphasize that basic Multiset CCA provides a poor estimator, as explained in section~\ref{sec:samplingnoise}.
 
 Let us highlight that ShICA can be seen as a particular instance of IVA where
 subject specific components $s_{ij}$ are such that $s_{ij} = s_j + n_{ij}$. However,
@@ -381,11 +381,11 @@ realistic for brain imaging applications. In IVA-G, components are allowed to ha
 need to follow a Gaussian law. ShICA can in addition make use of the
 non-Gaussianity of the components. Lastly, let us highlight that ShICA (like
 MultiView ICA) specifically enables extraction of shared components from the
-subject specific components, unlike previous versions of IVA. In fact, ShICA comes with minimum mean square error estimates for the shared components
+subject specific components, unlike previous versions of IVA. In fact, ShICA comes with minimum mean squared error estimates for the shared components
 that is often the quantity of interest.
 
 The IVA theory provides global identifiability conditions in the Gaussian case (IVA-G)~\cite{via2011joint} and local identifiability conditions in the general case~\cite{anderson2014independent} from which local identifiability conditions of ShICA could be derived. However, in this work, we provide global identifiability conditions for ShICA.
-Lastly, IVA can be performed using joint diagonalization of cross covariances~\cite{li2011joint, congedo2012orthogonal} although multiple matrices have to be learnt and cross-covariances are not necessarily symmetric positive definite which makes the algorithm slower and less principled.
+Lastly, IVA can be performed using joint diagonalization of cross covariances~\cite{li2011joint, congedo2012orthogonal} although multiple matrices have to be learnt and cross-covariances are not necessarily symmetric positive definite, which makes the algorithm slower and less principled.
 
 Let us point out that extracting a shared response from multiple dataset is also
 the goal of SRM. Some deep variants~\cite{chen2016convolutional} release the
