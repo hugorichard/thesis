@@ -120,10 +120,10 @@ the average spatial maps across subjects.
 \subsection{MEG Phantom experiment}
 \label{app:phantom}
 \subsubsection{Elekta Phantom}
-    Dipoles in $m=32$ various locations are emitting the same signal.
-    Signal magnitude can be either very high, high or low, leading to 3 datasets: a very clean one, a clean one and a noisy one. These datasets are available as part of the Brainstorm application~\cite{tadel2011brainstorm}. We preprocess the data using Maxwell filtering and low-pass filtering as done in the MNE tutorial \url{https://mne.tools/0.17/auto_tutorials/plot_brainstorm_phantom_elekta.html} and only consider data recorded by the magnetometers.
-    We use the very clean dataset to recover the true signal by PCA with 1
-    component. Then we reduce the noisy dataset by applying view specific PCA with $k=20$ components and algorithms are applied on the reduced data. We select the component that is closer to the true one and compute the L2 norm between the predicted component and the true one after normalization.
+We use the \emph{Elektra Phantom MEG} dataset described
+in~\ref{sec:meg:datasets} where dipoles at $m=32$ different locations emit the
+same signal.
+    We reduce the data by applying view specific PCA with $k=20$ components and algorithms are applied on the reduced data. We select the component that is closer to the true one and compute the L2 norm between the predicted component and the true one after normalization.
     Then we attempt to recover the position of each dipole by performing dipole fitting on the mixing operator of each view (using only the column corresponding to the true component). The localization error is defined as the mean l2 distance between the true localization and the predicted localization where the mean is computed across dipoles. 
     Each epoch corresponds to 301 samples and 20 epochs are available in total. We vary the number of epochs between 2 and 18 and display in Fig~\ref{exp:meg_phantom} the reconstruction error and the localization error as a function of the number of epochs used.
     ShICA-ML outperforms other methods. ShICA-J gives satisfying results while being much faster.

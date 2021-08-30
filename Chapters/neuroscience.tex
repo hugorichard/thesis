@@ -125,7 +125,7 @@ Subject 10 and run 8 are discarded because of missing data.
 We therefore use full brain data of 19 subjects split in 7 runs of respectively 451, 441, 438, 488, 462, 439 and 542 timeframes.
 
 
-In the \emph{CamCAN} dataset, 647 participants aged from 18 to 88 years are watching Alfred Hitchcock's "Bang! You're Dead" (edited so that it lasts only 8 minutes).
+In the fMRI \emph{CamCAN} dataset, 647 participants aged from 18 to 88 years are watching Alfred Hitchcock's "Bang! You're Dead" (edited so that it lasts only 8 minutes).
 % 
 CamCAN consists of data obtained from the CamCAN repository (available at \url{http://www.mrc-cbu.cam.ac.uk/datasets/camcan/}) (see \cite{taylor2017cambridge} and \cite{shafto2014cambridge}).
 % 
@@ -352,6 +352,26 @@ We only consider the 102 magnetometers.
 An epoch corresponds to 3\,s of MEG signals where a dipole is switched on for 0.4\,s with an oscillation at 20\,Hz and a peak-to-peak amplitude of 200\,nAm.
 % 
 We have access to $100$ epochs per dipole.
+%
+Maxwell filtering was applied on the data and a low pass filter with cut-off
+frequency at 40 Hz.
 
-The \emph{CamCAN} dataset contains the MEG data of 647 different subjects
-exposed to an audio-visual stimuli. 
+The \emph{Elekta Phantom MEG} dataset also uses data collected with a realistic
+head phantom and is available as part of the Brainstorm
+application~\cite{tadel2011brainstorm}.
+This dataset consider 32 different dipole locations. Like in the
+\emph{sinusoidal phantom} we only
+consider the 102 magnetometers and apply Maxwell filtering and a low pass filter
+with cut-off 40 Hz. The dipoles emit a signal at either a strong, medium or low
+amplitude yielding 3 datasets.
+We use the dataset where the emitted signal is very strong to recover the true signal
+by performing a PCA with 1 component.
+Then we work with the dataset where the emitted signal is the weakest.
+Each epoch corresponds to 301 samples and 20 epochs are available in total.
+
+The \emph{CamCAN} dataset~\cite{shafto2014cambridge}
+contains the MEG data of 647 different
+subjects exposed to an audio-visual stimuli. More precisely, subjects are presented simultaneously an
+auditory stimuli lasting 300ms at frequency 300, 600 or 1200 Hz  and a
+checkerboard pattern lasting 34ms. 120 trials are available.
+
