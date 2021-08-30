@@ -8,7 +8,9 @@ In the following synthetic experiments, data are generated according to model~\e
 \subsection{Separation performance: different use cases}
 \label{sec:rotation}
 %\pierre{Make sure that algos are always in the same order in legend, and that shica-j and shica ml are together}
-Gaussian components are generated from a standardized Gaussian and their noise has standard deviation $\Sigma_i^{\frac12}$ (obtained by sampling from a uniform density between $0$ and $1$) \textbf{XXX Unclear} while non-Gaussian components are generated from a Laplace distribution and their noise standard deviations are equal. We study 3 cases where either all components are Gaussian, all components are non-Gaussian or half of the components are Gaussian and half are non-Gaussian. We vary the number of samples $n$ between $10^2$ and $10^5$ and display in Fig~\ref{exp:rotation} the mean Amari distance across subjects as a function of $n$. The experiment is repeated $100$ times using different seeds. We report the median result and error bars  represent the first and last deciles.
+Gaussian components are generated from a standardized Gaussian and their noise
+has standard deviation $\Sigma_i^{\frac12}$ where $\Sigma_i^{\frac12}$ is a
+diagonal matrix. The diagonal coefficients of $\Sigma_i^{\frac12}$ are obtained by sampling from a uniform density between $0$ and $1$. Non-Gaussian components are generated from a Laplace distribution and their noise standard deviations are equal. We study 3 cases where either all components are Gaussian, all components are non-Gaussian or half of the components are Gaussian and half are non-Gaussian. We vary the number of samples $n$ between $10^2$ and $10^5$ and display in Fig~\ref{exp:rotation} the mean Amari distance across subjects as a function of $n$. The experiment is repeated $100$ times using different seeds. We report the median result and error bars  represent the first and last deciles.
 \begin{figure}
 \centering
   \includegraphics[width=0.9\textwidth]{./figures/amvica/identifiability.pdf}

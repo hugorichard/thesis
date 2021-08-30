@@ -17,6 +17,7 @@ techniques that leverage the availability of data from multiple subjects
 performing the same experiments. 
 
 \section{Independent component analysis}
+\label{sec:ica}
 ICA models a set of signals as the product of a \emph{mixing matrix} and a
 \emph{component} matrix containing independent components. As will be seen in this
 section, the required assumptions on the independent components to guarantee
@@ -260,9 +261,8 @@ The negative completed log-likelihood is given by
 updates are therefore given by:
 \begin{align}
 &\sigma_i^2 \leftarrow \frac1{v} (\| \xb_i - A_i \EE[\sbb|\xb]\|^2 + \| \diag(\VV[\sbb | \xb]) \|^2) \\
-  &A_i \leftarrow \Pcal(\xb_i \EE[\sbb|\xb]^{\top}) \\
+  &A_i \leftarrow \Pcal(\xb_i \EE[\sbb|\xb]^{\top}) \label{eq:psrm:Aiupdate} \\
   & \Sigma_s \leftarrow \VV[\sbb | \xb] + \EE[\sbb | \xb] \EE[\sbb | \xb]^{\top}
-    \label{eq:srm:Aiupdate}
 \end{align}
 
 It is useful to access the log-likelihood to check the implementation of the

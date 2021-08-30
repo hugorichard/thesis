@@ -60,12 +60,20 @@ Images are acquired in slices, one slice at a time so that different voxels are 
 In order to correct for this effect, a reference slice is chosen and other slices are interpolated so that all the voxels can be considered to have been acquired at the same time. 
 
 \subsubsection{Motion correction}
-Head motion causes massive distortion of the signal. They are corrected by chosen a reference image and apply rigid body transformations so that other images match the orientation and localization of the reference image.
+Head motion causes massive distortion of the signal. They are corrected by
+chosen a reference image and apply rigid body transformations so that other
+images match the orientation and localization of the reference image. We also record head movements independently so that they can be regressed out. However, if the task is correlated with head motion, this regression can destroy signal.
 
 \subsubsection{Spatial smoothing}
 Spatial smoothing blurs the image by application of a Gaussian kernel with a given width (in mm). When the signal of interest has a large spatial extend, smoothing increase the signal to noise ratio. 
 Smoothing is also used as a way to decrease between subject variability.
 However, in our experiment, we usually don't apply smoothing as our methods are able to deal with subject variability without having to discard higher frequencies.
+
+
+\subsubsection{Frequency filtering}
+Heating of the scanner causes a low temporal frequency noise to appear. In order
+to remove such noise, a high pass filtering is applied with a cut-off frequency
+of $0.01 Hz$. Sometimes a low pass filter with a cut-off frequency of $0.1$ Hz is also used since artifacts induced by motion are usually of higher frequency than the signal of interest.
 
 \subsubsection{Spatial normalization}
 Each subject has a brain of different size and of different shape.
@@ -75,61 +83,28 @@ template image used is based on an atlas developed at the Montreal Neurological
 Institute (MNI atlas) where 305 images were aligned based on anatomical features, averaged and then re-aligned to the mean image based on an affine registration model.
 Then an affine linear registration is applied. Typically, fMRI images of each subject are aligned on a high dimensional anatomical image of the same subject (this step is called \emph{coregistration}) and then the anatomical image is aligned to the MNI atlas. The two transformations are then composed to project fMRI data to the MNI space.
 
-\subsection{Analyzing task fMRI data via the general linear model}
-In this section, we describe one the most popular framework for analyzing fMRI data known as the general linear model.
+\subsubsection{Masking}
+It is often the case that only a subpart of the brain is of interest. When this is the case, we use a mask to only keep the set of voxels corresponding to particular locations defined by the mask.
+
+\subsubsection{Runs}
+Due to heating issue, it is in general not possible to use the scanner without interruptions for more than 10 minutes.  When long acquisitions must be
+performed they are split into short runs of approximately 10 minutes.
 
 
-
-
-
-
-
-
-
-
-\subsection{Preprocessing}
-
-
-This technique is now widely used 
-
-
-
-Task fMRI:
-As a non-invasive brain imaging technique, task fMRI records brain
-activity while participants are
-performing specific cognitive tasks.
-
-\subsection{Principle}
-\begin{itemize}
-\item 1990 Ogawa observed BOLD effect
-\item 1992 First images in Human
-  \item Blood need energy (sugar oxygen) quickly, Blood releases oxygen that is
-    not consumed (hemodynamic repsonse) Deoxyhemoglobin produces distortion of
-    the magnetic field. Peaks after 5s.
-  \item Block designs
-  \item Resting state
-    \item Naturalistic stimuli
-\end{itemize}
-\subsection{Pre-processing}
-\begin{itemize}
-\item Slice time correction
-\item Spatial re-alignment
-\item Coregistration to the T1 image
-\item Affine transformation of the functional volumes to a template brain (MNI)
-\end{itemize}
-\subsection{fMRI Datasets}
+\subsection{Example of fMRI Datasets}
 \label{srm:datasets:fmri}
-In this subsection we provide examples of fMRI datasets. These datasets will be
-used to evaluate the methods developed in this thesis.
+In this subsection we provide examples of fMRI datasets. These datasets will be used to evaluate the methods developed in this thesis.
 Datasets are preprocessed with FSL \url{http://fsl.fmrib.ox.ac.uk/fsl} using slice time correction, spatial realignment, coregistration to the T1 image and affine transformation of the functional volumes to a template brain (MNI).
-Using Nilearn \cite{abraham2014machine}, preprocessed data are resampled, masked
-(using a full brain mask available at \url{http://cogspaces.github.io/assets/data/hcp_mask.nii.gz}), detrended and standardized.
+Using Nilearn \cite{abraham2014machine}, preprocessed data are masked (using a full brain mask available at
+\url{http://cogspaces.github.io/assets/data/hcp_mask.nii.gz}), detrended and
+standardized (so that any voxel's timecourse has zero mean and unit variance).
+We also apply a high pass filter and a low pass filter with cut-off frequencies of 0.01 Hz and 0.1 Hz respectively).
 
 In the \emph{SHERLOCK} dataset, 17 participants are watching "Sherlock" BBC TV show (episode 1). 
 % 
 These data are downloaded from \url{http://arks.princeton.edu/ark:/88435/dsp01nz8062179}. 
 % 
-Data were acquired using a 3T scanner with an isotropic spatial resolution of 3 mm. 
+Data were acquired using a 3T scanner with an isotropic spatial resolution of 3~mm. 
 % 
 More information including the preprocessing pipeline is available in \cite{sherlock}.
 % 
@@ -180,9 +155,7 @@ At the time of writing, the CLIPS and RAIDERS dataset from the individual brain 
 
 Unless stated otherwise we use spatially unsmoothed data, except for the
 \emph{sherlock} dataset, for which the available data are already preprocessed
-with a 6\,mm spatial smoothing. All datasets are built from successive
-acquisitions called \emph{runs}. The repetition time (TR) is 2s for all datasets
-except for the Sherlock dataset where the TR is 1.5s.
+with a 6\,mm spatial smoothing. The temporal resolution or repetition time (TR) is 2s for all datasets except for the Sherlock dataset where the TR is 1.5s.
 %
 
 A summary about the size of each dataset is available in Table~\ref{tab:dataset_desc2}.
@@ -208,63 +181,163 @@ A summary about the size of each dataset is available in Table~\ref{tab:dataset_
   \caption{\textbf{Datasets description}}
   \label{tab:dataset_desc2}
 \end{table}
-\subsection{A classical supervised experimental setting to map brain functions}
-\subsubsection{Block design}
-Describe block design setting and GLM model
-\subsubsection{GLM model}
-Univariate statistical methods, such as general linear models (GLMs)
-\cite{friston1995analysis} have been successfully applied to
-identifying the brain regions involved in specific tasks.
-% 
-Describe seed based resting state as well as atlas based resting state.
 
-\subsubsection{Decoding}
-However such methods do not capture well correlations and interactions between brain-wide measurements.
-By contrast, classifiers trained 
-to \emph{decode} brain maps, i.e to discriminate between specific stimulus or task types~\cite{shirer_decoding_2012,varoquaux_how_2014,loula_decoding_2018}, take these correlations into account. 
-% 
-The same framework is also popular for individual imaging-based diagnosis.
+\subsection{An example of univariate analysis: analyzing task fMRI data via the general linear model}
+In this section, we describe a framework successfully applied to identifying the brain regions involved in specific tasks: the general linear model
+(GLM)~\cite{friston1995analysis}. We refer the reader to
+Poline~\cite{poline2012general} for a more detailed description of the model and only cover here what we consider to be the most important parts.
 
-% 
-\subsection{An example of unsupervised design: analysis of resting state data}
+We associate to each image $t$ a set of numbers $\sb(t)$ that describe the experiment and
+nuisance parameters.
+For instance, in an experiment where the subject is shown either images of faces
+or nothing we could have the association: $\sb(t) = (\phi(t), \tau(t), x(t), y(t),
+z(t))$ where $\phi(t)=1$ if the stimuli is a face and $0$ otherwise, $\tau(t)=1$
+if nothing is shown and $0$ otherwise and  $x(t), y(t), z(t)$ describes the
+position of the head. While $\phi$ and $\tau$ describe the experiment, $x, y, z$
+describe nuisance parameters.
+Note that in practice we use much more regressors for nuisance parameters such
+as parameters describing the rotation of the head, heartbeats, respiration
+rhythm and really any other parameter that might introduce artifacts. We also
+usually convolve the regressors describing the experiment with the hemodynamic
+function so that they are closer to the actual brain response and sometimes also its derivative to account for small temporal deviations from our model of hemodynamic response.
+We call $S \in \RR^{k, n}$ the \emph{design matrix} (in standard textbooks it is
+usually called $X$ but in this thesis we use $X$ for the data) such that column
+$t$ of $S$ is given by $\sb(t)$.
+Then, the general linear model sees the data of one subject $X \in \RR^{v, n}$ as a linear combination of the
+design matrix $S$ with additive noise $N$.
+\begin{align}
+X = A S + N
+\end{align}
+where $A \in \RR^{v, k}$ contains $k$ spatial maps in the sense that column $j$
+of $A$ can be plotted as a brain image representing the localization of activity
+described by the line $j$ of $S$.
+The noise is often assumed to be Gaussian with unit variance so that $A$ can be obtained as the
+result of a linear regression. Another common hypothesis is to assume temporal
+correlation of the noise in the form of an AR-1 process. In this case, we 
+consider instead the data $BX$ where $B \in \RR^{n, n}$ is chosen so that the
+noise $BN$ has no temporal correlation allowing us to perform linear regression.
+
+The result of the GLM procedure is often given by \emph{contrasts maps} where
+the spatial maps corresponding to conditions of interest are subtracted.
+In our face versus baseline example, we would typically display the first column of
+$A$ (that corresponds to $\phi$ which describes the activation related to faces) minus
+the second column of $A$ (that corresponds to $\tau$ which describes the
+baseline). An example of ``face versus basline'' contrast is displayed in
+Figure~\ref{fig:hcp_contrast}.
+
+\begin{figure}
+  \includegraphics[scale=0.25]{figures/neuroscience/faces_vs_baseline.png}
+  \caption{Contrast ``face versus baseline'' computed from the fMRI data of one
+    subject in the HCP dataset~\cite{van2013wu}. This contrast was downloaded
+    from neurvault~\cite{gorgolewski2015neurovault}.}
+  \label{fig:hcp_contrast}
+\end{figure}
+
+
+While in this thesis, we always work with unthresholded contrast maps like the one in Figure~\ref{fig:hcp_contrast}, contrast maps
+are usually thresholded to keep only activity that are significantly
+different from zero.
+The GLM model is called univariate since interactions between voxels are not
+modeled.
+In general, univariate methods are often criticized for their unability to
+capture well correlations and interactions between brain-wide measurements.
+This makes it difficult to precisely locate brain functions from brain maps. An approach to overcome this issue is to train classifiers to \emph{decode} brain maps, i.e to discriminate between different stimulus of task
+types~\cite{shirer_decoding_2012,varoquaux_how_2014,loula_decoding_2018}. When linear classifiers are used, the weights of this classifiers localize the brain functions.
+This approach is much more powerful as classifiers take correlations between
+voxels into account. Decoding is also popular for individual imaging-based diagnosis.
 
 \section{Magneto electro encephalography (MEG)}
-\subsection{Principle}
-History
-\begin{itemize}
-  \item EEG: 1929 Hans Berger developed electroencephalograpgy, the grapgic
-    representation of the difference in voltage between towo different cerbral
-    locations plotted over time. (Electrical potential difference)
-    \item 1972: David Cohen invented magneto encephalography. This measurement
-      takes advantage of the direct connection between electrical activity and
-      magnetism. (Magnetic field generated by neural activity)
+Most material in this section is inspired from the book of Riitta Hari and Aina
+Puce~\cite{hari2017meg}.
 
-      \item When a group of neuron (50 000~100 000) is simulatenously excited, it generates a current
-      of large enough magnitude to be captured by EEG/MEG
-    \item Artifacts: signals not generated by the brain. Cleaning the data two types: physiological ones (eye movement (blinking), muscal artefact
-      (squizing teath)), non physiological ones (cell phone) 
-     \item Forward problem: measurement of the current from the sources (rather
-       easy). Model electrical condution of human head.  Difficult problem is to
-       find the sources from the MEG/EEG (inverse problem). More possible
-       solutions for sources than number of electrodes.
-       Making reasonnable guess on sources. No unique solution.
+\subsection{Principle of MEG}
+When a neuron fires, it emits a current that generates a magnetic field. By
+recording the magnetic field close to the skull, we gain insight on neural
+activity.
 
-     \item Signal neads to pass protective layers (becomes weaker). We have
-       active electrodes with amplifiers inside or passive that is amplified
-       only later (EEG)
-     \item MEG: SQUID (measuring very weak magnetic fields) and applify a few centimers away from the sensors.
-      
-\end{itemize}
-\subsection{Preprocessing}
-Predefined distance from the screen, and for a predifined task. Blank screen in
-between stimulus. Phase lock activity  is generated. Average across trials = ERP
-(event related potential). Positive deflection P100.
-Good temporal resolution bad spatial resolution.
-Stimulation can be shown continuously. We then present a stimulkus flickering at
-a specific frequency.
-\subsection{Source localization: forward and inverse models}
-Talk about how source localization is done in MEG. Insist on the fact that it is
-rather slow so that in the next section we can make the link with ICA
+A limiting factor is that the magnetic fields induced by neuronal currents are
+extremely weak (on the order of $10 fT$) which is much lower than the ambient magnetic noise ($10^8 fT$). Therefore recordings are performed in a shielded room and extremely sensitive magnetometers are used.
+The best current tools can measure the magnetic filed generated by approximately 50~000 neurons oriented in the same direction.
+
+MEG recording device also include gradiometers in addition to magnetometers.
+These are sensitive to the local variations of the magnetic field. However in our experiments, we only use the magnetometers data.
+
+MEG has a temporal resolution on the order of the ms which is essentially the same as electroencephalography (EEG). This is much better than fMRI. The spatial
+resolution is similar than in EEG and is on the order of the centimeter.
+In general the brain sources are slightly better localized in MEG since the
+magnetic field is not affected by changes in conductivity in the head.
+
+
+\subsection{Solving the inverse problem}
+In order to locate activation from the brain measurements, we need to solve an inverse problem: what kind of sources can generate the magnetic field we
+observe ? This section gives an overview of the sLoreta
+method~\cite{pascual2002standardized} and is strongly inspired from the tutorial
+of the authors~\cite{pascual2007discrete}.
+
+From a vector describing the 3D current density inside the brain $\jb \in \RR^{3v}$
+($v$ is the number of voxels) we
+can predict the magnetic field recorded by the sensors $\bb \in \RR^p$ ($p$ is the number of sensors) provided
+we know how the magnetic field propagates through the brain by using Maxwell's equation. This is called the \emph{forward model}. Simplistic models of the
+brain are used to provide an approximate solution for the forward model.
+We have therefore
+\begin{align}
+  \bb = K \jb
+  \label{eq:maxwell}
+\end{align}
+where $K \in \RR^{p, 3v}$ is given by our simplistic model of the head.
+$K$ can be seen as $K  = [K_1 \dots K_{v}]$ where $K_i \in \RR^{p, 3}$ describes how voxel $i$ contributes to the measured magnetic field $\bb$.
+
+Note that if $\bb$ and $K$ are given there is an infinite number of possible
+$\jb$ so the inverse problem must be regularized in order to select a solution among all possible ones.
+A common parametrization is to assume that:
+\begin{align}
+\jb(K_i) = (K_i^{\top} C K_i) \bb
+\end{align}
+for a symmetric matrix $C \in \RR^{p, p}$ and $\jb(K_i)$ describes the current at voxel $i$.
+In sLoreta, we have $C = (K K^{\top} + \alpha I)^{\dagger}$ where $\dagger$
+represents the more pseudo inverse $I$ is the identity matrix and $\alpha$ is an hyperparameter. 
+
+Taking a point wise source $\ab \in \RR^{3}$ at voxel $j$
+equation~\eqref{eq:maxwell} yields $\bb = K_j \ab$.
+Then, $\| \jb(K_i) \|^2$ is maximum at $K_i=K_j$ showing that the method can correctly recover point sources.
+
+\subsection{Preprocessing steps}
+This section is inspired from the preprocessing recommandations
+in~\cite{jas2018reproducible} and the book of Riitta Hari and Aina
+Puce~\cite{hari2017meg}. 
+
+\subsubsection{Temporal filtering}
+Temporal filtering is usually done by analogous filtering using a wide range of
+frequency (typically from $0.01 Hz$ to $200Hz$.
+A digital filtering is usually applied afterwards. A low-pass filtering with
+cut-off frequency at $40 Hz$ is valuable as it is below the line frequency. It
+also removes some of the artifacts due to eye movements although subjects are
+often asked to fix a cross on a screen while scanning.
+
+\subsubsection{Independent component analysis}
+Independent component analysis (ICA) can be used to isolate artifacts due to
+heart beating or muscle contraction. As will be seen in section~\ref{sec:ica}.
+ICA extracts independent components from the data. The data can be cleaned by
+removing components corresponding to artifacts.
+
+\subsubsection{Maxwell filtering}
+Maxwell filtering also called signal space separation
+(SSS)~\cite{taulu2006spatiotemporal} identifies the contributions of the
+magnetic field from brain sources outside the brain and removes it.
+This decreases the effect of outside noise and even allows to scan subjects with
+implemented stimulators.
+
+
+\subsection{Experimental designs}
+Two kind of response are generally studied in MEG: \emph{evoked response} and
+\emph{event related} response.
+The evoked response is observed when the subject is exposed to a short stimuli.
+We typically repeat the experiment multiple times and average the subject
+response over trials.
+Another technique is to average signal with respect to some event such as eye
+movement or utterance of a word. The recovered signal is then called
+event-related response.
+
 \subsection{MEG datasets}
 \label{sec:meg:datasets}
 In this section, we give example of MEG datasets. These examples are used in

@@ -28,7 +28,7 @@ differentiation operators can always be exchanged and that all quantities
 introduced are well defined. The set of parameters $\thetab$ is viewed as a
 vector and the set of $n$ observations is viewed as a vector $\xb$.
 
-\subsection{Bias and efficiency of estimators}
+\subsection{Desirable properties of estimators}
 An \emph{estimator} $\hat{\thetab}_n$ of $\thetab_*$ is a function of the
 observations $\xb$ that aims at finding $\thetab_*$.
 An estimator is a random variable as it depends on $\xb$. Therefore, it can almost never be perfectly accurate and that
@@ -608,9 +608,9 @@ by the algorithm.
 \begin{prop}[Newton algorithms are equivariant]
   \label{prop:equivariance:qn}
   Let us consider $\xb_k$ the current estimate of the minimum of $f$ obtained by
-  a Newton algorithm starting from $\xb_0$.
+  the Newton method starting from $\xb_0$.
   Consider $\yb_k$ the current estimate of the minimum of $g(\yb) = f(A\yb)$ for any
-  invertible matrix $A$ starting from $\yb_0 = A^{-1}\xb_0$.
+  invertible matrix $A$ obtained by the Newton method starting from $\yb_0 = A^{-1}\xb_0$.
   Then, $\yb_k = A^{-1} \xb_k$.
 \end{prop}
 \begin{proof}
@@ -622,7 +622,7 @@ by the algorithm.
             &= A^{-1} \xb_{k+1} \\
 \end{align}
 \end{proof}
-Equivariance typically does not hold for gradient descent.
+In contrast, gradient descent is not equivariant.
 
 However, despite its attractive properties, Newton algorithms are rarely used in
 practice because they are often intractable. Indeed inverting
