@@ -230,12 +230,9 @@ The question of stability is also interesting: if the algorithm is initialized ~
 %
 In the appendix~\ref{sec:stability}, we provide an analysis similar to~\cite{cardoso1998blind}, and derive sufficient numerical conditions for the unmixing matrices to be local minima of $\mathcal{L}$.
 %
-We also study the practical impact of changing the hyperparameter $\sigma$ on the accuracy of a machine learning pipeline based on MultiviewICA on real fMRI data in the appendix Sec.~\ref{sec:app_sigma_impact}.
-%
-As expected from the theoretical study, the performance of the algorithm is barely affected by $\sigma$.
 
 \section{Related Work}
-In contrast to ConcatICA (see section~\ref{sec:canicaandconcatica}),
+In contrast to ConcatICA or CanICA (see section~\ref{sec:canicaandconcatica}),
 MultiView ICA maximizes a likelihood, which brings statistical guarantees like
 consistency or asymptotic efficiency. Furthermore MultiViewICA finds individual
 and shared independent components in a single step. This differs from ConcatICA or
@@ -260,6 +257,10 @@ One strength of our model is that we only assume that the mixing matrices are in
 Other methods impose a common mixing matrix~\cite{cong2013validating, grin2010independent, calhoun2001fmri, Monti18UAI}. Like PCA, the Shared Response Model~\cite{chen2015reduced} (SRM) assumes orthogonality of the mixing matrices. While the model defines a simple likelihood and provides an efficient way to reduce dimension, the orthogonal constraint may not be plausible.
 
 Deep Learning methods, such as convolutional auto-encoders (CAE), can also be used to find the subject specific unmixing~\cite{chen2016convolutional}. While these nonlinear extensions of the aforementioned methods are interesting, these models are hard to train and interpret. In the experiments on fMRI data in appendix~\ref{appendix_reproduce}, we obtain better accuracy with MultiView ICA than that of CAE reported in~\cite{chen2016convolutional}.
+
+A different path to multi-subject ICA is to extract independent components with individual ICA in each subject and align them. We propose a simple baseline approach to do so called \emph{PermICA}.
+Inspired by the heuristic of the hyperalignment method~\cite{haxby2011common} we choose a reference subject and first match the components of all other subjects to the components of the reference subject. The process is then repeated multiple times, using the average of previously aligned components as a reference. Finally, group components are given by the average of all aligned components. We use the Hungarian algorithm to align pairs of mixing matrices~\cite{tichavsky2004optimal}.
+Alternative approaches involving clustering have also been developed~\cite{esposito2005independent,bigdely2013measure}.
 
 Lastly, IVA based methods (see section~\ref{sec:IVA}) do not specifically model
 the shared response which is the quantity of interest in this work.

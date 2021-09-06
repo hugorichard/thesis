@@ -21,6 +21,13 @@ the oxygen level in blood can be tracked by a magnetic resonance imaging (MRI) s
 When a short stimuli occur, the change in the relative change in the MRI signal (BOLD
 signal) is not instantaneous. The typical response to a stimuli follows the
 curve displayed in figure~\ref{fig:hrf}. This response is rather slow (it may lats \emph{20s}) compared to the temporal scale of neurons which is on the order of \emph{ms}.
+
+\begin{figure}
+  \center
+  \includegraphics[scale=0.8]{figures/neuroscience/hrf.pdf}
+  \caption{A model of the hemodynamic response function}
+\end{figure}
+
 Luckily, the shape of the hemodynamic response does not vary much across time
 and therefore the BOLD signal is often seen as the result of the convolution of activation with the hemodynamic response.
 
@@ -183,6 +190,7 @@ A summary about the size of each dataset is available in Table~\ref{tab:dataset_
 \end{table}
 
 \subsection{An example of univariate analysis: analyzing task fMRI data via the general linear model}
+\label{sec:glm}
 In this section, we describe a framework successfully applied to identifying the brain regions involved in specific tasks: the general linear model
 (GLM)~\cite{friston1995analysis}. We refer the reader to
 Poline~\cite{poline2012general} for a more detailed description of the model and only cover here what we consider to be the most important parts.
@@ -214,7 +222,7 @@ described by the line $j$ of $S$.
 The noise is often assumed to be Gaussian with unit variance so that $A$ can be obtained as the
 result of a linear regression. Another common hypothesis is to assume temporal
 correlation of the noise in the form of an AR-1 process. In this case, we 
-consider instead the data $BX$ where $B \in \RR^{n, n}$ is chosen so that the
+consider instead the data $XB$ where $B \in \RR^{n, n}$ is chosen so that the
 noise $BN$ has no temporal correlation allowing us to perform linear regression.
 
 The result of the GLM procedure is often given by \emph{contrasts maps} where

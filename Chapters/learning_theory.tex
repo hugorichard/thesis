@@ -183,13 +183,13 @@ efficient in the finite sample case, but satisfies these properties asymptotical
 \subsection{Maximum likelihood}
 The maximum likelihood estimates the parameters $\hat{\thetab}$ such that the
 density $\nu_{\hat{\thetab}}$ at observed data $\xb_1, \dots, \xb_n$ is the highest among all possible
-values for $\thetab in \Theta$:
+values for $\thetab \in \Theta$:
 \begin{align}
   \hat{\thetab}_n = \argmax_{\thetab \in \Theta} \nu_{\thetab}(\xb_1, \dots, \xb_n)
 \end{align}
 
 The quantity $\nu_{\thetab}(\xb_1, \dots, \xb_n)$ is called the
-\emph{likelihood} and we call $\thetab_n$ the \emph{maximum likelihood estimator}.
+\emph{likelihood} and we call $\hat{\thetab}_n$ the \emph{maximum likelihood estimator}.
 
 Often we assume that samples are independent and identically distributed so that
 the joint density can be written:
@@ -248,10 +248,10 @@ that $\hat{\thetab}_n$ converges in probability to $\theta_*$:  $\forall \epsilo
 and uniform convergence in probability means $sup_{\thetab} \|l_n(\thetab) -
 l(\thetab)\| \xrightarrow[n \rightarrow \infty]{P} 0$.
 \begin{proof}
-  We first show that $l$ is minimum at $\thetab_*$:
+  We first show that $l$ is maximum at $\thetab_*$:
   \begin{align}
     l(\thetab_*) - l(\thetab) &= \EE_{\xb \sim \nu_{\thetab_*}}[\log \nu_{\thetab_*}(\xb) - \log(\nu_{\thetab}(\xb)] \\
-                            &= D_{KL}(\nu_{\thetab_*}, \nu_{\thetab}) \\
+                            &= D_{KL}(\nu_{\thetab_*}, \nu_{\thetab}) \\ \label{kl-likelihood}
                             &\geq 0
   \end{align}
   where $D_{KL}$ is the Kullback-Leibler divergence that is always positive.
@@ -414,6 +414,7 @@ called \emph{first order methods}. We will begin by presenting the famous
 \emph{quasi-Newton methods}. This section closely follow the chapter~9 of~\cite{boyd2004convex}.
 
 \subsubsection{Gradient descent}
+\label{sec:gd}
 We assume that $f$ is differentiable everywhere.
 From a point $\xb_0$, assuming a small \emph{step size} $\alpha$ and a direction
 $\db$ such that $\|\db\| = 1$, a Taylor decomposition at first order gives:
@@ -493,6 +494,7 @@ The type of convergence we get in proposition~\ref{prop:conv:gd} is called a
 \|^2$ is bounded by a linear function of  $\|\xb^{k} - \xb_* \|^2$) .
 
 \subsubsection{Newton method and quasi-Newton methods}
+\label{sec:qn}
 We assume that $f$ is twice differentiable everywhere.
 As in gradient descent, we depart from a point $\xb_0$, assume a small \emph{step size} $\alpha$ and a direction
 $\db$ such that $\|\db\| = 1$, a Taylor decomposition at the second first order gives:
@@ -729,7 +731,7 @@ In example~\ref{ex:em::gaussmixt:2} we us use the EM algorithm to optimize the G
   \label{ex:em::gaussmixt:2}
   Let us take the same data as in example~\ref{ex:em:gaussmixt}.
   \begin{align}
-    \gamma_n^k = p(z_n = 1 | x_n) &= \frac{\phi^k \Ncal(x_n; \mu_0^k, 1)}{ \phi^k \Ncal(x_n; \mu_0^k, 1) + (1 - \phi^k) \Ncal(x_n; \mu_1^k, 1)} 
+    \gamma_i^k = p(z_i = 1 | x_i) &= \frac{\phi^k \Ncal(x_i; \mu_0^k, 1)}{ \phi^k \Ncal(x_i; \mu_0^k, 1) + (1 - \phi^k) \Ncal(x_i; \mu_1^k, 1)} 
   \end{align}
   The E-step is given by:
   \begin{align}
