@@ -114,13 +114,129 @@
 \cleardoublepage
 
 
+\chapter{Overview}
+Group studies involving large cohorts of subjects are important to draw general
+conclusions about brain functional organization. However, the aggregation of
+data coming from multiple subjects is challenging, since it requires accounting
+for large variability in anatomy, functional topography and stimulus response
+across individuals. Data modeling is especially hard for ecologically relevant
+conditions such as movie watching, where the experimental setup does not imply
+well-defined cognitive operations. Consequently, the statistical analysis of the
+data using supervised regression-based approaches is difficult. This has
+motivated the use of unsupervised learning methods that leverage the
+availability of data from multiple subjects performing the same experiment;
+analysis on such large groups boost statistical power.
+In this thesis, we develop well principled unsupervised methods for the analysis
+of neuro-imaging data.
+
+\section{Organization of the manuscript}
+In part~\ref{part:background}, we give some background on statistical learning
+and optimization (chapter~\ref{ch:statistical_learning}), neuroscience
+(chapter~\ref{ch:neuroscience} and unsupervised methods popular in neuroimaging (chapter~\ref{ch:review}).
+
+The parts~\ref{part:fastsrm},~\ref{part:mvica},~\ref{part:shica}
+and~\ref{part:condica} highlight four different contributions that led to
+different publications.
+
+\subsection{Fast shared response model for fMRI data}
+When subjects are exposed to the same stimuli, their brain activity must exhibit
+some shared response. Our goal is to recover this shared response. The shared
+response model is one possible solution to this problem.
+However, the algorithm used in the shared response model does not scale well
+with the size of input . This is problematic because fMRI data have a very large
+size. Indeed, the fMRI data of each subject have a dimension on the order of
+$p=10^5$ and a number of samples on the order of $n=10^3$. Therefore, there is a
+need for faster algorithms. This will be presented in part~\ref{part:fastsrm}
+
+\subsection{MultiViewICA for neuroimaging data}
+In order to obtain a meaningful shared response, we need to impose constrains on
+the model. In the shared response model, orthogonality constraints are imposed
+that are not biologically plausible. A popular and more biologically plausible constraint is the
+independence of the recovered responses. However, most popular methods using these
+constraints are partially heuristic when multiple subjects are involved. In
+contrast, we develop a well principled method that comes with statistical
+guarantees. In practice our method is able to recover more reliable estimate of
+the shared response on fMRI and MEG data than competitors. This work will be presented in
+part~\ref{part:mvica}.
+
+\paragraph{Published work}
+\fullcite{richard2020modeling}
+
+\subsection{Shared ICA for neuroimaging data}
+The model used in MultiViewICA assumes that all subjects are equally different.
+In Shared ICA, we use a more general model that allows to model different
+deviations form the stereotypical response depending on the subject considered
+and/or on the response. Importantly, the difference between subjects can be used
+as an additional source of information to recover an even better estimate of the
+shared response. In practice, we observe that Shared ICA improves upon
+MultiViewICA. This work will be presented in part~\ref{part:shica}.
+
+\paragraph{Published work} This work has been submitted to NeurIPS 2021.
+
+\subsection{Conditional ICA}
+Our results suggest that ICA is a good generative model for fMRI data. Can it be
+used to perform data augmentation ? We design a data augmentation method, that
+leverages the large amount of (unlabeled) resting state data to generate
+realistic fake task data from a small set of images.
+Our data augmentation method yields an improvement in classification accuracy on
+eight large datasets. This will be discussed in part~\ref{part:condica}.
+
+\paragraph{Published work}
+\fullcite{tajini2021functional} (co-first authorship with equal contribution)
+
+\subsection{Softwares}
+The implementation of the methods developed in this thesis is open source and
+available on Github. Some of the code we wrote has made its way to bigger
+packages. 
+
+\subsubsection{Mvlearn}
+Mvlearn~\cite{perry2020mvlearn} is a python package for multiview learning tools. It offers reference
+implementations for algorithms and methods related to multiview learning.
+Its API is close to the scikit-learn~\cite{abraham2014machine} one making it
+easy to learn.
+We have implemented the GroupICA, GroupPCA and MultiViewICA modules of mvlearn.
+
+\paragraph{Published work}
+\fullcite{perry2020mvlearn}
+
+
+
+\subsubsection{Brainiak}
+Brainiak~\cite{kumar2020brainiak}, is a python package that applies machine
+learning methods to neuroimaging data. Its API is the same as in scikit-learn
+and it includes modules such as Representational Similarity Analysis or Shared
+response modeling.
+We have implemented the FastSRM module of Brainiak.
+
+
+\paragraph{Published work}
+\fullcite{kumar2020brainiak}
+
+\section{Chapter ordering}
+The appendices can be skipped at first read.
+Chapters~\ref{ch:statistical_learning},~\ref{ch:neuroscience} and~\ref{ch:review} present the necessary background.
+The reader more interested in the
+theory should first read
+chapters~\ref{ch:fastsrm1},~\ref{ch:mvica1},~\ref{ch:shica}
+and~\ref{ch:condica}. Chapters~\ref{ch:fastsrm2},~\ref{ch:mvica2},~\ref{ch:shica2}
+and~\ref{ch:condica2} focus on practical results.
+
+
+
+
+
+
 
 \part{Background concepts}
+\label{part:background}
 \chapter{Statistical learning and optimization}
+\label{ch:statistical_learning}
 \input{Chapters/learning_theory.tex}
 \chapter{Neuroscience background}
+\label{ch:neuroscience}
 \input{Chapters/neuroscience.tex}
 \chapter{Review of selected unsupervised methods popular in neuro-imaging studies}
+\label{ch:review}
 \input{Chapters/review.tex}
 \part{FastSRM: An efficient implementation of the shared response model}
 \label{part:fastsrm}
@@ -131,6 +247,7 @@
 \label{ch:fastsrm2}
 \input{Chapters/fastsrm_exp.tex}
 \part{MultiView ICA}
+\label{part:mvica}
 \chapter{MultiView ICA theory}
 \label{ch:mvica1}
 \input{Chapters/multiviewica.tex}
@@ -138,6 +255,7 @@
 \label{ch:mvica2}
 \input{Chapters/multiviewica_exp.tex}
 \part{Shared ICA}
+\label{part:shica}
 \chapter{Shared ICA theory}
 \label{ch:shica}
 \input{Chapters/shica.tex}
@@ -145,6 +263,7 @@
 \label{ch:shica2}
 \input{Chapters/shica_exp.tex}
 \part{CondICA}
+\label{part:condica}
 \chapter{CondICA Theory}
 \label{ch:condica}
 \input{Chapters/condica.tex}
@@ -154,13 +273,70 @@
 
 \part{Conclusion}
 \chapter{Conclusion}
-\section{Resources resulting from this thesis}
-\subsection{Mvlearn}
-\subsection{Brainiak}
+In this thesis, we have presented three contributions that allow to tackle
+inter-subject variability in neuro-imaging, and a data augmentation method for fMRI data.
+
+First, in chapter~\ref{ch:fastsrm1} and chapter~\ref{ch:fastsrm1}, we develop an
+atlas based procedure that is shown to accelerate significantly the existing
+procedure for performing dimension reduction of fMRI data in a multi-subject
+context with provably no loss of performance. It is now possible to apply these
+algorithms in big datasets where the number of subjects is on the order of
+several hundreds with several thousand samples and several hundred thousand features.
+
+Then, we propose in chapter~\ref{ch:mvica1} and chapter~\ref{ch:mvica2}
+a novel unsupervised algorithm, MultiViewICA that reveals latent sources observed through different views. Using an independence assumption, we have demonstrated that the model is identifiable provided that the latent
+sources are not Gaussian. In contrast to previous approaches, the proposed model leads to a closed-form likelihood, which we then optimize efficiently using a dedicated alternate quasi-Newton approach.
+Therefore, our approach enjoys the statistical guarantees of maximum-likelihood
+theory, while still being tractable. MultiViewICA outperforms other unsupervised
+methods used in fMRI and MEG in the context of shared response modeling. However,
+it assumes the same level of noise for all
+subjects which does not model properly between-subjects variability.
+
+In chapter~\ref{ch:shica} and chapter~\ref{ch:shica2}, we extend MultiViewICA so
+that it offers a more realistic noise model. The so-called ShICA model is a principled unifying solution to the problems of shared response modelling and GroupICA. ShICA is able to use both the diversity of Gaussian variances and non-Gaussianity for optimal estimation. We presented two algorithms to fit the model: ShICA-J, a fast algorithm that uses noise diversity, and ShICA-ML, a maximum likelihood approach that can separate Gaussian and non-Gaussian components. ShICA algorithms come with principled procedures for shared components estimation, as well as adaptation and estimation of noise levels in each view (subject) and component.
+In practice ShICA outperforms MVICA and other unsupervised methods used in the
+context of shared response modeling.
+
+Lastly, we introduce in chapter~\ref{ch:condica} and chapter~\ref{ch:condica2} a data
+augmentation method based on ICA that outperforms deep learning algorithms in
+terms of decoding accuracy while being much faster.
+
+
+\subsection{Other code contributions}
+We have contributed to other large open source projects such as scikit-learn~\cite{abraham2014machine}.
+
+
 \section{Contributions outside of the scope of the thesis}
+Some of the contributions we have made during the thesis were outside of its
+scope. We now present these contributions succinctly.
+
 \subsection{A deep approach to model complex stimuli}
+In this work, we learn a model to predict fMRI data of subjects watching a movie
+from the activities of a deep neural network exposed to the same movie. The neural network is previously trained to perform action recognition on a large dataset.
+The association of activity in visual areas with the different layers of the
+deep architecture displays complexity-related contrasts across visual areas and
+reveals a striking foveal/peripheral dichotomy.
+
+\paragraph{Published work}
+\fullcite{richard2018optimizing}
+
 \subsection{Predicting resting state from fMRI}
+In this work, we predict task contrasts from rest fMRI data using a piecewise
+  linear model. This model is shown to outperform linear models and a fully
+  connected neural network.
+
+  
+\paragraph{Published work}
+\fullcite{dohmatob2021brain}
+
 \subsection{An optimal transport approach to hyperalignment}
+In this work, we benchmark optimal transport, ridge regression and scale
+Procrustes to align the data of two
+subjects. Ridge regression seems to be the best method.
+
+\paragraph{Published work}
+\fullcite{bazeille2019local}
+
 \section{A note about resources used}
 All the code is written in Python.
 We use Matplotlib for plotting~\cite{hunter2007matplotlib} , scikit-learn for

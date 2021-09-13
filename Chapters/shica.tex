@@ -312,23 +312,15 @@ components $\sbb$ have the super-Gaussian density
 
 We propose to maximize the log-likelihood using a generalized
 EM~\cite{neal1998view, dempster1977maximum}. Derivations are available in Appendix~\ref{app:emestep}. Like in the previous section, the E-step is in closed-form yielding the following sufficient statistics:
-\begin{align}
-\label{mmse2}
-&\EE[\sbb | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32
-    \}}\theta_{\alpha} \eb_{\alpha}}{\sum_{\alpha \in
-    \{\frac12, \frac32 \}}\theta_{\alpha}}
-    \\ 
-    &\VV[\sbb | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32
-    \}}\theta_{\alpha} V_{\alpha}}{\sum_{\alpha \in
-    \{\frac12, \frac32 \}}\theta_{\alpha}} 
+  \begin{align}
+    \label{mmse2}
+    &\EE[s_j | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32\}} \theta_{\alpha} \frac{\alpha \bar{y}_{j}}{\alpha + \bar{\Sigma_{j}}}}{\sum_{\alpha \in \{0.5, 1.5\}} \theta_{\alpha}} \\
+    & \VV[s_j | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32\}} \theta_{\alpha} \frac{\bar{\Sigma_{j}}\alpha}{\alpha + \bar{\Sigma_{j}}}}{\sum_{\alpha \in \{0.5, 1.5\}} \theta_{\alpha}}  
 \end{align}
-    where
-    \begin{align}
-      &\eb_{\alpha}= \left(\sum_{i=1}^m \Sigma_i^{-1}  + \frac1{\alpha}I \right)^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \\
-      &V_{\alpha} = (\sum_{i=1}^m \Sigma_i^{-1}  + \frac1{\alpha}I)^{-1} \\
-      &\theta_{\alpha} = \mathcal{N} \left( \left( \sum_{i=1}^m \Sigma_i^{-1} \right)^{-1} \Sigma_i^{-1} \yb_i; 0, \alpha I + (\sum_{i=1}^m \Sigma_i^{-1})^{-1} \right)
-    \end{align}
-    with $\yb_i = W_i \xb_i$.
+where $\theta_{\alpha} = \Ncal(\bar{y}_{j}; 0 , \bar{\Sigma}_{j} + \alpha)$, 
+$\bar{y}_j = \frac{\sum_i \Sigma_{ij}^{-1} y_{ij}}{ \sum_i
+  \Sigma_{ij}^{-1}}$ and $\bar{\Sigma_{j}} = (\sum_i
+\Sigma_{ij}^{-1})^{-1}$ with $\yb_i = W_i \xb_i$.
 Noise updates are in closed-form and given by:
 \begin{align}
 \Sigma_i \leftarrow  \diag((\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb])

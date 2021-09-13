@@ -300,43 +300,9 @@ for $A'_1 = A_1(I_p + \Sigma_1)^{\frac12}U(I_p + \Sigma_1)^{-\frac12}$ where $U$
 \section{EM E-step and M-step for ShICA with Gaussian components}
   \subsection{E-step}
   \label{conditional_density}
-  The complete likelihood is given by
-\begin{equation}
-  p(\xb, \sbb) = \prod_i p(\xb_i | \sbb) p(\sbb)=  \prod_i (|W_i| \Ncal(\yb_i; \sbb, \Sigma_i)) \Ncal(\sbb; 0, I_k)
-\end{equation}
+  The derivations are the same as in section~\ref{app:emestep1} but the sum over
+  $\alpha \in {\frac12, \frac32}$ is replaced by just $\alpha=1$.
 
-The likelihood writes
-\begin{align}
-  p(\xb) &= \int_{\sbb} \prod_{i=1}^m \left(|W_i| \Ncal(\yb_i; \sbb, \Sigma_i) \right) \Ncal(\sbb; 0, I_k) d \sbb \\
-\end{align}
-
-Denoting $P = (\sum_{i=1}^m \Sigma_i^{-1} + I)$ we can write
-\begin{align}
-  &\sum_{i=1}^m \langle \yb_i - \sbb, \Sigma_i^{-1} (\yb_i - \sbb) \rangle + \langle \sbb , \sbb \rangle \\
-  &=  \sum_{i=1}^m \langle \yb_i , \Sigma_i^{-1} \yb_i\rangle + \langle \sbb ,(\sum_{i=1}^m \Sigma_i^{-1} + I) \sbb \rangle  -2 \langle \sbb ,\sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \rangle \\
-  &=  \sum_{i=1}^m \left(\langle \yb_i , \Sigma_i^{-1} \yb_i\rangle \right)  +\langle \sbb  - P^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) , P (\sbb - P^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right)) \rangle   \\&- \langle P^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) , \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \rangle 
-\end{align}
-
-Denoting
-\begin{align*}
-&\psi(\yb, \sbb, P, \Sigma) = \\& \exp(-\frac12 \langle \sbb  - P^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) , P (\sbb - P^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right)) \rangle)
-\end{align*}
- we get
- \begin{align}
-     p(\sbb | \xb) &= \frac{p(\xb, \sbb)}{p(\xb)} \\
-                   &= \frac{\psi(\yb, \sbb, P, \Sigma)}{
-                     \int_{\sbb} \psi(\yb, \sbb, P, \Sigma) d \sbb} \\
-     &= \mathcal{N}(\sbb; P^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right), P^{-1})
- \end{align}
-so 
-\begin{align}
-  &\sbb|\xb \sim \Ncal( \EE[\sbb|\xb], \VV[\sbb | \xb])
-\end{align}
-where
-\begin{align}
-	&\EE[\sbb|\xb]= \left(\sum_{i=1}^m \Sigma_i^{-1}  + I \right)^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right)  \\
-  &\VV[\sbb|\xb]= (\sum_{i=1}^m \Sigma_i^{-1}  + I)^{-1} 
-\end{align}
 
 \subsection{M-step}
 The function to minimize in the M-step is then given by:
@@ -360,69 +326,118 @@ Plugging in the closed-form formula for $\EE[\sbb|\xb]$ and $\VV[\sbb|\xb]$ we g
 \label{app:emestep}
 
   \subsection{E-step}
+  \label{app:emestep1}
   The complete likelihood is given by
 \begin{align}
   p(\xb, \sbb) &= \prod_i p(\xb_i | \sbb) p(\sbb) \\
-  &=  \sum_{\alpha \in \{\frac12, \frac32\}} p(\xb, \sbb | \alpha) 
+  &= \prod_i p(\xb_i | \sbb) \prod_j \sum_{\alpha \in \{0.5, 1.5\}}p(s_j | \alpha) \\
 \end{align}
 where 
-\[
-p(\xb, \sbb | \alpha)  = \prod_i (|W_i| \Ncal(\yb_i; \sbb, \Sigma_i)) \Ncal(\sbb; 0, \alpha I_k)
-\]
-
-We denote $P_{\alpha} = (\sum_{i=1}^m \Sigma_i^{-1} + \frac1{\alpha}I), R_{\alpha} =  ((\sum_{i=1}^m \Sigma_i^{-1})^{-1} + \alpha I)$ and $\bar{\yb} = \frac{\sum_i \Sigma_i^{-1} \yb_i}{\sum_i \Sigma_i^{-1}}$. We introduce the constants $c_1, \dots c_3$ that are independent of $\alpha$ and $\sbb$.
-We have:
 \begin{align}
-  p(\xb, \sbb | \alpha) &= \frac{c_1}{|\alpha I|}\exp(-\frac12(\sum_{i=1}^m \langle \yb_i - \sbb, \Sigma_i^{-1} (\yb_i - \sbb) \rangle + \frac1{\alpha}\langle \sbb , \sbb \rangle)) \\
-  &= \frac{c_1}{|\alpha I|} \exp(-\frac12(\sum_{i=1}^m \langle \yb_i - \sbb + \nonumber \\& \enspace \enspace \bar{\yb} - \bar{\yb}, \Sigma_i^{-1} (\yb_i - \sbb + \bar{\yb} - \bar{\yb}) \rangle + \frac1{\alpha}\langle \sbb , \sbb \rangle)) \\
-                        &= \frac{c_1}{|\alpha I|} \exp(-\frac12(\sum_{i=1}^m \langle \yb_i - \bar{\yb}, \Sigma_i^{-1} (\yb_i - \bar{\yb}) \rangle \nonumber \\& \enspace \enspace+ \sum_{i=1}^m \langle \bar{\yb} - \sbb, \Sigma_i^{-1} (\bar{\yb}- \sbb) \rangle + \frac1{\alpha}\langle \sbb , \sbb \rangle)) \\
-  &= \frac{c_2}{|\alpha I|} \exp(-\frac12( \langle \bar{\yb} - \sbb, \sum_{i=1}^m  \Sigma_i^{-1} (\bar{\yb}- \sbb) \rangle + \frac1{\alpha}\langle \sbb , \sbb \rangle)) \\
-                        &= \frac{c_2}{|\alpha I|} \exp(-\frac12( \langle \bar{\yb}, \sum_{i=1}^m  \Sigma_i^{-1} \bar{\yb} \rangle + \nonumber \\& \enspace \enspace
-  \langle \sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, P_{\alpha} (\sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1} \bar{\yb}) \rangle \nonumber
-   \\& \enspace - \langle P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, \sum_i \Sigma_i^{-1}\bar{\yb} \rangle)) \\
-     &= \frac{c_2}{|\alpha I|} \exp(-\frac12( \langle \bar{\yb}, (\sum_{i=1}^m  \Sigma_i^{-1} -  \sum_{i=1}^m  \Sigma_i^{-1} P_{\alpha}^{-1} \sum_{i=1}^m  \Sigma_i^{-1}) \bar{\yb} \rangle + \nonumber \\
-  & \enspace \langle \sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, P_{\alpha} (\sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1} \bar{\yb}) \rangle)) \\
-                        &= \frac{c_2}{|\alpha I|} \exp(-\frac12( \langle \bar{\yb}, R_{\alpha}^{-1} \bar{\yb} \rangle + \nonumber \\& \enspace \enspace \langle \sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, P_{\alpha} (\sbb - P_{\alpha}^{-1} \sum_i \Sigma_i^{-1} \bar{\yb}) \rangle)) \label{app:51}  \\
-  &= c_3 \mathcal{N}(\bar{y}; 0, R_{\alpha}) \mathcal{N}(\sbb, P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, P_{\alpha}^{-1}) \label{app:52}
-\end{align}
-In equation~\eqref{app:51}, we use the Woodburry matrix identity
-$(A + B)^{-1} = A^{-1} - A^{-1} (A^{-1} + B^{-1})^{-1} A^{-1}$ with $A = (\sum_i \Sigma_i^{-1})^{-1}$ and $B = \alpha I$.
-
-In equation~\eqref{app:52}, we use: $|\alpha I | \propto |R_{\alpha}||P_{\alpha}^{-1}|$. Indeed we have:
-\begin{align}
-&(\sum_{i=1}^m \Sigma_i^{-1} + \frac1{\alpha}I) ((\sum_i \Sigma_i^{-1})^{-1} \alpha I) = \alpha I + (\sum_i \Sigma_i^{-1})^{-1} \\
-&\implies P_{\alpha}((\sum_i \Sigma_i^{-1})^{-1} \alpha I) = R_{\alpha} \\
-& \implies |P_{\alpha}||\alpha I||(\sum_i \Sigma_i^{-1})^{-1}| = |R_{\alpha}| \\
-& \implies |\alpha I | \propto |R_{\alpha}||P_{\alpha}^{-1}|
+  p(s_j | \alpha) = \Ncal(s_j; 0, \alpha)
 \end{align}
 
-
- Therefore we get
- \begin{align}
-     p(\sbb | \xb) &= \frac{\sum_{\alpha} \mathcal{N}(\bar{y}; 0, R_{\alpha}) \mathcal{N}(\sbb, P_{\alpha}^{-1} \sum_i \Sigma_i^{-1}\bar{\yb}, P_{\alpha}^{-1})}{\sum_{\alpha} \mathcal{N}(\bar{y}; 0, R_{\alpha})} \\
- \end{align}
-so 
-
- \begin{align}
-  &\sbb|\xb \sim \frac{\sum_{\alpha \in \{\frac12, \frac32 \}}\theta_{\alpha} \Ncal( \eb_{\alpha}, V_{\alpha})}{\sum_{\alpha \in \{\frac12, \frac32 \}}\theta_{\alpha}}
- \end{align}
-
- \begin{align}
-   &\eb_{\alpha}= \left(\sum_{i=1}^m \Sigma_i^{-1}  + \frac1{\alpha}I \right)^{-1}  \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \\
-   &V_{\alpha} = (\sum_{i=1}^m \Sigma_i^{-1}  + \frac1{\alpha}I)^{-1} \\ 
-   &\theta_{\alpha} = \mathcal{N}((\sum_{i=1}^m \Sigma_i^{-1})^{-1} \Sigma_i^{-1} \yb_i; 0, (\alpha I + \sum_{i=1}^m \Sigma_i^{-1})^{-1})
- \end{align}
-  
- Therefore we get
+We have
 \begin{align}
-	&\EE[\sbb | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32
-  \}}\theta_{\alpha} \eb_{\alpha}}{\sum_{\alpha \in
-  \{\frac12, \frac32 \}}\theta_{\alpha}} \\
-  &\VV[\sbb | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32
-    \}}\theta_{\alpha} \vb_{\alpha}}{\sum_{\alpha \in
-    \{\frac12, \frac32 \}}\theta_{\alpha}}
+  p(\xb_i | \sbb) &=|W_i|\Ncal(\yb_i; \sbb, \Sigma_i)  \\
+                  &= |W_i| \prod_j \Ncal(y_{ij}; s_j, \Sigma_{ij})
 \end{align}
-    
+where $\Sigma_{ij}$ is the coefficient $j, j$ of $\Sigma_i$ and $\yb_i = W \xb_i$.
+
+Let us introduce a first lemma:
+\begin{lemma}
+  \label{lemma:multmgauss}
+  \begin{align*}
+    \prod_{i=1}^m \Ncal(x_i; u, v_i) = \prod_{i=1}^m \Ncal(x_i; \bar{x}, v_i) \sqrt{2 \pi \bar{v}} \Ncal(\bar{x}; u, \bar{v})
+  \end{align*}
+  where $\bar{v} = (\sum_{i=1}^m v_i^{-1})^{-1}$ and $\bar{x} = \frac{\sum_i v_i^{-1}
+    x_i}{\sum_i v_i^{-1}}$.
+\end{lemma}
+\begin{proof}
+  We have that
+  \begin{align}
+    \frac1{v_i}(x_i - u)^2 &= \frac1{v_i}(x_i - u)^2 \\
+                           &=\frac1{v_i}(x_i - \bar{x} + \bar{x} - u)^2 \\
+                           &=\frac1{v_i}(x_i - \bar{x})^2 + \frac1{v_i}(\bar{x} - u)^2 \label{eq:lem:multigauss}
+  \end{align}
+  and therefore
+  \begin{align}
+    &\prod_i \frac1{\sqrt{2 \pi v_i}}\exp(-\frac1{2v_i}(x_i - \mu)^2) \\
+    &= \prod_j \frac1{\sqrt{2 \pi v_i}}\exp(-\frac12 (\frac1{v_i}(x_i - \bar{x})^2 + \frac1{v_i}(\bar{x} - u)^2)) \\ 
+    &= \prod_j \Ncal(x_i, \bar{x}, v_i) \exp(-\frac12( \sum_i \frac1{v_i})(\bar{x} - u)^2)) \\ 
+  \end{align}
+    so the desired result follow.
+\end{proof}
+
+By Lemma~\ref{lemma:multmgauss}, we have
+\begin{align}
+  \prod_i p(\xb_i | \sbb) &= \prod_i |W_i| \prod_j \Ncal(y_{ij}; \bar{y}_{j}, \Sigma_{ij}) \sqrt{2 \pi \bar{\Sigma_{j}}} \Ncal(\bar{y}_j; s_j, \bar{\Sigma_{j}})  \\
+\end{align}
+where $\bar{y}_j = \frac{\sum_i \Sigma_{ij}^{-1} y_{ij}}{ \sum_i
+  \Sigma_{ij}^{-1}}$ and $\bar{\Sigma_{j}} = (\sum_i
+\Sigma_{ij}^{-1})^{-1}$.
+Hiding variable that do not depend on $\sbb$ we obtain
+
+\begin{align}
+  \prod_i p(\xb_i | \sbb) &\propto \prod_j \Ncal(\bar{y}_j; s_j, \bar{\Sigma_{j}})  \\
+\end{align}
+
+Then we get
+\begin{align}
+  p(\xb, \sbb) &= \prod_j \sum_{\alpha \in \{0.5, 1.5\}} \Ncal(s_j; \bar{y}_j, \bar{\Sigma_{j}}) \Ncal(s_j; 0, \alpha)
+\end{align}
+
+Let us now prove a second Lemma:
+\begin{lemma}
+  \label{lemma:multgauss}
+  \begin{align*}
+    \mathcal{N}(x; y, \nu) \mathcal{N}(x, 0, \alpha) = \mathcal{N}(y; 0, \nu + \alpha) \mathcal{N}(x; \frac{\alpha y}{\alpha + \nu}, \frac{\nu \alpha}{\alpha + \nu})
+  \end{align*}
+\end{lemma}
+\begin{proof}
+
+  We have 
+\begin{align}
+  &\mathcal{N}(x; y, \nu) \mathcal{N}(x, 0, \alpha) = \frac{\exp \left(-\frac{(x-y)^2}{2\nu} \right)}{\sqrt{2 \pi \nu}} \frac{\exp \left(-\frac{x^2}{2\alpha}\right)}{\sqrt{2 \pi \alpha}}
+\end{align}
+
+Then,
+\begin{align}
+  &\exp \left(-\frac{(x-y)^2}{2\nu} \right) \\
+  &= \exp\left(- \frac{\alpha (x-y)^2 + \nu x^2}{2 \alpha \nu} \right) \\
+  &= \exp\left(- \frac{\alpha (x^2 -2xy + y^2) + \nu x^2}{2 \alpha \nu} \right) \\ 
+  &=\exp\left(- \frac{x^2(\alpha + \nu) -2x(\alpha y) + \alpha y^2 }{2 \alpha \nu} \right) \\
+  &= \exp\left( -\frac{x^2 -2x\frac{\alpha y}{\alpha + \nu} + \frac{\alpha y^2}{\alpha + \nu} }{2 \frac{\alpha \nu}{\alpha + \nu}} \right) \\
+  &= \exp\left( -\frac{(x - \frac{\alpha y}{\alpha + \nu})^2 - ( \frac{\alpha y}{\alpha + \nu} )^2 + \frac{\alpha y^2}{\alpha + \nu} }{2 \frac{\alpha \nu}{\alpha + \nu}} \right) \\
+  &= \exp\left( -\frac{(x - \frac{\alpha y}{\alpha + \nu})^2}{2\frac{\alpha \nu}{\alpha + \nu}}\right) \exp \left(-\frac{ - \alpha^2 y^2 + (\alpha + \nu)\alpha y^2 }{2 \alpha \nu(\alpha + \nu)} \right) \\
+  &= \exp\left( -\frac{(x - \frac{\alpha y}{\alpha + \nu})^2}{2\frac{\alpha \nu}{\alpha + \nu}}\right) \exp \left(-\frac{\nu\alpha y^2 }{2 \alpha \nu(\alpha + \nu)} \right)
+\end{align}
+
+and
+\begin{align}
+  \frac1{\sqrt{2 \pi \nu}\sqrt{2 \pi \alpha}} &= \frac1{\sqrt{2 \pi (\nu + \alpha)}\sqrt{2 \pi \frac{\nu \alpha}{\nu + \alpha}}}
+\end{align}
+so that the desired result follow.
+\end{proof}
+                 
+By Lemma~\ref{lemma:multgauss}, we have:
+\begin{align}
+  &p(\xb, \sbb) \\
+  &= \prod_j \sum_{\alpha \in \{0.5, 1.5\}} \Ncal(\bar{y}_{j}; 0 , \bar{\Sigma}_{j} + \alpha) \Ncal(s_j; \frac{\alpha \bar{y}_{j}}{\alpha + \bar{\Sigma_{j}}}, \frac{\bar{\Sigma_{j}}\alpha}{\alpha + \bar{\Sigma_{j}}})
+\end{align}
+
+and therefore we get:
+\begin{align}
+  p(\sbb | \xb) &= \frac{p(\sbb, \xb)}{\int_{\sbb} p(\sbb, \xb)} \\
+                &= \prod_j \frac{\sum_{\alpha \in \{0.5, 1.5\}} \theta_{\alpha} \Ncal(s_j; \frac{\alpha \bar{y}_{j}}{\alpha + \bar{\Sigma_{j}}}, \frac{\bar{\Sigma_{j}}\alpha}{\alpha + \bar{\Sigma_{j}}})}{\sum_{\alpha \in \{0.5, 1.5\}} \theta_{\alpha}}
+\end{align}
+where $\theta_{\alpha} = \Ncal(\bar{y}_{j}; 0 , \bar{\Sigma}_{j} + \alpha)$.
+
+So we obtain the desired result:
+\begin{align}
+  &\EE[s_j | \xb] = \frac{\sum_{\alpha \in \{0.5, 1.5\}} \theta_{\alpha} \frac{\alpha \bar{y}_{j}}{\alpha + \bar{\Sigma_{j}}}}{\sum_{\alpha \in \{0.5, 1.5\}} \theta_{\alpha}} \\
+  & \VV[s_j | \xb] = \frac{\sum_{\alpha \in \{0.5, 1.5\}} \theta_{\alpha} \frac{\bar{\Sigma_{j}}\alpha}{\alpha + \bar{\Sigma_{j}}}}{\sum_{\alpha \in \{0.5, 1.5\}} \theta_{\alpha}}  
+\end{align}
 
 \subsection{M-step}
 The function to minimize in the M-step is then given by:

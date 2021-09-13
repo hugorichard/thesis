@@ -146,6 +146,7 @@ Assume for simplicity that the sources have the same density $\delta$, denoting 
 where we used the change of variable $\sbb = W \xb$.
 
 \subsubsection{Optimizing the maximum likelihood: relative gradient, Hessian and approximations}
+\label{sec:opt:likelihood:relativegradient}
 The matrix $W$ needs to be invertible. In practice, if the constraint is not
 enforced, we could see numerical instabilities appear.
 A simple rule that preserve the inversibility of $W$ is to use updates of the
@@ -222,7 +223,8 @@ negative log-likelihood coincides, up to a constant, with the KL divergence betw
 distribution of the data and the distribution of the data as hypothesized in the
 model:
 \begin{align}
-  -l(\theta) &=  D_{KL}(p(\xb^*), p(W^{-1} \sbb)) \\
+  &-l(\theta) \\
+  &=  D_{KL}(p(\xb^*), p(W^{-1} \sbb)) \\
              &=  D_{KL}(p(W\xb^*), p(\sbb)) \\
              &=  D_{KL}(p(W \xb^*), \prod_i p_i(\wb_i\xb^*)) + D_{KL}(\prod_i p_i(\wb_i\xb^*), p(\sbb)) \\
              &=  D_{KL}(p(W \xb^*), \prod_i p_i(\wb_i\xb^*)) + D_{KL}(\prod_i p_i(\wb_i\xb^*), \prod_i p_i(s_i)) \\
@@ -406,41 +408,200 @@ The model of~\cite{guo2008unified} considers the very general model $\xb_i = A_i
 In~\cite{guo2008unified}, the sources are assumed to be a mixture of Gaussian
 $p(s_j) = \sum_{z=1}^q \Ncal(\mu_{zj}, \sigma_{zj})$.
 where parameters of the Gaussian mixtures are learned. The fact that these
-parameters are learned make the E-step impossible to compute in closed form. The
+parameters are learned make the E-step impossible to compute in closed form. In
+addition, the
 approximate E-step described in~\cite{guo2008unified} involves at each iteration
 a costly sum where the number of terms is $q^p$ making their algorithm
 intractable when the number of components $p$ is larger than $20$ even if the
 number of Gaussian mixtures is as small as $q=2$. 
 
 In this section, we assume that the parameters of the Gaussian mixture are
-known and take $q=2$. Since the noise variance is assumed to be the same across subjects
-in~\cite{guo2008unified} we will take it equal to $\sigma I$ where $\sigma$ is
-an hyper-parameter. Even in this
-simplified setting, we will see that the large sum with $q^p$ terms appears
-making such approaches scale exponentially with the number of components $p$.
+known, take $q=2$ and assume the same noise variance $\sigma$ for all subjects and all
+components. In this
+simplified setting, we will show that the E-step is in closed form but involves
+a large sum with $q^p$ terms.
 
 Note that in this setting the problem can be treated as a single subject noisy
 ICA problem where $A = \begin{bmatrix} A_1 \\ \vdots  \\ A_m \end{bmatrix}$,
 $\xb = \begin{bmatrix} \xb_1 \\ \vdots  \\ \xb_m \end{bmatrix}$ and $\nb
-= \begin{bmatrix} \nb_1 \\ \vdots  \\ \nb_m \end{bmatrix}$. This showcase the
-strong link between~\cite{guo2008unified} and~\cite{moulines1997maximum}. We now
-follow the derivations in~\cite{moulines1997maximum} and write the expected
-likelihood given by:
+= \begin{bmatrix} \nb_1 \\ \vdots  \\ \nb_m \end{bmatrix}$. This showcases the
+strong link between~\cite{guo2008unified} and~\cite{moulines1997maximum}.
+
+We assume the following Gaussian mixture for each source $s_j$.
 \begin{align}
-p(\xb)
+  &p(s_j) = \frac12 \sum_{\alpha_j \in \{\frac12, \frac32\}} p(s_j | \alpha_j) \\
+  &p(s_j | \alpha_j) = \mathcal{N}( s_j; 0, \alpha_j)
+\end{align}
+where $\alpha_j$ can be seen as a random variable that take its value in $\{ \frac12,
+\frac32 \}$  with equal probability. We call $\alphab$ the random vector with
+independent coordinates such that coordinate $j$ is given by $\alpha_j$.
+
+Following a similar direction as~\cite{moulines1997maximum} we can write:
+\begin{align}
+  &p(\xb, \sbb, \alphab) \\
+  &= p(\xb | \sbb) p(\sbb|\alphab)p(\alphab) \\
+                        &= \Ncal(\xb; A\sbb, \sigma^2 I_p)\mathcal{N}( \sbb; 0, \diag(\alphab)) \frac1{2^p} \\
+  &\propto \frac{\exp\big(-\frac12(\frac1{ \sigma^2}\|\xb - A\sbb \|^2 + \langle \sbb , \diag(\alphab)^{-1} \sbb\rangle)\big)}{(|\sigma^2 I_p| |\diag(\alphab)|)^{\frac12}}  \\
+  &= \frac{\exp\big(-\frac12(\frac1{ \sigma^2}(\|\xb \|^2 - 2 \langle \xb, A \sbb \rangle + \|A \sbb \|^2)  + \langle \sbb , \diag(\alphab)^{-1} \sbb\rangle) \big)}{(|\sigma^2 I_p| |\diag(\alphab)|)^{\frac12}} \\
+  &\propto \frac{\exp\big(-\frac12( \langle \sbb - \mu_{\alphab}, V_{\alphab}^{-1} (\sbb - \mu_{\alphab}) \rangle - \langle \mu_{\alphab} ,V_{\alphab}^{-1} \mu_{\alphab} \rangle) \big)}{(|\sigma^2 I_p| |\diag(\alphab)|)^{\frac12}}
+\end{align}
+where $V_{\alphab} = (\frac1{\sigma^2}A^{\top}A + \diag(\alphab)^{-1})^{-1}$, $\mu_{\alphab} = \frac1{\sigma^2}V_{\alphab}
+A^{\top} \xb$ and the proportionality constant contains terms that do not depend
+on $\sbb$ or $\alphab$.
+
+So that we get:
+\begin{align}
+  p(\sbb | \xb, \alphab) =  \Ncal(\sbb, \mu_{\alphab}, \Sigma_{\alphab})
 \end{align}
 
+Then we have that:
+\begin{align}
+  p(\alphab | \xb) &= \int_{\sbb} p(\alphab, \sbb | \xb) d\sbb \\
+                    &\propto \int_{\sbb} p(\xb, \sbb ,\alphab) d\sbb \\ 
+                   &\propto \frac{\exp\big(\frac12(\langle \mu_{\alphab} ,V_{\alphab}^{-1} \mu_{\alphab} \rangle) \big)}{(|\diag(\alphab)| |V_{\alphab}^{-1}|)^{\frac12}}\\ 
+\end{align}
+where we leave out terms that do not depend on $\alphab$.
+The normalizing constant can be computed by summing over possible values of
+$\alphab$:
+\begin{align}
+  p(\alphab | \xb) &= \frac{\frac{\exp\big(\frac12(\langle \mu_{\alphab} ,V_{\alphab}^{-1} \mu_{\alphab} \rangle) \big)}{(|\diag(\alphab)| |V_{\alphab}^{-1}|)^{\frac12}}}{\sum_{\alphab, \alpha_j \in \{\frac12, \frac32\}} \frac{\exp\big(\frac12(\langle \mu_{\alphab} ,V_{\alphab}^{-1} \mu_{\alphab} \rangle) \big)}{(|\diag(\alphab)| |V_{\alphab}^{-1}|)^{\frac12}}}
+\end{align}
 
+Then, we can obtain a closed form formula for $p(\sbb | \xb)$ using
+\begin{align}
+  p(\sbb | \xb) = \sum_{\alphab, \alpha_j \in \{\frac12, \frac32\}} p(\sbb | \xb, \alphab) p(\alphab | \xb)
+\end{align}
 
+The problem here is that the size of the set $\{\alphab, \alpha_j \in
+  \{\frac12, \frac32\} \}$ is $2^p$ which quickly gets large when $p$ increases.
 
 \subsection{Independent vector analysis}
-Independent vector analysis~\cite{lee2008independent} (IVA) models the data as a linear mixture of independent components $\xb_i = A_i \sbb_i$ where each component $s_{ij}$ of a given view $i$ can depend on the corresponding component in other views ($(s_{ij})_{i=1}^m$ are not independent).
 \label{sec:IVA}
-Practical implementations of this very general idea assume a distribution for $p((s_{ij})_{i=1}^m)$. In IVA-L~\cite{lee2008independent}, $p((s_{ij})_{i=1}^m) \propto \exp(-\sqrt{\sum_i (s_{ij})^2})$ (so the variance of each component in each view is assumed to be the same), in IVA-G~\cite{anderson2011joint} or in~\cite{via2011maximum}, $p((s_{ij})_{i=1}^m) \sim \mathcal{N}(0, R_{ss})$ and~\cite{engberg2016independent} proposed a normal inverse-Gamma density.
-\subsubsection{IVA-L}
-\subsubsection{IVA-G}
+Independent vector analysis~\cite{lee2008independent} (IVA) models the data as a
+linear mixture of independent components $\xb_i = A_i \sbb_i$ where each
+component $s_{ij}$ of a given view $i$ can depend on the corresponding component
+in other views: $\sbb_{[j]} = (s_{ij})_{i=1}^m$ are not independent.
+
+Introducing $\xb \in \RR^{mp}$ such that $\xb  = [\xb_1, \dots, \xb_m]^{\top}$,
+$\sbb \in \RR^{mp}$ such that $\sbb = [\sbb_1, \dots, \sbb_m]^{\top}$ and $\yb
+\in \RR^{mp}$ such that $\yb = [\yb_1, \dots, \yb_m]^{\top}$ where $\yb_i = W_i
+\xb_i$ with $W_i = A_i^{-1}$, the
+log-likelihood is given by:
+\begin{align*}
+  \loss &= - log(p(\xb)) \\
+        &= \sum_{i=1}^m -\log(|W_i|) -\log(p(\yb)) \\
+        &= \sum_{i=1}^m - \log(|W_i|) + \sum_{j=1}^p -\log(p_{\sbb_{[j]}}(\yb_{[j]}))
+\end{align*}
+where we used the notation $\yb_{[j]} = (y_{ij})_{i=1}^m$.
+
+The optimization can be carried out using alternate minimization keeping the
+mixing matrices of all subjects fixed but one. We can rely on the relative
+gradient as in section~\ref{sec:opt:likelihood:relativegradient} and use update
+of the form $W_i \leftarrow (I - \alpha_i G_i) W_i$ where $\alpha_i$ is given by
+backtracking line search and $G_i$ is the relative gradient given by:
+\begin{align}
+  G_i = -I_p + \phi_i(\yb_i) \yb_i^{\top}
+\end{align}
+where component $j$ of $\phi_i$ is given by $\phi_{ij} = (\partialfrac{\yb_{ij}}{-\log(p_{\sbb_{[j]}}(\yb_{[j]}))})_{j=1}^p$.
+
+
+Practical implementations of this general model assume a distribution for
+$p_{\sbb_{[j]}}$.
+In IVA-L~\cite{lee2008independent},
+\begin{align}
+  p_{\sbb_{[j]}}(\yb_{[j]}) \propto \exp(-\sqrt{\sum_i (y_{ij})^2})
+\end{align}
+and therefore
+\begin{align}
+  \phi_{ij}(\yb_i) &= \frac{y_{ij}}{\sqrt{\sum_i (y_{ij})^2}}
+\end{align}
+
+In IVA-G~\cite{anderson2011joint}~\cite{via2011maximum},
+\begin{align}
+  p_{\sbb_{[j]}}(\yb_{[j]}) = \Ncal( \yb_{[j]}; 0, \Sigma_j)
+\end{align}
+and therefore
+\begin{align}
+  \phi_{ij}(\yb_j) &= \sum_l \Sigma_j^{-1}[il] y_{lj}
+\end{align}
+where  $\Sigma_j^{-1}[il]$ is the coordinate $i, l$ of $\Sigma_j^{-1}$ and
+$y_{lj}$ is the $j$th coordinate of $\yb_i$.
+
+In IVA-G, an estimate of $\Sigma_j$ is needed at each iteration. This is
+computed using the empirical estimate of the covariance:
+\begin{align}
+\Sigma_j = \frac1{n} \sum_{t=1}^n \yb_{[j]} \yb_{[j]}^{\top}
+\end{align}
+
+Second order extensions and Hessian approximations can be used in IVA as well.
+This is described in~\cite{anderson2011joint}. Also note that although IVA-G and
+IVA-L are the two most popular implementations of the IVA framework, others exist
+(see for instance the work in~\cite{anderson2013independent}).
 
 \subsection{Hyperalignment}
+Hyperalignment is a model initially designed for fMRI data to reduce
+inter-subject variability~\cite{haxby2011common}.
+
+Let us assume we have access to the data of two subjects: $\xb_1, \xb_2$.
+Assuming these subjects are exposed to a time-locked stimuli (such as a movie), a possible alignment is given by the Procruste transform:
+\begin{align}
+min_{P \in \RR^{p, p}, PP^{\top} = I_p} \|P \xb_1 - \xb_2 \|_2
+\end{align}
+This can be solved efficiently by
+\begin{align}
+  P_{12} = \Pcal(\xb_2 \xb_1^{\top})
+\end{align}
+where $\Pcal$ is the projection on the Stiefel manifold: $\Pcal(M) = M
+(M^{\top}M)^{-\frac12}$. In practice $\Pcal(M)$ is computed by performing an SVD
+of $M$, $M = U_M D_M V_M^{\top} $ so that $\Pcal(M) = U_M V_M^{\top}$.
+
+Hyperalignment is the combination of the Procruste transform and an iterative
+procedure to produce a template from multiple alignments.
+
+In an initialization step, a random subject $i$ is chosen and the alignment
+between all subjects $s \neq i$ and the target are computed. The initial
+template $\tb$ is given by the averaged aligned data. Then, all subjects are
+aligned to the current template $\tb$ and the template is recomputed using the
+averaged aligned data. This procedure is repeated for a given number of
+iterations until convergence.
+
+We describe formally
+the method in algorithm~\ref{algo:hyper:2}.
+
+\begin{algorithm}[H]
+  \SetAlgoLined
+  \caption{Hyperalignment}
+  \label{algo:shicaj}
+  \KwIn{Data $\Xb_1, \dots, \Xb_m \in \RR^{p, n}$,  number of iterations
+    $n_{iter}$}
+  $\blacktriangleright$ Select a random subject \\
+  $i \sim \Ucal(1, m)$ \\
+  $\blacktriangleright$ Initialize the alignment operators \\
+  \For{$s=1 \dots m$}{
+    \If{$s=i$}{
+      $P_{st} = I_p$ \\
+    }
+    \Else{
+      $P_{st} = \Pcal(X_t X_s^{\top})$ \\
+    }
+  }
+  $T = \frac{\sum_{s=1}^m P_{st} X_s}{m}$ \\
+
+  $\blacktriangleright$ Main loop \\
+  \For{$it=1 \dots n_{iter}$}
+  {
+    $\blacktriangleright$ Align data and the current template \\
+    \For{$s=1 \dots m$}{
+      $P_{st} = \Pcal(T X_s^{\top})$ \\
+    }
+
+    $\blacktriangleright$ Compute the template as the mean of aligned data \\
+    $T = \frac{\sum_{s=1}^m P_{st} X_s}{m}$ \\
+    }
+  \Return{Estimated template $T$ and operators $P_{st}$}
+\end{algorithm}
+
+
 
 \subsection{The shared response model (SRM)}
 The shared response model~\cite{chen2015reduced} is a multi-view latent factor
@@ -507,8 +668,7 @@ have:
   \label{eq:detsrm:Aiupdate}
 \end{equation}
 where $\Pcal$ is the projection on the Stiefel manifold: $\Pcal(M) = M
-(M^{\top}M)^{-\frac12}$. In practice $\Pcal(M)$ is computed by performing an SVD
-of $M$, $M = U_M D_M V_M^{\top} $ so that $\Pcal(M) = U_M V_M^{\top}$.
+(M^{\top}M)^{-\frac12}$.
 
 The complexity of Deterministic SRM is in $\bigO(\mathrm{n_{iter}} mpvn)$ where
 $n$ is the number of samples and $\mathrm{n_{iter}}$ the number of iterations.
