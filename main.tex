@@ -132,21 +132,21 @@ of neuro-imaging data.
 \section{Organization of the manuscript}
 In part~\ref{part:background}, we give some background on statistical learning
 and optimization (chapter~\ref{ch:statistical_learning}), neuroscience
-(chapter~\ref{ch:neuroscience} and unsupervised methods popular in neuroimaging (chapter~\ref{ch:review}).
+(chapter~\ref{ch:neuroscience}) and unsupervised methods popular in neuroimaging (chapter~\ref{ch:review}).
 
 The parts~\ref{part:fastsrm},~\ref{part:mvica},~\ref{part:shica}
 and~\ref{part:condica} highlight four different contributions that led to
 different publications.
 
 \subsection{Fast shared response model for fMRI data}
-When subjects are exposed to the same stimuli, their brain activity must exhibit
-some shared response. Our goal is to recover this shared response. The shared
-response model is one possible solution to this problem.
+When subjects are exposed to the same stimuli, their brain activity likely exhibits
+some common, or shared response. Our goal is to recover this shared response. The \emph{shared
+response model} is one possible solution to this problem.
 However, the algorithm used in the shared response model does not scale well
 with the size of input . This is problematic because fMRI data have a very large
 size. Indeed, the fMRI data of each subject have a dimension on the order of
 $p=10^5$ and a number of samples on the order of $n=10^3$. Therefore, there is a
-need for faster algorithms. This will be presented in part~\ref{part:fastsrm}
+need for faster algorithms. This will be presented in part~\ref{part:fastsrm}.
 
 \subsection{MultiViewICA for neuroimaging data}
 In order to obtain a meaningful shared response, we need to impose constrains on
@@ -163,7 +163,7 @@ part~\ref{part:mvica}.
 \fullcite{richard2020modeling}
 
 \subsection{Shared ICA for neuroimaging data}
-The model used in MultiViewICA assumes that all subjects are equally different.
+The model used in MultiViewICA assumes that all subjects are equally different \textbf{XXX WDYM ?}.
 In Shared ICA, we use a more general model that allows to model different
 deviations form the stereotypical response depending on the subject considered
 and/or on the response. Importantly, the difference between subjects can be used
@@ -190,9 +190,9 @@ available on Github. Some of the code we wrote has made its way to bigger
 packages. 
 
 \subsubsection{Mvlearn}
-Mvlearn~\cite{perry2020mvlearn} is a python package for multiview learning tools. It offers reference
+Mvlearn~\cite{perry2020mvlearn} is a Python package for multiview learning tools. It offers reference
 implementations for algorithms and methods related to multiview learning.
-Its API is close to the scikit-learn~\cite{abraham2014machine} one making it
+Its API is close to the scikit-learn~\cite{abraham2014machine} one, making it
 easy to learn.
 We have implemented the GroupICA, GroupPCA and MultiViewICA modules of mvlearn.
 
@@ -202,7 +202,7 @@ We have implemented the GroupICA, GroupPCA and MultiViewICA modules of mvlearn.
 
 
 \subsubsection{Brainiak}
-Brainiak~\cite{kumar2020brainiak}, is a python package that applies machine
+Brainiak~\cite{kumar2020brainiak}, is a Python package that applies machine
 learning methods to neuroimaging data. Its API is the same as in scikit-learn
 and it includes modules such as Representational Similarity Analysis or Shared
 response modeling.
