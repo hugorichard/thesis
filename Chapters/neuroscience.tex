@@ -196,15 +196,15 @@ In this section, we describe a framework successfully applied to identify brain 
 (GLM)~\cite{friston1995analysis}. We refer the reader to
 Poline~\cite{poline2012general} for a more detailed description of the model and only cover here what we consider to be the most important parts.
 
-We associate to each image $t$ a set of numbers $\sb(t)$ that describe the experiment and
+We associate to each image $t$ a set of numbers $\sb(t)$ \textbf{XXX weird notation} that describe the experiment and
 nuisance parameters.
 For instance, in an experiment where the subject is shown either images of faces
-or nothing we could have the association: $\sb(t) = (\phi(t), \tau(t), x(t), y(t),
+or nothing we could have the association: $s\b(t) = (\phi(t), \tau(t), x(t), y(t),
 z(t))$ where $\phi(t)=1$ if the stimuli is a face and $0$ otherwise, $\tau(t)=1$
-if nothing is shown and $0$ otherwise and  $x(t), y(t), z(t)$ describes the
+if nothing is shown and $0$ otherwise and  $x(t), y(t), z(t)$ describe the
 position of the head. While $\phi$ and $\tau$ describe the experiment, $x, y, z$
 describe nuisance parameters.
-Note that in practice we use much more regressors for nuisance parameters such
+Note that in practice we use many more nuisance regressors, such
 as parameters describing the rotation of the head, heartbeats, respiration
 rhythm and really any other parameter that might introduce artifacts. We also
 usually convolve the regressors describing the experiment with the hemodynamic
@@ -219,7 +219,7 @@ X = A S + N
 \end{align}
 where $A \in \RR^{v, k}$ contains $k$ spatial maps in the sense that column $j$
 of $A$ can be plotted as a brain image representing the localization of activity
-described by the line $j$ of $S$.
+described by the row $j$ of $S$.
 The noise is often assumed to be Gaussian with unit variance so that $A$ can be obtained as the
 result of a linear regression. Another common hypothesis is to assume temporal
 correlation of the noise in the form of an AR-1 process. In this case, we 
@@ -232,7 +232,7 @@ In our face versus baseline example, we would typically display the first column
 $A$ (that corresponds to $\phi$ which describes the activation related to faces) minus
 the second column of $A$ (that corresponds to $\tau$ which describes the
 baseline). An example of ``face versus basline'' contrast is displayed in
-Figure~\ref{fig:hcp_contrast}.
+Figure~\ref{fig:hcp_contrast}. \textbf{XXX ? usually the baseline is model explicitly. If you want a contrast,r ather model something like face vs place ?}
 
 \begin{figure}
   \includegraphics[scale=0.25]{figures/neuroscience/faces_vs_baseline.png}
@@ -244,15 +244,15 @@ Figure~\ref{fig:hcp_contrast}.
 
 
 While in this thesis, we always work with unthresholded contrast maps like the one in Figure~\ref{fig:hcp_contrast}, contrast maps
-are usually thresholded to keep only activity that are significantly
+are usually thresholded to keep only activity that is significantly
 different from zero.
 The GLM model is called univariate since interactions between voxels are not
 modeled.
-In general, univariate methods are often criticized for their unability to
+Univariate methods are often criticized for their inability to
 capture well correlations and interactions between brain-wide measurements.
 This makes it difficult to precisely locate brain functions from brain maps. An approach to overcome this issue is to train classifiers to \emph{decode} brain maps, i.e to discriminate between different stimulus of task
 types~\cite{shirer_decoding_2012,varoquaux_how_2014,loula_decoding_2018}. When linear classifiers are used, the weights of this classifiers localize the brain functions.
-This approach is much more powerful as classifiers take correlations between
+This approach can be more powerful, as classifiers take correlations between
 voxels into account. Decoding is also popular for individual imaging-based diagnosis.
 
 \section{Magneto electro encephalography (MEG)}
@@ -272,7 +272,7 @@ MEG recording device also include gradiometers in addition to magnetometers.
 These are sensitive to the local variations of the magnetic field. However in our experiments, we only use the magnetometers data.
 
 MEG has a temporal resolution on the order of the ms which is essentially the same as electroencephalography (EEG). This is much better than fMRI. The spatial
-resolution is similar than in EEG and is on the order of the centimeter.
+resolution is similar to that of EEG and is on the order of the centimeter.
 In general the brain sources are slightly better localized in MEG since the
 magnetic field is not affected by changes in conductivity in the head.
 
@@ -286,7 +286,7 @@ of the authors~\cite{pascual2007discrete}.
 From a vector describing the 3D current density inside the brain $\jb \in \RR^{3v}$
 ($v$ is the number of voxels) we
 can predict the magnetic field recorded by the sensors $\bb \in \RR^p$ ($p$ is the number of sensors) provided
-we know how the magnetic field propagates through the brain by using Maxwell's equation. This is called the \emph{forward model}. Simplistic models of the
+we know how the magnetic field propagates through the brain by using Maxwell's equation. This is called the \emph{forward model}. Simplistic \textbf{XXX Simplisitic ? WDYM ?} models of the
 brain are used to provide an approximate solution for the forward model.
 We have therefore
 \begin{align}
@@ -304,7 +304,7 @@ A common parametrization is to assume that:
 \end{align}
 for a symmetric matrix $C \in \RR^{p, p}$ and $\jb(K_i)$ describes the current at voxel $i$.
 In sLoreta, we have $C = (K K^{\top} + \alpha I)^{\dagger}$ where $\dagger$
-represents the more pseudo inverse $I$ is the identity matrix and $\alpha$ is an hyperparameter. 
+represents Moore's pseudo inverse, $I$ is the identity matrix and $\alpha$ is an hyperparameter. 
 
 Taking a point wise source $\ab \in \RR^{3}$ at voxel $j$
 equation~\eqref{eq:maxwell} yields $\bb = K_j \ab$.
@@ -338,7 +338,7 @@ implemented stimulators.
 
 
 \subsection{Experimental designs}
-Two kind of response are generally studied in MEG: \emph{evoked response} and
+Two kinds of response are generally studied in MEG: \emph{evoked response} and
 \emph{event related} response.
 The evoked response is observed when the subject is exposed to a short stimuli.
 We typically repeat the experiment multiple times and average the subject
@@ -349,7 +349,7 @@ event-related response.
 
 \subsection{MEG datasets}
 \label{sec:meg:datasets}
-In this section, we give example of MEG datasets. These examples are used in
+In this section, we give examples of MEG datasets. These examples are used in
 the rest of the thesis to evaluate the methods developed.
 
 The \emph{Sinusoidal Phantom MEG} dataset uses data collected with a realistic head phantom, which is a plastic device mimicking real electrical brain components.
@@ -368,7 +368,7 @@ frequency at 40 Hz.
 The \emph{Elekta Phantom MEG} dataset also uses data collected with a realistic
 head phantom and is available as part of the Brainstorm
 application~\cite{tadel2011brainstorm}.
-This dataset consider 32 different dipole locations. Like in the
+This dataset involves 32 different dipole locations. Like in the
 \emph{sinusoidal phantom} we only
 consider the 102 magnetometers and apply Maxwell filtering and a low pass filter
 with cut-off 40 Hz. The dipoles emit a signal at either a strong, medium or low
