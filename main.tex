@@ -276,21 +276,21 @@ and~\ref{ch:condica2} focus on practical results.
 In this thesis, we have presented three contributions that allow to tackle
 inter-subject variability in neuro-imaging, and a data augmentation method for fMRI data.
 
-First, in chapter~\ref{ch:fastsrm1} and chapter~\ref{ch:fastsrm1}, we develop an
+First, in chapter~\ref{ch:fastsrm1} and chapter~\ref{ch:fastsrm2}, we develop an
 atlas based procedure that is shown to accelerate significantly the existing
 procedure for performing dimension reduction of fMRI data in a multi-subject
 context with provably no loss of performance. It is now possible to apply these
-algorithms in big datasets where the number of subjects is on the order of
-several hundreds with several thousand samples and several hundred thousand features.
+algorithms in big datasets where the number of subjects is of the order of
+several hundreds, with several thousand samples and several hundred thousand features.
 
 Then, we propose in chapter~\ref{ch:mvica1} and chapter~\ref{ch:mvica2}
-a novel unsupervised algorithm, MultiViewICA that reveals latent sources observed through different views. Using an independence assumption, we have demonstrated that the model is identifiable provided that the latent
+a novel unsupervised algorithm, MultiViewICA, that reveals latent sources observed through different views. Using an independence assumption, we have demonstrated that the model is identifiable, provided that the latent
 sources are not Gaussian. In contrast to previous approaches, the proposed model leads to a closed-form likelihood, which we then optimize efficiently using a dedicated alternate quasi-Newton approach.
 Therefore, our approach enjoys the statistical guarantees of maximum-likelihood
 theory, while still being tractable. MultiViewICA outperforms other unsupervised
 methods used in fMRI and MEG in the context of shared response modeling. However,
 it assumes the same level of noise for all
-subjects which does not model properly between-subjects variability.
+subjects, which does not model properly between-subjects variability.
 
 In chapter~\ref{ch:shica} and chapter~\ref{ch:shica2}, we extend MultiViewICA so
 that it offers a more realistic noise model. The so-called ShICA model is a principled unifying solution to the problems of shared response modelling and GroupICA. ShICA is able to use both the diversity of Gaussian variances and non-Gaussianity for optimal estimation. We presented two algorithms to fit the model: ShICA-J, a fast algorithm that uses noise diversity, and ShICA-ML, a maximum likelihood approach that can separate Gaussian and non-Gaussian components. ShICA algorithms come with principled procedures for shared components estimation, as well as adaptation and estimation of noise levels in each view (subject) and component.
@@ -312,7 +312,7 @@ scope. We now present these contributions succinctly.
 
 \subsection{A deep approach to model complex stimuli}
 In this work, we learn a model to predict fMRI data of subjects watching a movie
-from the activities of a deep neural network exposed to the same movie. The neural network is previously trained to perform action recognition on a large dataset.
+from the activities of a deep neural network exposed to the same movie. The neural network is previously trained to perform action recognition on a large corpus of movies.
 The association of activity in visual areas with the different layers of the
 deep architecture displays complexity-related contrasts across visual areas and
 reveals a striking foveal/peripheral dichotomy.
@@ -330,9 +330,9 @@ In this work, we predict task contrasts from rest fMRI data using a piecewise
 \fullcite{dohmatob2021brain}
 
 \subsection{An optimal transport approach to hyperalignment}
-In this work, we benchmark optimal transport, ridge regression and scale
+In this work, we benchmark optimal transport, ridge regression and scaled
 Procrustes to align the data of two
-subjects. Ridge regression seems to be the best method.
+subjects. Optimal Transport Ridge regression seems to be the best method.
 
 \paragraph{Published work}
 \fullcite{bazeille2019local}
@@ -344,7 +344,7 @@ machine-learning pipelines~\cite{pedregosa2011scikit}, MNE for MEG
 processing~\cite{gramfort2013meg}, Nilearn for fMRI processing and for its CanICA implementation~\cite{abraham2014machine}, Brainiak~\cite{kumar2020brainiak} for its SRM implementation. 
 % 
 
-
+\textbf{XXX Overall the conclusion lacks insight ? What could be the impact of your work ? its limitations ? Future directions ?}
 
 
 \cleardoublepage\include{FrontBackmatter/Bibliography}
