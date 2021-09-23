@@ -1,19 +1,30 @@
 In the previous chapter, we have decribed multiple unsupervised methods to analyze
-multiview data such as fMRI data that are of very high dimension.
-When working with high dimensional data, the shared response model~\cite{chen2015reduced} (SRM) is particularly
+multiview data.
+As described in section~\ref{sec:srm:review}, the shared response
+model~\cite{chen2015reduced} (SRM) is a multi-view latent factor model. It sees
+the data $(\xb_i)_{i=1}^m$ as:
+\begin{align}
+  &\xb_i = A_i \sbb + \nb_i \\
+  &A_i^{\top}A_i = I_p
+    \label{eq:model:srm}
+\end{align}
+with $\nb_i \sim \Ncal(0, \Sigma_i)$ where $\Sigma_i = \sigma^2 I_v$ in
+deterministic SRM and $\Sigma_i = \sigma_i^2 I_v$ in probabilistic SRM.
+
+When working with high dimensional data, SRM is particularly
 interesting as it provides a principled way to perform dimension reduction. Note that this
 contrasts with ICA-like methods that do not incorporate dimension reduction in their model.
 
 However SRM has initially been designed to work within regions of interest using
-only few subjects. When using full brain data, computational costs are still
-high. Lastly, memory requirements are difficult to meet since the full dataset needs to hold
+only few subjects. When using full brain data, computational costs become
+high. In addition, memory requirements are difficult to meet since the full dataset needs to hold
 in memory.
 
 Fortunately, these high costs can be reduced. Intuitively, since the shared
 response lives in a reduced space, a compressed representation of the input is
-good enough to find a suitable estimate.
+good enough to find a suitable estimate of the shared response.
 FastSRM implements this idea. It turns out that there exists an optimal
-compression of the input from which we can obtain the same solution as
+compression of the input for which we can obtain the same solution as
 with the full data.
 
 \section{The FastSRM algorithm}
@@ -24,8 +35,15 @@ mixing matrices and $\sbb$ the shared response while in probabilistic SRM $\thet
 mixing matrices, $(\sigma_i)_{i=1}^m$ the noise levels and $\Sigma_s$ the
 components variance.
 
+In fMRI, the classical approach used to reduce the data is to apply an atlas.
+Deterministic atlases~\cite{bellec2010multi} correspond to a parcellation of the
+brain into $r$ regions. Reducing an image using a deterministic atlas corresponds to
+averaging the signal within each region of the atlas. A probabilistic atlases such
+as~\cite{dadi_fine-grain_2020} describes each region as a set of weights across
+the full brain. Therefore, the image reduction can be done with a matrix product.
+
 In FastSRM we consider a set of view specific atlases $U_i \in \RR^{v, r}$ such that
-$U_i^{\top}U_i = I_r$.
+$U_i^{\top}U_i = I_r$ where $r$ is the number of regions in the atlas.
 Data are reduced using $\zb_i = U_i^{\top} \xb_i$ and an SRM algorithm is applied
 on data $\zb_i$ yielding parameters $\theta'$.
 The figure~\ref{fig:srm:conceptual} illustrates this process.
@@ -40,14 +58,19 @@ obtain these guarantees.
 \begin{figure}
   \centering
   \includegraphics[scale=0.34]{figures/srm/conceptual_figure2.pdf}
-  \caption{\textbf{FastSRM algorithm} In step 1, data are projected onto an atlas (top). In step 2 a SRM algorithm is applied on reduced data to compute the shared response.}
+  \caption{\textbf{FastSRM algorithm} In step 1, data $\xb_i$ are projected onto an
+    atlas $U_i$ that may depend on the subject $i$ (top). In step 2 a SRM algorithm is applied on reduced data to compute the shared response.}
   \label{fig:srm:conceptual}
 \end{figure}
 
 From a computational stand point, the dimension reduction provides
 a large reduction in memory usage. Indeed as the original data are seen only
 once, it is no longer necessary to keep the full dataset in memory (we can load
-data $\xb_i$ one after the other and similarly for the atlases $U_i$. Therefore the memory consumption is only in $\bigO(vn)$ which is lower than classical SRM algorithms by a factor of $m$. This yields a practical benefit: on most fMRI datasets, one no longer need a large cluster to run the shared response model but only a modern laptop.
+data $\xb_i$ one after the other and similarly for the atlases $U_i$). Therefore
+the memory consumption is only in $\bigO(vn)$ (where $v$ is the number of voxels
+and $n$ is the number of samples) which is lower than SRM by a factor of $m$,
+the number of subjects. The number of subjects is typically between $10$ and
+$1000$. This yields a practical benefit: on fMRI datasets with many subjects, one no longer needs a large cluster to run the shared response model but only a modern laptop.
 Additionally, low memory consumption reduces the
 risk of thrashing~\cite{denning1968thrashing}, a phenomenon that causes large
 increase in computation time when the memory used is close to the total available
@@ -59,23 +82,22 @@ original data $\xb_i$ yielding a time complexity of $\bigO(
 Let us highlight that in practice, it often happens that an experiment is run
 multiple times such as when cross validated results are needed. In these cases,
 the pre-processing is performed only once and the apparent complexity becomes
-$\bigO(\mathrm{n_{iter}} mpnr)$ which is faster than traditional SRM methods by
-a factor of $\frac{v}{r}$.
+$\bigO(\mathrm{n_{iter}} mpnr)$ which is faster than SRM by
+a factor of $\frac{v}{r}$. The number of regions in large atlases is about $r=1000$ and in full brain data, the number of voxels is about $300~000$ so that $\frac{v}{r}$ is typically about $1000$.
 
-It remains to show how to draw a correspondence between FastSRM and SRM which is
-addressed in the following section.
+It remains to show how to draw a correspondence between FastSRM and SRM which is addressed in the following section.
 
 \section{Optimal atlases}
 In general, working with reduced data induces a loss of information and
-therefore there is little hope to recover the parameters that would have been
-obtained from SRM from the parameters of FastSRM.
-However, in this section, we show that there exists an optimal atlas in the sense
-that the traditional shared response model and FastSRM yield the same
-results whether it is applied on full data or on reduced data.
+therefore there is little hope to recover the parameters that would have been obtained from SRM from the parameters of FastSRM.
+However, in this section, we show that there exists an optimal atlas in the sense that SRM and FastSRM yield the same results.
+
+While it is possible in principle to use FastSRM with a sub-optimal atlas,
+we will only use the optimal atlas and therefore, in the rest of the thesis, we refer to FastSRM with the optimal atlas as just FastSRM.
 
 Let us consider $\xb_i = U_{\xb_i} \zb_i$ a PCA of $\xb_i$. As the number of
-samples $n$ is lower than the number of features $U_{\xb_i} \in \RR^{v, n}$ and
-$\zb_i \in \RR^{n}$.  We also have $U_{\xb_i}^{\top}U_{\xb_i} = I$.
+samples $n$ is lower than the number of features $U_{\xb_i} \in \RR^{v, n}$ and $\zb_i \in \RR^{n}$.  We also have $U_{\xb_i}^{\top}U_{\xb_i} = I$.
+Therefore $U_{\xb_i}$ constitutes a possible choice of subject specific atlas.
 
 As the next property shows, $U_{\xb_i}$ constitutes an optimal atlas when
 fitting deterministic SRM.

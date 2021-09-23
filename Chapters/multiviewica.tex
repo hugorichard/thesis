@@ -156,7 +156,7 @@ Newton's direction is then $-\left(\mathcal{H}_i\right)^{-1}G_i$. However, this 
 These obstacles render the computation of Newton's direction impractical.
 %
 Luckily, if we assume that the signals in $\yb_i$ are independent, several coefficients cancel, and the Hessian simplifies to the approximation
-%\bt{IIUC if the sources are independent this is not an approximation} \pa{It is an approximation because even if the sources are independent, you have $y_i = s^i$ only when $W_i$ is the true unmixing matrix, i.e. when the algo has converged}
+%\bt{IIUC if the components are independent this is not an approximation} \pa{It is an approximation because even if the components are independent, you have $y_i = s^i$ only when $W_i$ is the true unmixing matrix, i.e. when the algo has converged}
 \begin{align}
     \label{eq:hessian_approx}
     (H_i)_{abcd} &= \delta_{ad}\delta_{bc} + \delta_{ac}\delta_{bd}\Gamma^i_{ab} \\
@@ -266,7 +266,7 @@ Lastly, IVA based methods (see section~\ref{sec:IVA}) do not specifically model
 the shared response which is the quantity of interest in this work.
 
 \section{Conclusion}
-In this chapter, we have proposed a novel unsupervised algorithm that reveals latent sources observed through different views. Using an independence assumption, 
+In this chapter, we have proposed a novel unsupervised algorithm that reveals latent components observed through different views. Using an independence assumption, 
 we have demonstrated that the model is identifiable.
 % 
 In contrast to previous approaches, the proposed model leads to a closed-form likelihood, which we then optimize efficiently using a dedicated alternate quasi-Newton approach.

@@ -58,19 +58,23 @@
     % \pdfbookmark[1]{Acronyms}{acronyms}
     % \markboth{\spacedlowsmallcaps{Acronyms}}{\spacedlowsmallcaps{Acronyms}}
     \chapter*{Acronyms}
-    \begin{acronym}[UMLX]
-        \acro{DRY}{Don't Repeat Yourself}
-        \acro{API}{Application Programming Interface}
-        \acro{UML}{Unified Modeling Language}
-    \end{acronym}
+    \begin{tabular}{ll}
+        ICA & Independent component analysis \\
+        ML & Maximum likelihood \\
+      MVICA & MultiViewICA \\
+      PCA & Principal component analysis \\
+      ShICA & Shared ICA \\
+      SRM & Shared response model \\
+
+    \end{tabular}
 
     \chapter*{Notations}
     We write vectors in bold letter $\vb$ and scalars in lower case $a$. Upper case letters $M$ are used to denote
-    matrices. We denote $|W|$ the absolute value of the determinant of $W$. $\xb \sim \Ncal(\mub, \Sigma)$ means that $\xb \in \mathbb{R}^k$ follows
-    a multivariate normal distribution of mean $\mub \in \mathbb{R}^k$ and
-    covariance $\Sigma \in \mathbb{R}^{k \times k}$. The $j, j$ entry of a diagonal matrix $\Sigma_i$ is denoted $\Sigma_{ij}$, the $j$ entry of $\yb_i$ is denoted $y_{ij}$. Lastly, $\delta$ is the Kronecker delta.
+    matrices. We denote $|W|$ the absolute value of the determinant of $W$. $\xb \sim \Ncal(\mub, \Sigma)$ means that $\xb \in \mathbb{R}^k$ follows a multivariate normal distribution of mean $\mub \in \mathbb{R}^k$ and
+    covariance $\Sigma \in \mathbb{R}^{k \times k}$. When $\xb \sim \Ncal(\mub,
+    \Sigma)$, its density is given by $\xb \rightarrow \Ncal(\xb; \mub, \Sigma)$. The $j, j$ entry of a diagonal matrix $\Sigma_i$ is denoted $\Sigma_{ij}$, the $j$ entry of $\yb_i$ is denoted $y_{ij}$. $\delta$ is the Kronecker delta.
     We use the usual scalar product for matrices $\langle A , B\rangle =
-    \tr(A^{\top} B)$ and the associated norm is denoted $\|A\| = \sqrt \langle
-    A, A \rangle$. Vectors can be seen as tall matrices and therefore notations for
+    \tr(A^{\top} B)$ and the associated norm is denoted $\|A\| = \sqrt{\langle
+    A, A \rangle}$. Vectors can be seen as tall matrices and therefore notations for
     the scalar product and norm are the same.
 \endgroup

@@ -9,7 +9,7 @@ This has motivated the use of unsupervised learning methods that do not make
 assumptions about what triggers brain activations in the stimuli.
 
 In this chapter, we first present \emph{independent component analysis} (ICA), a widely used
-unsupervised method for neuro-imaging studies routinely applied on individual
+unsupervised method for neuroimaging studies routinely applied on individual
 subject electroencephalography (EEG)~\cite{makeig1996independent},
 magnetoencephalography (MEG)~\cite{vigario1998independent} or functional MRI
 (fMRI)~\cite{mckeown1998independent} data, then we review \emph{multiview} unsupervised 
@@ -32,7 +32,7 @@ In M/EEG processing, it is widely used to isolate acquisitions artifacts from ne
 In neuroscience, the number of components $k$ is typically much lower than the number
 of available observations $v$. We are therefore in an overcomplete setting.
 However in ICA, it is assumed the number of observations is equal to the number
-of sources. Therefore, a
+of components. Therefore, a
 typical pre-processing step is to reduce the dimension. We therefore first
 present principal component analysis which is the standard method to perform
 dimension reduction in this context.
@@ -125,7 +125,7 @@ shows that $O$ can only be a scale and permutation matrix.
   permutation matrix.
 \end{theorem}
 
-As a result, if we assume that at most one source is Gaussian, ICA is identifiable up to a scale and permutation indeterminacy.
+As a result, if we assume that at most one component is Gaussian, ICA is identifiable up to a scale and permutation indeterminacy.
 
 \subsubsection{Infomax: Maximum likelihood estimation}
 Infomax is introduced in~\cite{bell1995information} in the context of source
@@ -135,7 +135,7 @@ in~\cite{cois1997infomax}, this is equivalent to
 maximum likelihood where component $i$ is assumed to have $g_i$ as its
 cumulative distribution function.
 
-Assume for simplicity that the sources have the same density $\delta$, denoting $f(x) =
+Assume for simplicity that the components have the same density $\delta$, denoting $f(x) =
 -\log(\delta(x))$ and $f(\xb) = \sum_{i=1}^m f(x_i)$ for $\xb \in
 \RR^m$ the negative log-likelihood is given by:
 \begin{align}
@@ -210,10 +210,10 @@ have:
 \subsubsection{Robustness to density mismatch}
 In practice, we observe that sometimes, the quasi-Newton algorithm described in
 the previous section fails to recover the true mixing matrix. This happens when the
-sources used in the model are too far from the true sources in the data. In this section, we explain
+components used in the model are too far from the true components in the data. In this section, we explain
 why this happens and derive stability conditions. This follows the work done in~\cite{cardoso1998blind}.
 
-When the density of the sources correspond to the one used in the model. We
+When the density of the components correspond to the one used in the model. We
 recover the correct unmixing matrices via the maximum likelihood estimate in the
 limit of large samples. This comes from the consistency of maximum likelihood
 estimators.
@@ -234,12 +234,12 @@ denote $\prod_i p_i(x_i)$ the product of the marginal densities of $\xb$.
 
 The first term in the last equality is the mutual information. It quantifies the
 independence of unmixed data $W \xb$. The second term quantifies the mismatch
-between the assumed distribution of the sources and the marginals of unmixed data.
-Therefore if the assumed sources are too far from the true sources, the
+between the assumed distribution of the components and the marginals of unmixed data.
+Therefore if the assumed components are too far from the true components, the
 recovered unmixing matrices may be far from the true ones.
 
 
-Looking at the relative gradient $G$, we see that if sources are truly
+Looking at the relative gradient $G$, we see that if components are truly
 independent, the true unmixing matrix will be a stationary point of the loss up
 to a scaling: $G(\Lambda A^{-1})=0$ where $\Lambda=\diag(\lambda_1 \dots \lambda_p)$.
 However, in order for the quasi-Newton to reach this point, it must be a local
@@ -276,7 +276,7 @@ method recovers the correct unmixing matrices in a wide variety of cases.
 \subsection{A variation : non-stationary ICA and joint diagonalization}
 Up to now we have assumed that samples were independent an identically distributed. In non-stationary ICA, samples are no longer identically distributed as the distribution can vary over time.
 This section follows the work in~\cite{pham2001blind}.
-The sources are assumed to be Gaussian with a variance that varies between
+The components are assumed to be Gaussian with a variance that varies between
 samples but is assumed to be piece-wise constant $\Sigma_t = \Sigma_k$ for $t \in
 T_k$ where $(T_k)_k$ is a partition of $[1, 2, \dots, n]$ and $\Sigma_k$ is a
 positive diagonal matrix.
@@ -405,7 +405,7 @@ not rely on maximum likelihood estimators. Therefore they do not benefit of
 advantages of such estimators such as asymptotic efficiency.
 
 The model of~\cite{guo2008unified} considers the very general model $\xb_i = A_i\sbb + \nb_i$, where the noise covariance can be learned from the data. 
-In~\cite{guo2008unified}, the sources are assumed to be a mixture of Gaussian
+In~\cite{guo2008unified}, the components are assumed to be a mixture of Gaussian
 $p(s_j) = \sum_{z=1}^q \Ncal(\mu_{zj}, \sigma_{zj})$.
 where parameters of the Gaussian mixtures are learned. The fact that these
 parameters are learned make the E-step impossible to compute in closed form. In
@@ -427,7 +427,7 @@ $\xb = \begin{bmatrix} \xb_1 \\ \vdots  \\ \xb_m \end{bmatrix}$ and $\nb
 = \begin{bmatrix} \nb_1 \\ \vdots  \\ \nb_m \end{bmatrix}$. This showcases the
 strong link between~\cite{guo2008unified} and~\cite{moulines1997maximum}.
 
-We assume the following Gaussian mixture for each source $s_j$.
+We assume the following Gaussian mixture for each component $s_j$.
 \begin{align}
   &p(s_j) = \frac12 \sum_{\alpha_j \in \{\frac12, \frac32\}} p(s_j | \alpha_j) \\
   &p(s_j | \alpha_j) = \mathcal{N}( s_j; 0, \alpha_j)
@@ -604,6 +604,7 @@ the method in algorithm~\ref{algo:hyper:2}.
 
 
 \subsection{The shared response model (SRM)}
+\label{sec:srm:review}
 The shared response model~\cite{chen2015reduced} is a multi-view latent factor
 model. The data $\xb_1 \dots \xb_m$ are modeled as random vectors following the model:
 \begin{align}
@@ -637,8 +638,10 @@ In~\cite{chen2015reduced, anderson2016enabling}, two versions of the shared resp
 introduced which we now present.
 \subsubsection{Deterministic shared response model}
 \label{sec:deterministicsrm}
-The deterministic shared response model sees both $A_i$ and $\sbb$ as parameters to be
-estimated and $\forall i, \Sigma_i=\sigma^2 I_v$ where $\sigma$ is an hyper-parameter.
+The deterministic shared response model sees both the mixing matrices $A_i$ and
+the shared response $\sbb$ as parameters to be
+estimated. The noise variance is fixed to a multiple of identity: $\forall i,
+\Sigma_i=\sigma^2 I_v$ where $\sigma$ is an hyper-parameter to choose.
 The model is optimized by maximizing the log-likelihood.
 The likelihood is given by: $p(\xb) = \prod_i \Ncal(\xb_i; A_i \sbb, \sigma^2 I)$ and
 therefore the negative log-likelihood is given up to a constant independent of

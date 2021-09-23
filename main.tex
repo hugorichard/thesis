@@ -127,7 +127,7 @@ motivated the use of unsupervised learning methods that leverage the
 availability of data from multiple subjects performing the same experiment;
 analysis on such large groups boost statistical power.
 In this thesis, we develop well principled unsupervised methods for the analysis
-of neuro-imaging data.
+of neuroimaging data.
 
 \section{Organization of the manuscript}
 In part~\ref{part:background}, we give some background on statistical learning
@@ -139,31 +139,37 @@ and~\ref{part:condica} highlight four different contributions that led to
 different publications.
 
 \subsection{Fast shared response model for fMRI data}
-When subjects are exposed to the same stimuli, their brain activity must exhibit
-some shared response. Our goal is to recover this shared response. The shared
-response model is one possible solution to this problem.
+When subjects are exposed to the same stimuli, their brain activity share
+some components. Our goal is to recover these shared components. The shared
+response model is one possible solution to this problem: it sees the data of
+each subject as a constrained linear combination of shared sources.
 However, the algorithm used in the shared response model does not scale well
 with the size of input . This is problematic because fMRI data have a very large
 size. Indeed, the fMRI data of each subject have a dimension on the order of
 $p=10^5$ and a number of samples on the order of $n=10^3$. Therefore, there is a
-need for faster algorithms. This will be presented in part~\ref{part:fastsrm}
+need for faster and more memory-efficient algorithms.
+Our work in this direction will be presented in part~\ref{part:fastsrm}.
 
 \subsection{MultiViewICA for neuroimaging data}
 In order to obtain a meaningful shared response, we need to impose constrains on
-the model. In the shared response model, orthogonality constraints are imposed
-that are not biologically plausible. A popular and more biologically plausible constraint is the
-independence of the recovered responses. However, most popular methods using these
-constraints are partially heuristic when multiple subjects are involved. In
-contrast, we develop a well principled method that comes with statistical
-guarantees. In practice our method is able to recover more reliable estimate of
-the shared response on fMRI and MEG data than competitors. This work will be presented in
-part~\ref{part:mvica}.
+the model. In the shared response model, the linear combination of the shared
+sources is done under orthogonality constraints which are often deemed not
+biologically plausible. A more biologically plausible constraint is
+to assume independence of the recovered responses.
+However, most popular methods using this assumption are partially heuristic when
+multiple subjects are involved.
+In part~\ref{part:mvica}, we introduce MultiViewICA: a method based on the
+maximum likelihood principle that can be efficiently optimized.
+In practice our method is able to recover more reliable estimate of
+the shared response on fMRI and MEG data than competitors.
 
 \paragraph{Published work}
 \fullcite{richard2020modeling}
 
 \subsection{Shared ICA for neuroimaging data}
-The model used in MultiViewICA assumes that all subjects are equally different.
+The model used in MultiViewICA allows the response of each subject to differ
+from the stereotypical response. However, it is assumed that the deviation is on
+the same order of magnitude for all subjects and all components.
 In Shared ICA, we use a more general model that allows to model different
 deviations form the stereotypical response depending on the subject considered
 and/or on the response. Importantly, the difference between subjects can be used
@@ -235,7 +241,7 @@ and~\ref{ch:condica2} focus on practical results.
 \chapter{Neuroscience background}
 \label{ch:neuroscience}
 \input{Chapters/neuroscience.tex}
-\chapter{Review of selected unsupervised methods popular in neuro-imaging studies}
+\chapter{Review of selected unsupervised methods popular in neuroimaging studies}
 \label{ch:review}
 \input{Chapters/review.tex}
 \part{FastSRM: An efficient implementation of the shared response model}
@@ -274,7 +280,7 @@ and~\ref{ch:condica2} focus on practical results.
 \part{Conclusion}
 \chapter{Conclusion}
 In this thesis, we have presented three contributions that allow to tackle
-inter-subject variability in neuro-imaging, and a data augmentation method for fMRI data.
+inter-subject variability in neuroimaging, and a data augmentation method for fMRI data.
 
 First, in chapter~\ref{ch:fastsrm1} and chapter~\ref{ch:fastsrm1}, we develop an
 atlas based procedure that is shown to accelerate significantly the existing
