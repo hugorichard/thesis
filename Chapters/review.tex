@@ -4,9 +4,9 @@ psychological experiments.
 This makes naturalistic paradigms an attractive class of
 stimulation protocols for brain imaging.
 %
-However, such stimulations are difficult to quantify, therefore the statistical analysis of the data using supervised regression-based approaches is challenging.
+However, such stimulations are difficult to model, therefore the statistical analysis of the data using supervised regression-based approaches is challenging.
 This has motivated the use of unsupervised learning methods that do not make
-assumptions about what triggers brain activations in the stimuli.
+assumptions about what triggers brain activations in the presented stimuli.
 
 In this chapter, we first present \emph{independent component analysis} (ICA), a widely used
 unsupervised method for neuroimaging studies routinely applied on individual
@@ -21,16 +21,16 @@ performing the same experiments.
 Independent component analysis (ICA) models a set of signals as the product of a \emph{mixing matrix} and a
 \emph{component} matrix containing independent components. As will be seen in this
 section, the required assumptions on the independent components to guarantee
-identifiability are rather weak making ICA a method of choice to analyze the
-data of subjects exposed to a stimuli that is difficult to quantify.
+identifiability are rather weak, making ICA a method of choice to analyze the
+data of subjects exposed to a stimulus that is difficult to quantify.
 
-ICA is applied in fMRI data to analyze resting state
+ICA is applied to fMRI data to analyze resting state
 data~\cite{beckmann2005investigations} or when subjects are
 exposed to natural~\cite{malinen2007towards}~\cite{bartels2005brain} or complex stimuli~\cite{calhoun2002different}. 
 In M/EEG processing, it is widely used to isolate acquisitions artifacts from neural signal~\cite{jung1998extended}, and to identify brain components of interest~\cite{vigario2000independent, delorme2012independent}.
 
-In neuroscience, the number of components $k$ is typically much lower than the number
-of available observations $v$. We are therefore in an overcomplete setting.
+In neuroscience, the number $k$ of components is typically much lower than the number $v$
+of available observations. We are therefore in an overcomplete setting.
 However in ICA, it is assumed the number of observations is equal to the number
 of components. Therefore, a
 typical pre-processing step is to reduce the dimension. We therefore first
@@ -51,10 +51,10 @@ The corresponding optimization problem is given by:
   &= \argmax_{R} \trace(R^{\top} \VV[\xb] R)
 \end{align}
 Therefore the matrix $R$ is just given by the first $p$ eigenvectors of
-$\VV[\xb]$. In practice we observe a matrix of data $X \in \RR^{v, n}$ and
-would compute an empirical estimate of the covariance by $\frac1{n}X X^{\top}$.
+$\VV[\xb]$. In practice the observed data can be represented as a matrix $X \in \RR^{v, n}$,
+from which one can compute an empirical estimate of the covariance by $\frac1{n}X X^{\top}$.
 %
-However, such an estimate is not practical in high dimensions: $v$ is very
+However, such an estimate is not practical in high dimension: $v$ is very
 large and therefore $XX^{\top}$ is a prohibitively large matrix.
 
 Therefore, we rely instead of the singular value decomposition of $X$:
@@ -81,11 +81,11 @@ Therefore $R = U_p$.
 Sometimes the PCA includes whitening $R = U_p D_p^{-1}$ where $D_p$ contains the
  $p$ largest singular values of $X$ so that projected data are
 uncorrelated (but $R$ is no longer orthonormal). In this paper what we call PCA
-does not include whitening of the signals.
+does not include signal whitening.
 
 After the data are reduced such that the number of observations are identical to
 the number of components, we can perform independent component analysis (ICA).
-ICA can exploit a number of different properties of the signal. Most of our
+ICA can exploit a number of different properties of the signal. Most ICA
 algorithms use non-gaussianity of the data to extract relevant components so we
 focus next on non-Gaussian ICA.
 
@@ -105,7 +105,8 @@ It is easily seen that if $\sbb$ is non-Gaussian, so is $P \sbb$ where  $P$ is a
 sign and permutation matrix.
 Therefore if $\xb = A \sbb$, take $A' = AP^{\top}$ and $\sbb'=P\sbb$ and we have
 $\xb = A' \sbb'$.
-In other words, there exist a permutation and scaling indeterminacy.
+In other words, there exists a permutation and scaling indeterminacy.
+\tetxbf{XXX sign or scaling ? There seems to be a confusion througgout the paragraph}
 
 Therefore, we can assume without loss of generality that $\sbb$ has unit variance ($\VV[\sbb] = I$).
 If we whiten the data by applying a matrix $H$ such that $\VV[H \xb] = I_p$ we have $H \xb = \tilde{A} \sbb$ where $\tilde{A} = HA$. $\VV[H \xb] = 1$ implies $\tilde{A}^{\top} \tilde{A} = I$ so without loss of generality we can assume that $\xb$ has unit variance and that $A$ is orthogonal. 
@@ -169,15 +170,15 @@ Second order extensions of the method are obtained by following the steps in
 section~\ref{sec:qn}. The corresponding Hessian is called the \emph{relative
   Hessian}.
 As a side note, the relative gradient coincides with the natural
-gradient~\cite{amari1999natural} that exploits the property of the statistical model.
+gradient~\cite{amari1999natural} that exploits the property of the statistical model. \textbf{XXX Please clarify what yoy mean here}
 
 
 Let us follow~\cite{ablin2018faster} and use a quasi-Newton algorithm to minimize the likelihood.
-The relative gradient and Hessian of $\loss$ is given by:
+The relative gradient and Hessian of $\loss$ are given by:
 \begin{align}
-  G = f'(\yb) \yb^{\top} - I_p
+  G = f'(\yb) \yb^{\top} - I_p,
 \end{align}
-where $\yb = W \xb$ and $f'(\yb) = \partialfrac{f(\yb)}{\yb}$
+where $\yb = W \xb$ and $f'(\yb) = \partialfrac{f(\yb)}{\yb}$ \textbf{XXX the inverse ?}
 and
 \begin{align}
   H_{abcd} =  \delta_{ad}\delta_{bc} + \delta_{ac} f''(y_a)y_by_d
@@ -210,11 +211,13 @@ have:
 \subsubsection{Robustness to density mismatch}
 In practice, we observe that sometimes, the quasi-Newton algorithm described in
 the previous section fails to recover the true mixing matrix. This happens when the
-components used in the model are too far from the true components in the data. In this section, we explain
+sources used in the model are too far from the actual  generating sources.
+%
+In this section, we explain
 why this happens and derive stability conditions. This follows the work done in~\cite{cardoso1998blind}.
 
-When the density of the components correspond to the one used in the model. We
-recover the correct unmixing matrices via the maximum likelihood estimate in the
+When the density of the sources corresponds to the one used in the model, one
+recovers the correct unmixing matrices via the maximum likelihood estimate in the
 limit of large samples. This comes from the consistency of maximum likelihood
 estimators.
 When this is not the case, a mismatch appears which can be quantified. Let us
@@ -243,14 +246,14 @@ Looking at the relative gradient $G$, we see that if components are truly
 independent, the true unmixing matrix will be a stationary point of the loss up
 to a scaling: $G(\Lambda A^{-1})=0$ where $\Lambda=\diag(\lambda_1 \dots \lambda_p)$.
 However, in order for the quasi-Newton to reach this point, it must be a local
-minima (the Hessian must be definite positive). 
+minimum (the Hessian must be definite positive). 
 
 Let us therefore consider the Hessian $H$ at point $W = \Lambda A^{-1}$ where
 $\Lambda$ is chosen such that $G = 0$. The unmixed data $\yb = W \xb$ are independent and
 therefore, we have $\tilde{H} = H$.
 For any matrix $M$:
-\begin{align}(\tilde{H} M)_{ab} = M_{ba} + M_{ab} f''(y_a)y_b^2
-\end{align}.
+\begin{align}(\tilde{H} M)_{ab} = M_{ba} + M_{ab} f''(y_a)y_b^2.
+\end{align}
 So $\tilde{H}$ is block diagonal with blocks of size either 1 or 2.
 The blocks of size 1 are given by :
 \begin{align}
@@ -281,10 +284,11 @@ samples but is assumed to be piece-wise constant $\Sigma_t = \Sigma_k$ for $t \i
 T_k$ where $(T_k)_k$ is a partition of $[1, 2, \dots, n]$ and $\Sigma_k$ is a
 positive diagonal matrix.
 
-The (empirical) likelihood is given by:
+The log-likelihood is given by:
 \begin{align}  
   \loss &= -\log(|W|)  + \frac1{n} \sum_k \big( \frac12 \sum_{i \in T_k}\|\Sigma_k^{-\frac12} W \xb^k_i \|^2 + \frac12 \log(|\Sigma_k|) \big)
 \end{align}
+\textbf{XXX unsure about the sign}
 Denoting $C_k = \sum_{i \in T_k} \xb_i^k (\xb_i^k)^{\top}$ we have 
 
 \begin{align}  
@@ -315,10 +319,10 @@ subjects is called \emph{shared response modeling}.
 
 In the general linear model presented in
 section~\ref{sec:glm}, the shared response is assumed to be known. Therefore,
-multiple subjects can be studied separately assuming the data of different
+multiple subjects can be studied separately assuming that the data of different
 subjects are independent given the shared response.
 In the unsupervised setting it may not be so straightforward to deal with
-multiple subject and therefore many different
+multiple subjects and therefore many different
 methods for data-driven multivariate analysis of neuroimaging group studies
 have been proposed.
 We summarize the characteristics of some of the most commonly used ones.
@@ -365,7 +369,7 @@ $D$ is the block diagonal matrix formed by the block $i, i$ of $C$ and $\ab \in
     The leading eigenvector correspond to the first canonical vectors. The
     second canonical vectors is given by the second eigenvalues and so on. They
     are orthogonal for the scalar product: $\langle \ab, \bb  \rangle_D =
-    \langle \ab, D \bb  \rangle_D$.
+    \langle \ab, D \bb  \rangle$.
 
   
 \subsection{Group independent component analysis}
@@ -405,10 +409,11 @@ not rely on maximum likelihood estimators. Therefore they do not benefit of
 advantages of such estimators such as asymptotic efficiency.
 
 The model of~\cite{guo2008unified} considers the very general model $\xb_i = A_i\sbb + \nb_i$, where the noise covariance can be learned from the data. 
-In~\cite{guo2008unified}, the components are assumed to be a mixture of Gaussian
+\textbf{XXX Noisy ICA then ?}
+In~\cite{guo2008unified}, each sources is assumed to be a mixture of Gaussians
 $p(s_j) = \sum_{z=1}^q \Ncal(\mu_{zj}, \sigma_{zj})$.
 where parameters of the Gaussian mixtures are learned. The fact that these
-parameters are learned make the E-step impossible to compute in closed form. In
+parameters are learned, making the E-step impossible to compute in closed form. In
 addition, the
 approximate E-step described in~\cite{guo2008unified} involves at each iteration
 a costly sum where the number of terms is $q^p$ making their algorithm
@@ -430,8 +435,9 @@ strong link between~\cite{guo2008unified} and~\cite{moulines1997maximum}.
 We assume the following Gaussian mixture for each component $s_j$.
 \begin{align}
   &p(s_j) = \frac12 \sum_{\alpha_j \in \{\frac12, \frac32\}} p(s_j | \alpha_j) \\
-  &p(s_j | \alpha_j) = \mathcal{N}( s_j; 0, \alpha_j)
+  &p(s_j | \alpha_j) = \mathcal{N}( s_j; 0, \alpha_j),
 \end{align}
+\textbf{XXX I am confused. Why do you introduce these values $1/2$ and $3/2$ ? None of your statements here depends on that choice...}
 where $\alpha_j$ can be seen as a random variable that take its value in $\{ \frac12,
 \frac32 \}$  with equal probability. We call $\alphab$ the random vector with
 independent coordinates such that coordinate $j$ is given by $\alpha_j$.
@@ -443,7 +449,7 @@ Following a similar direction as~\cite{moulines1997maximum} we can write:
                         &= \Ncal(\xb; A\sbb, \sigma^2 I_p)\mathcal{N}( \sbb; 0, \diag(\alphab)) \frac1{2^p} \\
   &\propto \frac{\exp\big(-\frac12(\frac1{ \sigma^2}\|\xb - A\sbb \|^2 + \langle \sbb , \diag(\alphab)^{-1} \sbb\rangle)\big)}{(|\sigma^2 I_p| |\diag(\alphab)|)^{\frac12}}  \\
   &= \frac{\exp\big(-\frac12(\frac1{ \sigma^2}(\|\xb \|^2 - 2 \langle \xb, A \sbb \rangle + \|A \sbb \|^2)  + \langle \sbb , \diag(\alphab)^{-1} \sbb\rangle) \big)}{(|\sigma^2 I_p| |\diag(\alphab)|)^{\frac12}} \\
-  &\propto \frac{\exp\big(-\frac12( \langle \sbb - \mu_{\alphab}, V_{\alphab}^{-1} (\sbb - \mu_{\alphab}) \rangle - \langle \mu_{\alphab} ,V_{\alphab}^{-1} \mu_{\alphab} \rangle) \big)}{(|\sigma^2 I_p| |\diag(\alphab)|)^{\frac12}}
+  &\propto \frac{\exp\big(-\frac12( \langle \sbb - \mu_{\alphab}, V_{\alphab}^{-1} (\sbb - \mu_{\alphab}) \rangle - \langle \mu_{\alphab} ,V_{\alphab}^{-1} \mu_{\alphab} \rangle) \big)}{(|\sigma^2 I_p| |\diag(\alphab)|)^{\frac12}},
 \end{align}
 where $V_{\alphab} = (\frac1{\sigma^2}A^{\top}A + \diag(\alphab)^{-1})^{-1}$, $\mu_{\alphab} = \frac1{\sigma^2}V_{\alphab}
 A^{\top} \xb$ and the proportionality constant contains terms that do not depend
@@ -478,7 +484,7 @@ The problem here is that the size of the set $\{\alphab, \alpha_j \in
 \subsection{Independent vector analysis}
 \label{sec:IVA}
 Independent vector analysis~\cite{lee2008independent} (IVA) models the data as a
-linear mixture of independent components $\xb_i = A_i \sbb_i$ where each
+linear mixture of independent components $\xb_i = A_i \sbb_i$, where each
 component $s_{ij}$ of a given view $i$ can depend on the corresponding component
 in other views: $\sbb_{[j]} = (s_{ij})_{i=1}^m$ are not independent.
 
@@ -503,7 +509,7 @@ backtracking line search and $G_i$ is the relative gradient given by:
   G_i = -I_p + \phi_i(\yb_i) \yb_i^{\top}
 \end{align}
 where component $j$ of $\phi_i$ is given by $\phi_{ij} = (\partialfrac{\yb_{ij}}{-\log(p_{\sbb_{[j]}}(\yb_{[j]}))})_{j=1}^p$.
-
+\textbf{XXX weird rendering}
 
 Practical implementations of this general model assume a distribution for
 $p_{\sbb_{[j]}}$.
@@ -543,7 +549,7 @@ Hyperalignment is a model initially designed for fMRI data to reduce
 inter-subject variability~\cite{haxby2011common}.
 
 Let us assume we have access to the data of two subjects: $\xb_1, \xb_2$.
-Assuming these subjects are exposed to a time-locked stimuli (such as a movie), a possible alignment is given by the Procruste transform:
+Assuming these subjects are exposed to a time-locked stimuli (such as a movie), a possible alignment is given by the Procrustes transform:
 \begin{align}
 min_{P \in \RR^{p, p}, PP^{\top} = I_p} \|P \xb_1 - \xb_2 \|_2
 \end{align}
@@ -555,7 +561,7 @@ where $\Pcal$ is the projection on the Stiefel manifold: $\Pcal(M) = M
 (M^{\top}M)^{-\frac12}$. In practice $\Pcal(M)$ is computed by performing an SVD
 of $M$, $M = U_M D_M V_M^{\top} $ so that $\Pcal(M) = U_M V_M^{\top}$.
 
-Hyperalignment is the combination of the Procruste transform and an iterative
+Hyperalignment is the combination of the Procrustes transform and an iterative
 procedure to produce a template from multiple alignments.
 
 In an initialization step, a random subject $i$ is chosen and the alignment
@@ -566,7 +572,7 @@ averaged aligned data. This procedure is repeated for a given number of
 iterations until convergence.
 
 We describe formally
-the method in algorithm~\ref{algo:hyper:2}.
+the method in algorithm~\ref{algo:shicaj}.
 
 \begin{algorithm}[H]
   \SetAlgoLined
@@ -664,7 +670,7 @@ yielding the closed form updates:
 \end{equation}
 
 From \eqref{eq:detsrmloss}, minimizing $\loss$ with respect to $A_i$ is
-equivalent to maximize $\langle A_i, \xb_i \sbb^{\top} \rangle$ and therefore we
+equivalent to maximizing $\langle A_i, \xb_i \sbb^{\top} \rangle$ and therefore we
 have:
 \begin{equation}
   A_i \leftarrow  \Pcal(\xb_i \sbb^T)
@@ -675,10 +681,10 @@ where $\Pcal$ is the projection on the Stiefel manifold: $\Pcal(M) = M
 
 The complexity of Deterministic SRM is in $\bigO(\mathrm{n_{iter}} mpvn)$ where
 $n$ is the number of samples and $\mathrm{n_{iter}}$ the number of iterations.
-We monitor the convergence by looking at the $\ell_{infty}$ norm of the
+We monitor the convergence by looking at the $\ell_{\infty}$ norm of the
 gradient. We can monitor the gradient without any increase in complexity.
 Indeed, after the updates with respect to each mixing matrix have been
-carried, only the gradient with respect to $\sbb$ remains: $\sum_i
+carried out, only the gradient with respect to $\sbb$ remains: $\sum_i
 (\sbb - A_i^{\top}\xb_i)$. The algorithm is stopped when the
 gradient is below a chosen tolerance.
 
@@ -728,6 +734,7 @@ and so up to constants the negative log-likelihood is given by:
   -\log(p(\xb)) = &\sum_i \frac{v}{2} \log(\sigma_i^2) + \frac12 \log(|\Sigma_s|) - \frac12 \log(|\VV[\sbb | \xb]|) \\ &+ \sum_i
   \frac12 \frac1{\sigma_i^2}\|\xb_i\|^2 - \frac12 \langle  \EE[\sbb | \xb], \VV[\sbb | \xb]^{-1} \EE[\sbb | \xb] \rangle
 \end{align}
+\textbf{XXX I am confused: why not simply the log of the above expression ?}
 
 The complexity of Probabilistic SRM is $\bigO(\mathrm{n_{iter}} mpvn)$, the same as in
 Deterministic SRM.

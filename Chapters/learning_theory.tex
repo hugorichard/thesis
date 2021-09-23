@@ -1,11 +1,12 @@
 In this chapter, we present the probabilistic modeling and
 optimization background needed for the present thesis.
 
-% Probabiliistic generative model
-\section{Probabilistic models}
-In a probabilistic modeling framework, learning from experience means finding the underlying process that generates the data we observe.
+\textbf{XXX feels like a course. Give a book to refer the reader to, and provide a more gentle introduction. Please also state more clearly what is presented in this section.}
 
-More formally, let us consider $n$ observations $\xb_1, \dots, \xb_n \in \RR^k$ generated according to the density $\nu_*$.  The goal is to recover $\nu_*$.
+\section{Probabilistic models}
+In a probabilistic modeling framework, learning from experience means indetifying the underlying process that generates the data we observe.
+
+More formally, let us consider $n$ observations $\xb_1, \dots, \xb_n \in \RR^k$ generated according to the density $\nu_*$.  The broad goal is to recover $\nu_*$.
 
 In practice, we assume a model for the true density $\nu_*$ meaning that we
 assume that $\nu_*$ belongs to a family of densities $\mathcal{F}$.
@@ -20,7 +21,7 @@ to find $\thetab_*$.
 
 
 Before we even try to find $\thetab_*$, it is instructing to wonder whether the
-problem is well defined. Ideally we would like that our model to be such that if
+problem is well defined. Ideally we would like our model to be such that if
 $\nu_{\thetab_1} = \nu_{\thetab_2}$ then $\thetab_1=\thetab_2$.
 When this is the case, we say that the model is \emph{identifiable}.
 
@@ -32,7 +33,7 @@ vector and the set of $n$ observations is viewed as a vector $\xb$.
 \subsection{Desirable properties of estimators}
 An \emph{estimator} $\hat{\thetab}_n$ of $\thetab_*$ is a function of the
 observations $\xb$ that aims at finding $\thetab_*$.
-An estimator is a random variable as it depends on $\xb$. Therefore, it can almost never be perfectly accurate and that
+An estimator is a random variable, as it depends on $\xb$. Therefore, it can almost never be perfectly accurate and that
 is why we need a criterion to measure its inaccuracy.
 
 A common choice is the mean squared error criterion given by:
@@ -43,14 +44,14 @@ A common choice is the mean squared error criterion given by:
 \end{align}
 
 where the right hand side in equation~\ref{eq:mse:biasvariance} gives the
-\emph{bias-variance decomposition}: the left term is the trace of the \emph{variance} $\VV(\hat{\thetab}_n) = \Cov(\hat{\thetab}_n -
+\emph{bias-variance decomposition}: the left term is the trace of the \emph{covariance} $\VV(\hat{\thetab}_n) = \Cov(\hat{\thetab}_n -
 \EE[\hat{\thetab}_n], \hat{\thetab}_n -
 \EE[\hat{\thetab}_n])$ where $\Cov(\ab, \bb) = \EE[(\ab - \EE[\ab]) \times (\bb -
 \EE[\bb])]$ and the right term is the squared norm of the \emph{bias} given by $\EE[\hat{\thetab}_n] - \thetab_*$ .
 
 The norm of the bias can be minimized exactly, such estimators that achieve $\EE[\hat{\thetab}_n] - \thetab_* = \bzero$ are called \emph{unbiased}.
 
-In example~\ref{ex:biased:var} data are generated from a one-dimensional
+In example~\ref{ex:biased:var}, data are generated from a one-dimensional
 Gaussian. The empirical estimator of the mean is shown to be unbiased. In
 contrast, the empirical estimate of the variance is biased: we show how to
 correct the estimator of the variance so that it becomes unbiased.
@@ -192,7 +193,7 @@ values for $\thetab \in \Theta$:
 The quantity $\nu_{\thetab}(\xb_1, \dots, \xb_n)$ is called the
 \emph{likelihood} and we call $\hat{\thetab}_n$ the \emph{maximum likelihood estimator}.
 
-Often we assume that samples are independent and identically distributed so that
+It is often assumed that samples are independent and identically distributed so that
 the joint density can be written:
 $\nu_{\thetab}(\xb_1, \dots, \xb_n) = \prod_{i=1}^n \nu_{\thetab}(\xb_i)$
 
@@ -292,7 +293,7 @@ $\Ncal(0, I(\thetab_*)^{-1})$ as $n$ gets large. This property is called \emph{a
   \label{prop:asymp:norm}
   We assume that for all $\xb$, the log-likelihood $l(\xb, \thetab)$ is two times differentiable with respect to $\thetab$, and that we
   can always exchange derivative and integration operators. We further assume
-  that $\thetab_*$ is in the interior of $\Theta$.
+  that $\thetab_*$ is in the interior of $\Theta$.\\
   Then,
   $\sqrt{n} \| \hat{\thetab}_n - \thetab_* \| \xrightarrow[n \rightarrow
   \infty]{D}  \Ncal(0,
@@ -404,7 +405,7 @@ to resort to iterative methods.
 
 
 \subsection{Some iterative optimization algorithms}
-We give ourselves a function $f: \RR^v \rightarrow \RR$ that we
+Let us consider a function $f: \RR^v \rightarrow \RR$ that we
 want to minimize. We use the canonical scalar product of $\RR^v$ and the
 associated norm to measure distances between parameters $\xb \in \RR^v$.
 
@@ -443,6 +444,7 @@ gradient descent can be shown to converge to the minimum.
   \begin{equation}
     \partialfrac{\xb^2}{f(\xb)} \geq \mu I
   \end{equation}
+  \textbf{XXX notation problem: single derivative at the numerator. You have the same issue in all the chapter.}
   In addition, assume that $f$ is $l$-smooth:
   \begin{equation}
     \partialfrac{\xb^2}{f(\xb)} \leq lI
@@ -516,7 +518,7 @@ Therefore, Newton updates are given by:
 where $\alpha$ is a small quantity.
 
 Unfortunately, Newton's method is not guaranteed to converge. This contrasts with the gradient descent method that is guaranteed to converge when the step-size is small enough.
-In order to converge, Newton's method need to ensure that each step yields to a sufficient decrease of the loss. This is done by a line search.
+In order to converge, Newton's method need to ensure that each step yields a sufficient decrease of the loss. This is done by a line search.
 
 The \emph{exact line search} sets $\alpha = \argmin_{t \in [0, 1]} f(\xb_k - t
 (\partialfrac{\xb^2}{f(\xb_0)})^{-1} \partialfrac{\xb}{f(\xb_k)})$ while the \emph{backtracking line search} is an iterative procedure where one starts with $\alpha=1$ and halve its value until it yields to a decrease of the loss.
@@ -768,4 +770,4 @@ In this chapter, we have introduced maximum-likelihood estimators and showed
 that they are consistent and asymptotically efficient. These estimators are
 solution of an optimization problem that can be solved using some of the
 iterative methods we have presented.
-In the next chapter we introduce the necessary background on neuroimaging.
+In the next chapter, we introduce the necessary background on neuro-imaging.
