@@ -161,7 +161,7 @@ maximum likelihood principle that can be efficiently optimized.
 In practice our method is able to recover more reliable estimate of
 the shared response on fMRI and MEG data than competitors.
 
-\paragraph{Published work}
+\paragraph{Published work} (Spotlight)
 \fullcite{richard2020modeling}
 
 \subsection{Shared ICA for neuroimaging data}
@@ -186,7 +186,7 @@ Our data augmentation method yields an improvement in classification accuracy on
 eight large datasets. This will be discussed in part~\ref{part:condica}.
 
 \paragraph{Published work}
-\fullcite{tajini2021functional} (co-first authorship with equal contribution)
+\fullcite{tajini2021functional} (Oral, co-first authorship with equal contribution)
 
 \subsection{Softwares}
 The implementation of the methods developed in this thesis is open source and
@@ -215,6 +215,8 @@ We have implemented the FastSRM module of Brainiak.
 
 \paragraph{Published work}
 \fullcite{kumar2020brainiak}
+
+
 
 \section{Chapter ordering}
 The appendices can be skipped at first read.
@@ -276,6 +278,13 @@ and~\ref{ch:condica2} focus on practical results.
 \input{Chapters/condica_exp.tex}
 
 \part{Conclusion}
+
+\section{A note about resources used}
+All the code is written in Python.
+We use Matplotlib for plotting~\cite{hunter2007matplotlib} , scikit-learn for
+machine-learning pipelines~\cite{pedregosa2011scikit}, MNE for MEG
+processing~\cite{gramfort2013meg}, Nilearn for fMRI processing and for its CanICA implementation~\cite{abraham2014machine}, Brainiak~\cite{kumar2020brainiak} for its SRM implementation. 
+
 \chapter{Conclusion}
 In this thesis, we have presented three contributions that allow to tackle
 inter-subject variability in neuroimaging, and a data augmentation method for fMRI data.
@@ -296,60 +305,78 @@ methods used in fMRI and MEG in the context of shared response modeling. However
 it assumes the same level of noise for all
 subjects, which does not model properly between-subjects variability.
 
-In chapter~\ref{ch:shica} and chapter~\ref{ch:shica2}, we extend MultiViewICA so
+In chapter~\ref{ch:shica1} and chapter~\ref{ch:shica2}, we extend MultiViewICA so
 that it offers a more realistic noise model. The so-called ShICA model is a principled unifying solution to the problems of shared response modelling and GroupICA. ShICA is able to use both the diversity of Gaussian variances and non-Gaussianity for optimal estimation. We presented two algorithms to fit the model: ShICA-J, a fast algorithm that uses noise diversity, and ShICA-ML, a maximum likelihood approach that can separate Gaussian and non-Gaussian components. ShICA algorithms come with principled procedures for shared components estimation, as well as adaptation and estimation of noise levels in each view (subject) and component.
 In practice ShICA outperforms MVICA and other unsupervised methods used in the
 context of shared response modeling.
 
-Lastly, we introduce in chapter~\ref{ch:condica} and chapter~\ref{ch:condica2} a data
+Lastly, we introduce in chapter~\ref{ch:condica1} and chapter~\ref{ch:condica2} a data
 augmentation method based on ICA that outperforms deep learning algorithms in
 terms of decoding accuracy while being much faster.
 
+Combined with the FastSRM algorithm, MultiViewICA and ShICA yield a novel way to
+make use of multi-view data. They yield a set of operators per view that map
+the data of each view to a shared response reducing the variability between views.
+In principle, reducing the variability between views should facilitate the
+understanding of the data. In particular, it should be easier to perform
+decoding from multiple subjects when the inter-subject variability is lower.
+This direction could be explored in future work.
 
-\subsection{Other code contributions}
-We have contributed to other large open source projects such as scikit-learn~\cite{abraham2014machine}.
+More generally, applications in this thesis were geared towards naturalistic imaging where the temporal response is assumed to be shared
+across subjects. This is not a requirement of our methods and we see at least two other
+settings in which our methods would be useful. The first
+one is the analysis of resting state data assuming that spatial topographies are
+shared across subjects. In this setting, the spatial topographies become the
+common components while the mixing operators denote a set of time-courses. In
+practice, the experimenter can perform such task by applying our method on
+transposed data.
+The second setting in which our methods could be useful is the analysis of MEG / EEG data assuming both a spatial and
+temporal mixing. This can be done in practice by stacking the features of
+consecutive samples.
+
+In terms of methods, we have treated separately dimension reduction
+(chapter~\ref{ch:fastsrm1}) and source identification (chapter~\ref{ch:mvica1}
+and chapter~\ref{ch:shica1}). Future work might focus on understanding how these
+two steps can be performed jointly. Lastly, in the case of naturalistic stimuli,
+the mixing matrices represent spatial topographies and therefore they can be
+assumed to be close to each other. This aspect is not addressed in our work
+where no link is assumed between mixing matrices and could be the topic of
+future research.
 
 
-\section{Contributions outside of the scope of the thesis}
-Some of the contributions we have made during the thesis were outside of its
-scope. We now present these contributions succinctly.
 
-\subsection{A deep approach to model complex stimuli}
-In this work, we learn a model to predict fMRI data of subjects watching a movie
-from the activities of a deep neural network exposed to the same movie. The neural network is previously trained to perform action recognition on a large corpus of movies.
-The association of activity in visual areas with the different layers of the
-deep architecture displays complexity-related contrasts across visual areas and
-reveals a striking foveal/peripheral dichotomy.
+% \section{Contributions outside of the scope of the thesis}
+% Some of the contributions we have made during the thesis were outside of its
+% scope. We now present these contributions succinctly.
 
-\paragraph{Published work}
-\fullcite{richard2018optimizing}
+% \subsection{A deep approach to model complex stimuli}
+% In this work, we learn a model to predict fMRI data of subjects watching a movie
+% from the activities of a deep neural network exposed to the same movie. The neural network is previously trained to perform action recognition on a large corpus of movies.
+% The association of activity in visual areas with the different layers of the
+% deep architecture displays complexity-related contrasts across visual areas and
+% reveals a striking foveal/peripheral dichotomy.
 
-\subsection{Predicting resting state from fMRI}
-In this work, we predict task contrasts from rest fMRI data using a piecewise
-  linear model. This model is shown to outperform linear models and a fully
-  connected neural network.
+% \paragraph{Published work}
+% \fullcite{richard2018optimizing}
+
+% \subsection{Predicting resting state from fMRI}
+% In this work, we predict task contrasts from rest fMRI data using a piecewise
+%   linear model. This model is shown to outperform linear models and a fully
+%   connected neural network.
 
   
-\paragraph{Published work}
-\fullcite{dohmatob2021brain}
+% \paragraph{Published work}
+% \fullcite{dohmatob2021brain}
 
-\subsection{An optimal transport approach to hyperalignment}
-In this work, we benchmark optimal transport, ridge regression and scaled
-Procrustes to align the data of two
-subjects. Optimal Transport Ridge regression seems to be the best method.
+% \subsection{An optimal transport approach to hyperalignment}
+% In this work, we benchmark optimal transport, ridge regression and scaled
+% Procrustes to align the data of two
+% subjects. Optimal Transport Ridge regression seems to be the best method.
 
-\paragraph{Published work}
-\fullcite{bazeille2019local}
+% \paragraph{Published work}
+% \fullcite{bazeille2019local}
 
-\section{A note about resources used}
-All the code is written in Python.
-We use Matplotlib for plotting~\cite{hunter2007matplotlib} , scikit-learn for
-machine-learning pipelines~\cite{pedregosa2011scikit}, MNE for MEG
-processing~\cite{gramfort2013meg}, Nilearn for fMRI processing and for its CanICA implementation~\cite{abraham2014machine}, Brainiak~\cite{kumar2020brainiak} for its SRM implementation. 
 % 
-
-\textbf{XXX Overall the conclusion lacks insight ? What could be the impact of your work ? its limitations ? Future directions ?}
-
 
 \cleardoublepage\include{FrontBackmatter/Bibliography}
 

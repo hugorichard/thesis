@@ -75,8 +75,10 @@ images match the orientation and localization of the reference image. One also r
 \subsubsection{Spatial smoothing}
 Spatial smoothing blurs the image by application of a Gaussian kernel with a given width (in mm). When the signal of interest has a large spatial extend, smoothing increases the signal to noise ratio. 
 Smoothing is also used as a way to decrease between subject variability.
-However, in our experiment, we usually don't apply smoothing as our methods are able to deal with subject variability without having to discard higher frequencies.
-\textbf{XXX The point could be debatted}
+In our experiment, we usually don't apply smoothing in order to measure how our
+methods are able to handle fined grained details. While there is currently no
+consensus on smoothing, we observe that a smoothing of 3~mm generally improves
+most analysis on fMRI data.
 
 \subsubsection{Frequency filtering}
 Heating of the scanner causes a low temporal frequency noise to appear. In order
@@ -143,21 +145,21 @@ We use all available subjects and runs yielding 647 participants and 1 run of 19
 The \emph{RAIDERS} dataset reproduces the protocol described
 in~\cite{haxby2011common}. 10 participants are watching the movie "Raiders
 of the lost ark". This dataset pertains to the Individual Brain Charting
-dataset~\cite{ibc}.
+dataset~\cite{ibc, ibc2}.
 % 
 Data 
 % 
 We use full brain data of 10 subjects split in 9 runs of respectively 374, 297, 314, 379, 347, 346, 350, 353 and 211 timeframes.
 %
 Note that the Raiders dataset is different from the one used in~\cite{chen2015reduced}, as it involves different subjects, and because data were acquired at NeuroSpin using a 3T scanner with an isotropic spatial resolution of 1.5 mm.
-The \emph{raiders-full} dataset~\cite{ibc} is an extension of the \emph{raiders} dataset where the first two scenes of the movie are shown twice (130 mins).
+The \emph{raiders-full} dataset~\cite{ibc, ibc2} is an extension of the \emph{raiders} dataset where the first two scenes of the movie are shown twice (130 mins).
 
 The CLIPS dataset reproduces the protocol of original studies described in
 \cite{nishimoto2011reconstructing} and \cite{huth2012continuous}. 10
 participants are exposed to short clips. The data were acquired in 17 runs of 325 timeframes. 
 %
 The CLIPS dataset also pertains to the Individual Brain Charting dataset
-(\cite{ibc}).
+(\cite{ibc, ibc2}).
 %
 At the time of writing, the CLIPS and RAIDERS dataset from the individual brain charting dataset \url{https://project.inria.fr/IBC/} are not yet public, but they will be in the future. Protocols on the visual stimuli presented are available in a dedicated repository on Github: \url{https://github.com/hbp-brain-charting/public_protocols}.
 
@@ -196,12 +198,12 @@ In this section, we describe a framework successfully applied to identify brain 
 (GLM)~\cite{friston1995analysis}. We refer the reader to
 Poline~\cite{poline2012general} for a more detailed description of the model and only cover here what we consider to be the most important parts.
 
-We associate to each image $t$ a set of numbers $\sb(t)$ \textbf{XXX weird notation} that describe the experiment and
+We associate to each image $t$ a set of numbers $\sbb(t)$ that describe the experiment and
 nuisance parameters.
-For instance, in an experiment where the subject is shown either images of faces
-or nothing we could have the association: $s\b(t) = (\phi(t), \tau(t), x(t), y(t),
-z(t))$ where $\phi(t)=1$ if the stimuli is a face and $0$ otherwise, $\tau(t)=1$
-if nothing is shown and $0$ otherwise and  $x(t), y(t), z(t)$ describe the
+For instance, in an experiment where the subject is either asked to listening a
+sentence or reading a sentence we could have the association: $\sbb(t) = (\phi(t), \tau(t), x(t), y(t),
+z(t))$ where $\phi(t)=1$ if the subject is reading a sentence and $0$ otherwise, $\tau(t)=1$
+if the subject is listening to a sentence and $0$ otherwise and  $x(t), y(t), z(t)$ describe the
 position of the head. While $\phi$ and $\tau$ describe the experiment, $x, y, z$
 describe nuisance parameters.
 Note that in practice we use many more nuisance regressors, such
@@ -211,7 +213,7 @@ usually convolve the regressors describing the experiment with the hemodynamic
 function so that they are closer to the actual brain response and sometimes also its derivative to account for small temporal deviations from our model of hemodynamic response.
 We call $S \in \RR^{k, n}$ the \emph{design matrix} (in standard textbooks it is
 usually called $X$ but in this thesis we use $X$ for the data) such that column
-$t$ of $S$ is given by $\sb(t)$.
+$t$ of $S$ is given by $\sbb(t)$.
 Then, the general linear model sees the data of one subject $X \in \RR^{v, n}$ as a linear combination of the
 design matrix $S$ with additive noise $N$.
 \begin{align}
@@ -228,18 +230,19 @@ noise $BN$ has no temporal correlation allowing us to perform linear regression.
 
 The result of the GLM procedure is often given by \emph{contrasts maps} where
 the spatial maps corresponding to conditions of interest are subtracted.
-In our face versus baseline example, we would typically display the first column of
-$A$ (that corresponds to $\phi$ which describes the activation related to faces) minus
+In our reading versus listening example, we would typically display the first column of
+$A$ (that corresponds to $\phi$ which describes the activation related to
+reading a sentence) minus
 the second column of $A$ (that corresponds to $\tau$ which describes the
-baseline). An example of ``face versus basline'' contrast is displayed in
-Figure~\ref{fig:hcp_contrast}. \textbf{XXX ? usually the baseline is model explicitly. If you want a contrast,r ather model something like face vs place ?}
+activation related to listening to a sentence). An example of ``reading versus listening contrast is displayed in
+Figure~\ref{fig:ibc_contrast}.
 
 \begin{figure}
-  \includegraphics[scale=0.25]{figures/neuroscience/faces_vs_baseline.png}
-  \caption{Contrast ``face versus baseline'' computed from the fMRI data of one
-    subject in the HCP dataset~\cite{van2013wu}. This contrast was downloaded
-    from neurvault~\cite{gorgolewski2015neurovault}.}
-  \label{fig:hcp_contrast}
+  \includegraphics[scale=0.3]{figures/neuroscience/spatial_map.png}
+  \caption{Contrast ``sentence listening versus sentence reading'' computed from the fMRI data of one
+    subject in the IBC dataset~\cite{ibc, ibc2}. This contrast was downloaded
+    from neurovault~\cite{gorgolewski2015neurovault} (collection 2138 subject 1 session 0) .}
+  \label{fig:ibc_contrast}
 \end{figure}
 
 
@@ -286,14 +289,15 @@ of the authors~\cite{pascual2007discrete}.
 From a vector describing the 3D current density inside the brain $\jb \in \RR^{3v}$
 ($v$ is the number of voxels) we
 can predict the magnetic field recorded by the sensors $\bb \in \RR^p$ ($p$ is the number of sensors) provided
-we know how the magnetic field propagates through the brain by using Maxwell's equation. This is called the \emph{forward model}. Simplistic \textbf{XXX Simplisitic ? WDYM ?} models of the
-brain are used to provide an approximate solution for the forward model.
+we know how the magnetic field propagates through the brain by using Maxwell's
+equation. This is called the \emph{forward model}. Models describing the
+geometry of the head (head models) are used to provide an approximate solution for the forward model.
 We have therefore
 \begin{align}
   \bb = K \jb
   \label{eq:maxwell}
 \end{align}
-where $K \in \RR^{p, 3v}$ is given by our simplistic model of the head.
+where $K \in \RR^{p, 3v}$ is given by the head model.
 $K$ can be seen as $K  = [K_1 \dots K_{v}]$ where $K_i \in \RR^{p, 3}$ describes how voxel $i$ contributes to the measured magnetic field $\bb$.
 
 Note that if $\bb$ and $K$ are given there is an infinite number of possible

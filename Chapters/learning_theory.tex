@@ -1,10 +1,15 @@
 In this chapter, we present the probabilistic modeling and
-optimization background needed for the present thesis.
+optimization background needed for the present thesis. The material presented in
+section~\ref{sec:probgenmodel} is inspired
+from the section 4 of~\cite{levy2012probabilistic}, the section 1.1
+of~\cite{ablin2019exploration}, the chapter 17 of~\cite{ferguson2017course}
+and~\cite{stein1956inadmissibility}. The material presented in
+section~\ref{sec:optimintro} comes from the chapter 9 of~\cite{boyd2004convex}
+and from~\cite{neal1998view}.
 
-\textbf{XXX feels like a course. Give a book to refer the reader to, and provide a more gentle introduction. Please also state more clearly what is presented in this section.}
-
-\section{Probabilistic models}
-In a probabilistic modeling framework, learning from experience means indetifying the underlying process that generates the data we observe.
+\section{Probabilistic generative models}
+\label{sec:probgenmodel}
+In a probabilistic generative modeling framework, learning from experience means indetifying the underlying process that generates the data we observe.
 
 More formally, let us consider $n$ observations $\xb_1, \dots, \xb_n \in \RR^k$ generated according to the density $\nu_*$.  The broad goal is to recover $\nu_*$.
 
@@ -31,6 +36,7 @@ introduced are well defined. The set of parameters $\thetab$ is viewed as a
 vector and the set of $n$ observations is viewed as a vector $\xb$.
 
 \subsection{Desirable properties of estimators}
+\label{sec:desirable}
 An \emph{estimator} $\hat{\thetab}_n$ of $\thetab_*$ is a function of the
 observations $\xb$ that aims at finding $\thetab_*$.
 An estimator is a random variable, as it depends on $\xb$. Therefore, it can almost never be perfectly accurate and that
@@ -183,6 +189,7 @@ introduce the maximum likelihood estimator which is not always unbiased nor
 efficient in the finite sample case, but satisfies these properties asymptotically.
 
 \subsection{Maximum likelihood}
+\label{sec:mlintro}
 The maximum likelihood estimates the parameters $\hat{\thetab}$ such that the
 density $\nu_{\hat{\thetab}}$ at observed data $\xb_1, \dots, \xb_n$ is the highest among all possible
 values for $\thetab \in \Theta$:
@@ -242,6 +249,7 @@ always converges to the optimal set of parameters:
   Assume $\Theta$ is compact, 
   Assume $l_n$ converge uniformly in probability to $l$
   and assume $l$ is continuous.
+  Lastly, assume that the model is identifiable.
   Then, the maximum likelihood estimator  $\hat{\thetab}_n$ is consistent
   meaning that $\hat{\thetab}_n \xrightarrow[n \rightarrow \infty]{P}  \thetab_*$.
 \end{prop}
@@ -257,13 +265,18 @@ l(\thetab)\| \xrightarrow[n \rightarrow \infty]{P} 0$.
                             &\geq 0
   \end{align}
   where $D_{KL}$ is the Kullback-Leibler divergence that is always positive.
+  The maximum is unique. This comes from the identifiability of the model that
+  implies
+  \begin{align}
+    l(\thetab_*) = l(\thetab) \implies \thetab_* = \thetab
+  \end{align}
 
   Let $\eps > 0$ and define $V_{\eps} = \{\thetab, \|\thetab - \thetab_*\| <
   \eps\}$ an open neighborhood of $\thetab_*$.
   Because $\Theta$ is compact and $l$ continuous we have $max_{\thetab \in \Theta
     \cap V_{\eps}^C} l(\thetab)$ is reached for a value $\thetab_0$.
   
-  Let us define $\delta = l(\thetab_*) - l(\thetab_0)$ and consider the event
+  Let us define $\delta = l(\thetab_*) - l(\thetab_0) > 0$ and consider the event
   \begin{align}
     A_n &= sup_{\thetab \in \Theta \cap V_{\eps}^C} \|l_n(\thetab) - l(\thetab)\| < \frac{\delta}{2}. \\
     &\implies l_n(\thetab) - l(\thetab) < \frac{\delta}{2} \\
@@ -291,29 +304,32 @@ $\Ncal(0, I(\thetab_*)^{-1})$ as $n$ gets large. This property is called \emph{a
 
 \begin{prop}[Asymptotic normality of maximum likelihood estimators]
   \label{prop:asymp:norm}
-  We assume that for all $\xb$, the log-likelihood $l(\xb, \thetab)$ is two times differentiable with respect to $\thetab$, and that we
-  can always exchange derivative and integration operators. We further assume
-  that $\thetab_*$ is in the interior of $\Theta$.\\
-  Then,
+  We assume that $\thetab_*$ is in the interior of $\Theta$.
+  Denoting $J_n(\thetab_n) =
+  \partialfrac{\thetab^2}{^2l_n(\theta_b)}(\thetab_n)$ and $J(\thetab_*) =
+  \partialfrac{\thetab^2}{^2l(\theta_b)}(\thetab_*)$ we assume that \\
+  $\thetab_n \xrightarrow[n \rightarrow
+  \infty]{P} \thetab_* \implies J_n(\thetab_n) \xrightarrow[n \rightarrow
+  \infty]{P} J(\thetab_*)$\\
+  Then, \\
   $\sqrt{n} \| \hat{\thetab}_n - \thetab_* \| \xrightarrow[n \rightarrow
   \infty]{D}  \Ncal(0,
   I(\thetab_*)^{-1})$
 \end{prop}
-where the convergence in distribution $ X_n \xrightarrow[n \rightarrow \infty]{D} X$ means  $\forall x, \enspace F_{X_n}(x)
-\xrightarrow[n \rightarrow \infty]{} F_X(x)$
+where the convergence in distribution $ x_n \xrightarrow[n \rightarrow \infty]{D} x$ means  $\forall t, \enspace F_{x_n}(t)
+\xrightarrow[n \rightarrow \infty]{} F_x(t)$ where $F_x$ is the distribution
+function of $x$.
 \begin{proof}
-  (heuristic)
 
   First order conditions give $\partialfrac{\thetab}{l_n(\hat{\thetab}_n)} = \bzero$.
 
   From the mean value theorem there exists $\thetab_0$ such that
   \begin{align}
     &\partialfrac{\thetab}{l_n(\hat{\thetab}_n)} - \partialfrac{\thetab}{l_n(\thetab_*)} = J(\thetab_0)(\hat{\thetab}_n - \thetab_*) \\
-    &\iff -\frac1{\sqrt{n}} \sum_{i=1}^n  \psi_{\thetab_*}(\xb_i) = J(\thetab_0)\sqrt{n}(\hat{\thetab}_n - \thetab_*)
+    &\iff -\frac1{\sqrt{n}} \sum_{i=1}^n  \psi_{\thetab_*}(\xb_i) = J_n(\thetab_0)\sqrt{n}(\hat{\thetab}_n - \thetab_*)
   \end{align}
-  where $J(\thetab) = \grad^2 l_n(\thetab)$.
 
-  Since we know from the proof of the Cramer-Rao bound
+  We know from the proof of the Cramer-Rao bound
   (proposition~\ref{prop:cramerrao}) that $\EE_{\xb} [\psi_{\thetab_*}(\xb)]=
   0$.  We can use the central limit theorem and write:
   \begin{align}
@@ -321,20 +337,24 @@ where the convergence in distribution $ X_n \xrightarrow[n \rightarrow \infty]{D
   \Ncal(0, I(\thetab_*))
   \end{align}
 
-  Then, by the law of large numbers, we get:
+  Then, we have:
   \begin{align}
-  J(\thetab_*) &= \frac1{n} \sum_{i=1}^n \partialfrac{\thetab}{ \psi_{\thetab_*}(\xb_i)}  \\
-                &\xrightarrow[]{a.s.} \EE_{\xb}[\partialfrac{\thetab}{\psi_{\thetab_*}(\xb)}] \\
+  J(\thetab_*) &= \EE_{\xb}[\partialfrac{\thetab}{\psi_{\thetab_*}(\xb)}] \\
               &=  \EE_{\xb} [\partialfrac{\thetab}{ \frac1{\nu_{\thetab_*}(\xb)} \partialfrac{\thetab}{ \nu_{\thetab_*}(\xb)}} ] \\
-              &= \EE_{\xb}[\frac1{\nu_{\thetab_*}(\xb)} \partialfrac{\thetab^2}{ \nu_{\thetab_*}(\xb)}-\frac{\partialfrac{\thetab}{ \nu_{\thetab_*}(\xb)}}{\nu_{\thetab_*}(\xb)}  \times  \frac{\partialfrac{\thetab}{\nu_{\thetab_*}(\xb)}}{\nu_{\thetab_*}(\xb)}  ] \\
+              &= \EE_{\xb}[\frac1{\nu_{\thetab_*}(\xb)} \partialfrac{\thetab^2}{^2 \nu_{\thetab_*}(\xb)}-\frac{\partialfrac{\thetab}{ \nu_{\thetab_*}(\xb)}}{\nu_{\thetab_*}(\xb)}  \times  \frac{\partialfrac{\thetab}{\nu_{\thetab_*}(\xb)}}{\nu_{\thetab_*}(\xb)}  ] \\
               &= - I(\thetab_*) \\
   \end{align}
 
-  Then as $\hat{\thetab}_n \xrightarrow[]{P} \thetab_*$ we could show that
-  $J(\thetab_0) \xrightarrow[]{P} -I(\thetab_*)$ and conclude that
+  Then since $\hat{\thetab}_n \xrightarrow[n \rightarrow \infty]{P} \thetab_*$, $\thetab_0
+  \xrightarrow[n \rightarrow \infty]{P} \thetab_*$ and from our assumption about
+  $J_n$ we get
+  $J_n(\thetab_0) \xrightarrow[n \rightarrow \infty]{P} J(\thetab_*) =
+  -I(\thetab_*)$.
+
+  From Slutsky's theorem we have
   \begin{align}
-    &I(\thetab_*) \sqrt{n}(\hat{\thetab}_n - \thetab_*) \xrightarrow[]{P}\Ncal(0, I(\thetab_*)) \\
-    &\iff \sqrt{n}(\hat{\thetab}_n - \thetab_*) \xrightarrow[]{P}\Ncal(0, I(\thetab_*)^{-1})
+    &I(\thetab_*) \sqrt{n}(\hat{\thetab}_n - \thetab_*) \xrightarrow[]{D}\Ncal(0, I(\thetab_*)) \\
+    &\iff \sqrt{n}(\hat{\thetab}_n - \thetab_*) \xrightarrow[]{D}\Ncal(0, I(\thetab_*)^{-1})
   \end{align}
 \end{proof}
 
@@ -396,6 +416,7 @@ and Wolf showed in~\cite{ledoit2004well} that shrinking the empirical estimator
 of covariance towards identity improves the quality of the estimator in high dimensions.
 
 \section{Optimization}
+\label{sec:optimintro}
 The maximum likelihood estimator gives a natural way to obtain estimators that
 are consistent and asymptotically efficient.
 However, it requires finding the maximum of the empirical expected
@@ -442,12 +463,11 @@ gradient descent can be shown to converge to the minimum.
   \label{prop:conv:gd}
   Assume that $f$ is two times differentiable and $\mu$-strongly convex:
   \begin{equation}
-    \partialfrac{\xb^2}{f(\xb)} \geq \mu I
+    \partialfrac{\xb^2}{^2f(\xb)} \geq \mu I
   \end{equation}
-  \textbf{XXX notation problem: single derivative at the numerator. You have the same issue in all the chapter.}
   In addition, assume that $f$ is $l$-smooth:
   \begin{equation}
-    \partialfrac{\xb^2}{f(\xb)} \leq lI
+    \partialfrac{\xb^2}{^2f(\xb)} \leq lI
   \end{equation}
   where $I$ is the identity matrix.
   From $\xb_0 \in \RR^v$ and given $\alpha \in \RR$ such that $\frac1{L} \geq \alpha > 0$, the iterates
@@ -502,18 +522,18 @@ We assume that $f$ is twice differentiable everywhere.
 As in gradient descent, we depart from a point $\xb_0$, assume a small \emph{step size} $\alpha$ and a direction
 $\db$ such that $\|\db\| = 1$, a Taylor decomposition at the second first order gives:
 \begin{align}
-  f(\xb_0 + \alpha \db) = f(\xb_0) + \langle \partialfrac{\xb}{f(\xb_0)} | \alpha \db \rangle + \langle \alpha \db | \partialfrac{\xb^2}{f(\xb_0)} \alpha \db \rangle + o(\alpha^2) 
+  f(\xb_0 + \alpha \db) = f(\xb_0) + \langle \partialfrac{\xb}{f(\xb_0)} | \alpha \db \rangle + \langle \alpha \db | \partialfrac{\xb^2}{^2 f(\xb_0)} \alpha \db \rangle + o(\alpha^2) 
 \end{align}
 If we neglect the terms in $o(\alpha^2)$, the best direction is given by
 \begin{align}
-  &\argmin_{\db, \|\db\| = 1} f(\xb_0) + \langle \partialfrac{\xb}{f(\xb_0)} | \alpha \db \rangle + \langle \alpha \db | \partialfrac{\xb^2}{f(\xb_0)} \alpha \db \rangle \\
-  &= - \frac{(\partialfrac{\xb^2}{f(\xb_0)})^{-1}\partialfrac{\xb}{f(\xb_0)}}{\| (\partialfrac{\xb^2}{f(\xb_0)})^{-1} \partialfrac{\xb}{f(\xb_0)}\|}
+  &\argmin_{\db, \|\db\| = 1} f(\xb_0) + \langle \partialfrac{\xb}{f(\xb_0)} | \alpha \db \rangle + \langle \alpha \db | \partialfrac{\xb^2}{^2 f(\xb_0)} \alpha \db \rangle \\
+  &= - \frac{(\partialfrac{\xb^2}{^2 f(\xb_0)})^{-1}\partialfrac{\xb}{f(\xb_0)}}{\| (\partialfrac{\xb^2}{^2 f(\xb_0)})^{-1} \partialfrac{\xb}{f(\xb_0)}\|}
 \end{align}
 
 
 Therefore, Newton updates are given by:
 \begin{align}
-  \xb_{k+1} = \xb_k -\alpha (\partialfrac{\xb^2}{f(\xb_k)})^{-1} \partialfrac{\xb}{f(\xb_k)} \label{eq:update:newton}
+  \xb_{k+1} = \xb_k -\alpha (\partialfrac{\xb^2}{^2 f(\xb_k)})^{-1} \partialfrac{\xb}{f(\xb_k)} \label{eq:update:newton}
 \end{align}
 where $\alpha$ is a small quantity.
 
@@ -521,7 +541,7 @@ Unfortunately, Newton's method is not guaranteed to converge. This contrasts wit
 In order to converge, Newton's method need to ensure that each step yields a sufficient decrease of the loss. This is done by a line search.
 
 The \emph{exact line search} sets $\alpha = \argmin_{t \in [0, 1]} f(\xb_k - t
-(\partialfrac{\xb^2}{f(\xb_0)})^{-1} \partialfrac{\xb}{f(\xb_k)})$ while the \emph{backtracking line search} is an iterative procedure where one starts with $\alpha=1$ and halve its value until it yields to a decrease of the loss.
+(\partialfrac{\xb^2}{^2 f(\xb_0)})^{-1} \partialfrac{\xb}{f(\xb_k)})$ while the \emph{backtracking line search} is an iterative procedure where one starts with $\alpha=1$ and halve its value until it yields to a decrease of the loss.
 
 As shown by proposition~\ref{eq:conv:newton}, Newton's method is guaranteed to converges when an
 exact line search is used.
@@ -530,17 +550,17 @@ exact line search is used.
   \label{eq:conv:newton}
   Assume that $f$ is two times differentiable, $\mu$-strongly convex and $l$-smooth:
   \begin{equation}
-    \mu I \leq \partialfrac{\xb^2}{f(\xb)} \leq l I
+    \mu I \leq \partialfrac{\xb^2}{^2 f(\xb)} \leq l I
   \end{equation}
   where $I$ is the identity matrix.
   Assume that the Hessian is Lipschitz with constant $h$:
   \begin{equation}
-  \| \partialfrac{\xb^2}{f(\xb)} - \partialfrac{\xb^2}{f(\yb)} \| \leq h \| \xb
+  \| \partialfrac{\xb^2}{^2 f(\xb)} - \partialfrac{\xb^2}{^2 f(\yb)} \| \leq h \| \xb
   - \yb \|
  \end{equation}
 
   From $\xb_0 \in \RR^v$  the iterates
-  $\xb_{k+1} = \xb_k -\alpha (\partialfrac{\xb^2}{f(\xb_0)})^{-1}
+  $\xb_{k+1} = \xb_k -\alpha (\partialfrac{\xb^2}{^2 f(\xb_0)})^{-1}
   \partialfrac{\xb}{f(\xb_k)}$ where $\alpha$ is chosen using an exact line
   search converge to the
   minimum $\xb_*$.
@@ -559,7 +579,7 @@ exact line search is used.
  \begin{proof}
    In the damped phase we have  $\| \partialfrac{\xb}{f(\xb)} \| \geq
    \frac{\mu^2}{h}$.
-   From Lagrange inequality and denoting $\db_k = -(\partialfrac{\xb^2}{f(\xb)})^{-1} \partialfrac{\xb}{f(\xb)}$ we have:
+   From Lagrange inequality and denoting $\db_k = -(\partialfrac{\xb^2}{^2 f(\xb)})^{-1} \partialfrac{\xb}{f(\xb)}$ we have:
    \begin{align}
      f(\xb_k + t \db_k) & \leq f(\xb) + t \langle \partialfrac{\xb}{f(\xb)} | \db_k \rangle  +  \frac{t^2 l}{2} \|\db_k\|^2 \\
                         & \leq f(\xb) + t \langle \partialfrac{\xb}{f(\xb)} | \db_k \rangle  -  \frac{t^2 l}{2 \mu} \langle \partialfrac{\xb}{f(\xb)} | \db_k \rangle \\
@@ -580,14 +600,14 @@ exact line search is used.
    only be better than this).
    We have
    \begin{align}
-     \partialfrac{\xb}{f(\xb_{k+1})} &= \partialfrac{\xb}{f(\xb_{k} + \db_k)} -\partialfrac{\xb}{f(\xb_k)} -  \partialfrac{\xb^2}{f(\xb_k)} \db_k \\
-                                     &= \int_{t \in [0, 1]} \partialfrac{\xb^2}{f(\xb_{k} + t \db_k)} \db_k dt  -  \partialfrac{\xb^2}{f(\xb_k)} \db_k \\
-                                     &=\int_{t \in [0, 1]} (\partialfrac{\xb^2}{f(\xb_{k} + t \db_k)} -  \partialfrac{\xb^2}{f(\xb_k)}) \db_k dt  \\
+     \partialfrac{\xb}{f(\xb_{k+1})} &= \partialfrac{\xb}{f(\xb_{k} + \db_k)} -\partialfrac{\xb}{f(\xb_k)} -  \partialfrac{\xb^2}{^2 f(\xb_k)} \db_k \\
+                                     &= \int_{t \in [0, 1]} \partialfrac{\xb^2}{^2 f(\xb_{k} + t \db_k)} \db_k dt  -  \partialfrac{\xb^2}{^2 f(\xb_k)} \db_k \\
+                                     &=\int_{t \in [0, 1]} (\partialfrac{\xb^2}{^2 f(\xb_{k} + t \db_k)} -  \partialfrac{\xb^2}{^2 f(\xb_k)}) \db_k dt  \\
    \end{align}
    Then 
    \begin{align}
-     \|\partialfrac{\xb}{f(\xb_{k+1})}\| &\leq \int_{t \in [0, 1]} \|(\partialfrac{\xb^2}{f(\xb_{k} + t \db_k)} -  \partialfrac{\xb^2}{f(\xb_k)}) \db_k\| dt  \\
-     &\leq \int_{t \in [0, 1]} \|(\partialfrac{\xb^2}{f(\xb_{k} + t \db_k)} -  \partialfrac{\xb^2}{f(\xb_k)})\| \| \db_k\| dt  \\
+     \|\partialfrac{\xb}{f(\xb_{k+1})}\| &\leq \int_{t \in [0, 1]} \|(\partialfrac{\xb^2}{^2 f(\xb_{k} + t \db_k)} -  \partialfrac{\xb^2}{^2 f(\xb_k)}) \db_k\| dt  \\
+     &\leq \int_{t \in [0, 1]} \|(\partialfrac{\xb^2}{^2 f(\xb_{k} + t \db_k)} -  \partialfrac{\xb^2}{^2 f(\xb_k)})\| \| \db_k\| dt  \\
                                          &\leq  \int_{t \in [0, 1]} t h\|\db_k\|^2 dt  \\
                                          &\leq  \frac{h}{2 \mu^2}\|\partialfrac{\xb}{f(\xb_{k})}\|^2 \\
    \end{align}
@@ -621,9 +641,9 @@ by the algorithm.
 \begin{proof}
   The relation holds for $k=0$ and assuming $\yb_k = A^{-1} \xb_k$ we have:
 \begin{align}
-  \yb_{k+1} &= \yb_k -\alpha (\partialfrac{\yb^2}{g(\yb_k)})^{-1} \partialfrac{\yb}{g(\yb_k)} \\
-  &= \yb_k -\alpha A^{-2}(\partialfrac{\xb^2}{f(\xb_k)})^{-1} A \partialfrac{\xb}{f(\xb_k)} \\
-  &= A^{-1} (\xb_k -\alpha (\partialfrac{\xb^2}{f(\xb_k)})^{-1} \partialfrac{\xb}{f( \xb_k)}) \\
+  \yb_{k+1} &= \yb_k -\alpha (\partialfrac{\yb^2}{^2 g(\yb_k)})^{-1} \partialfrac{\yb}{g(\yb_k)} \\
+  &= \yb_k -\alpha A^{-2}(\partialfrac{\xb^2}{^2 f(\xb_k)})^{-1} A \partialfrac{\xb}{f(\xb_k)} \\
+  &= A^{-1} (\xb_k -\alpha (\partialfrac{\xb^2}{^2 f(\xb_k)})^{-1} \partialfrac{\xb}{f( \xb_k)}) \\
             &= A^{-1} \xb_{k+1} \\
 \end{align}
 \end{proof}
@@ -631,7 +651,7 @@ In contrast, gradient descent is not equivariant.
 
 However, despite its attractive properties, Newton algorithms are rarely used in
 practice because they are often intractable. Indeed inverting
-the Hessian $\partialfrac{f}{\xb^2}$ is difficult as it is a tensor of dimension $\RR^{v \times v \times v \times
+the Hessian $\partialfrac{\xb^2}{^2 f}$ is difficult as it is a tensor of dimension $\RR^{v \times v \times v \times
   v}$.
 In some problems, it is possible to construct an approximation of the inverse of
 the Hessian in a reasonable time. This can be done iteratively by building a
