@@ -140,7 +140,7 @@ We employ a similar technique as~\cite{zibulevsky2003blind}, which we now descri
 
 Quasi-Newton methods are based on approximations of the Hessian of $\loss_i$.
 %
-The relative gradient (resp. Hessian)~\cite{amari1996new, cardoso1996equivariant} of $\loss_i$ is defined as the matrix $G_i\in \bbR^{p \times p}$ (resp. tensor $\mathcal{H}_i \in \bbR^{p\times p\times p\times p}$) such that as the matrix $E\in\bbR^{p\times p}$ goes to $0$, we have $\loss_i((I_p + E)W_i) \simeq \loss_i(W_i) + \langle G_i, W_i\rangle + \frac12\langle E, \mathcal{H}_iE\rangle$. Standard manipulations yield:
+The relative gradient (resp. Hessian)~\cite{amari1996new, cardoso1996equivariant} of $\loss_i$ is defined as the matrix $G_i\in \bbR^{p \times p}$ (resp. tensor $\mathcal{H}_i \in \bbR^{p\times p\times p\times p}$) such that as the matrix $E\in\bbR^{p\times p}$ goes to $0$, we have $\loss_i((I_p + E)W_i) \simeq \loss_i(W_i) + \dotp{ G_i}{ W_i} + \frac12\dotp{ E}{ \mathcal{H}_iE}$. Standard manipulations yield:
 \begin{equation}
     \label{eq:gradient}
     G_i = \frac1mf'(\tilde{\sbb})(\yb_i)^{\top} + \frac{1 - 1 /m}{\sigma^2}(\yb_i - \frac{m}{m-1}\tilde{\sbb}_{-i})(\yb_i)^{\top} - I_p 

@@ -162,8 +162,8 @@ where $\alpha$ is a small step-size and $D$ is a direction to be found.
 Following the same reasonning as in section~\ref{sec:gd}, we assume a small step-size
 and write at first order:
 \begin{align}
-  \argmin_{D, \|D\|=1} \loss((I + \alpha D)W) &= \argmin_{D, \|D\|=1} \loss(W) + \langle \partialfrac{W}{f(W)} | \alpha D W \rangle \\
-                                              &= \argmin_{D, \|D\|=1} \loss(W) + \langle \partialfrac{W}{f(W)} W^{\top} | \alpha D \rangle \\
+  \argmin_{D, \|D\|=1} \loss((I + \alpha D)W) &= \argmin_{D, \|D\|=1} \loss(W) + \dotp{ \partialfrac{W}{f(W)} }{ \alpha D W } \\
+                                              &= \argmin_{D, \|D\|=1} \loss(W) + \dotp{ \partialfrac{W}{f(W)} W^{\top} }{ \alpha D } \\
                                               &= -\frac{\partialfrac{W}{f(W)} W^{\top}}{\|\partialfrac{W}{f(W)} W^{\top} \|}
 \end{align}
 The updates are therefore given by  $W \leftarrow (I - \alpha G)W$ where $G = \partialfrac{W}{f(W)}
@@ -343,17 +343,18 @@ fastest to fit.
 Let us consider $\xb_1, \dots, \xb_m$, $m$ datasets and consider the following (SUMCORR)
 objective:
 \begin{align}
-  \max_{\ab_1 \in \RR^{v}, \dots, \ab_m \in \RR^{v}} \sum_{i=1}^m \sum_{j=1}^m \langle \ab_i | X_i X_j^{\top} \ab_j \rangle
+  \max_{\ab_1 \in \RR^{v}, \dots, \ab_m \in \RR^{v}} \sum_{i=1}^m \sum_{j=1}^m \dotp{ \ab_i }{ X_i X_j^{\top} \ab_j }
 \end{align}
 This objective can be arbitrarily large if not constrained. Constraint 4 is
 given by:
 \begin{align}
-  \sum_{i=1}^m \langle \ab_i X_i X_i^{\top} \ab_i \rangle = 1
+  \sum_{i=1}^m \dotp{ \ab_i }{ X_i X_i^{\top} \ab_i } = 1
 \end{align}
 
 The Lagrangian is given by:
 \begin{align}
-  \sum_{i=1}^m \sum_{j=1}^m \langle \ab_i | X_i X_j^{\top} \ab_j \rangle - \lambda (\sum_{i=1}^m \langle \ab_i X_i X_i^{\top} \ab_i \rangle - 1)
+  \sum_{i=1}^m \sum_{j=1}^m \dotp{ \ab_i }{ X_i X_j^{\top} \ab_j } - \lambda (\sum_{i=1}^m
+  \dotp{ \ab_i }{X_i X_i^{\top} \ab_i } - 1)
 \end{align}
 
 Taking the gradient with respect to $\ab_i$ we obtain
@@ -369,8 +370,8 @@ $D$ is the block diagonal matrix formed by the block $i, i$ of $C$ and $\ab \in
 
     The leading eigenvector correspond to the first canonical vectors. The
     second canonical vectors is given by the second eigenvalues and so on. They
-    are orthogonal for the scalar product: $\langle \ab, \bb  \rangle_D =
-    \langle \ab, D \bb  \rangle$.
+    are orthogonal for the scalar product: $\dotp{ \ab}{ \bb  }_D =
+    \dotp{ \ab}{ D \bb  }$.
 
   
 \subsection{Group independent component analysis}
@@ -450,9 +451,9 @@ Following a similar direction as~\cite{moulines1997maximum} we can write:
   &p(\xb, \sbb, \alphab) \\
   &= p(\xb | \sbb) p(\sbb|\alphab)p(\alphab) \\
                         &= \Ncal(\xb; A\sbb, \sigma^2 I_p)\mathcal{N}( \sbb; 0, \diag(\alphab)) \frac1{2^p} \\
-  &\propto \frac{\exp\big(-\frac12(\frac1{ \sigma^2}\|\xb - A\sbb \|^2 + \langle \sbb , \diag(\alphab)^{-1} \sbb\rangle)\big)}{(|\sigma^2 I_p| |\diag(\alphab)|)^{\frac12}}  \\
-  &= \frac{\exp\big(-\frac12(\frac1{ \sigma^2}(\|\xb \|^2 - 2 \langle \xb, A \sbb \rangle + \|A \sbb \|^2)  + \langle \sbb , \diag(\alphab)^{-1} \sbb\rangle) \big)}{(|\sigma^2 I_p| |\diag(\alphab)|)^{\frac12}} \\
-  &\propto \frac{\exp\big(-\frac12( \langle \sbb - \mu_{\alphab}, V_{\alphab}^{-1} (\sbb - \mu_{\alphab}) \rangle - \langle \mu_{\alphab} ,V_{\alphab}^{-1} \mu_{\alphab} \rangle) \big)}{(|\sigma^2 I_p| |\diag(\alphab)|)^{\frac12}},
+  &\propto \frac{\exp\big(-\frac12(\frac1{ \sigma^2}\|\xb - A\sbb \|^2 + \dotp{ \sbb }{ \diag(\alphab)^{-1} \sbb})\big)}{(|\sigma^2 I_p| |\diag(\alphab)|)^{\frac12}}  \\
+  &= \frac{\exp\big(-\frac12(\frac1{ \sigma^2}(\|\xb \|^2 - 2 \dotp{ \xb}{ A \sbb } + \|A \sbb \|^2)  + \dotp{ \sbb }{ \diag(\alphab)^{-1} \sbb}) \big)}{(|\sigma^2 I_p| |\diag(\alphab)|)^{\frac12}} \\
+  &\propto \frac{\exp\big(-\frac12( \dotp{ \sbb - \mu_{\alphab}}{ V_{\alphab}^{-1} (\sbb - \mu_{\alphab}) } - \dotp{ \mu_{\alphab} }{V_{\alphab}^{-1} \mu_{\alphab} }) \big)}{(|\sigma^2 I_p| |\diag(\alphab)|)^{\frac12}},
 \end{align}
 where $V_{\alphab} = (\frac1{\sigma^2}A^{\top}A + \diag(\alphab)^{-1})^{-1}$, $\mu_{\alphab} = \frac1{\sigma^2}V_{\alphab}
 A^{\top} \xb$ and the proportionality constant contains terms that do not depend
@@ -467,13 +468,13 @@ Then we have that:
 \begin{align}
   p(\alphab | \xb) &= \int_{\sbb} p(\alphab, \sbb | \xb) d\sbb \\
                     &\propto \int_{\sbb} p(\xb, \sbb ,\alphab) d\sbb \\ 
-                   &\propto \frac{\exp\big(\frac12(\langle \mu_{\alphab} ,V_{\alphab}^{-1} \mu_{\alphab} \rangle) \big)}{(|\diag(\alphab)| |V_{\alphab}^{-1}|)^{\frac12}}\\ 
+                   &\propto \frac{\exp\big(\frac12(\dotp{ \mu_{\alphab} }{V_{\alphab}^{-1} \mu_{\alphab} }) \big)}{(|\diag(\alphab)| |V_{\alphab}^{-1}|)^{\frac12}}\\ 
 \end{align}
 where we leave out terms that do not depend on $\alphab$.
 The normalizing constant can be computed by summing over possible values of
 $\alphab$:
 \begin{align}
-  p(\alphab | \xb) &= \frac{\frac{\exp\big(\frac12(\langle \mu_{\alphab} ,V_{\alphab}^{-1} \mu_{\alphab} \rangle) \big)}{(|\diag(\alphab)| |V_{\alphab}^{-1}|)^{\frac12}}}{\sum_{\alphab, \alpha_j \in \mathcal{A}} \frac{\exp\big(\frac12(\langle \mu_{\alphab} ,V_{\alphab}^{-1} \mu_{\alphab} \rangle) \big)}{(|\diag(\alphab)| |V_{\alphab}^{-1}|)^{\frac12}}}
+  p(\alphab | \xb) &= \frac{\frac{\exp\big(\frac12(\dotp{ \mu_{\alphab} }{V_{\alphab}^{-1} \mu_{\alphab} }) \big)}{(|\diag(\alphab)| |V_{\alphab}^{-1}|)^{\frac12}}}{\sum_{\alphab, \alpha_j \in \mathcal{A}} \frac{\exp\big(\frac12(\dotp{ \mu_{\alphab} }{V_{\alphab}^{-1} \mu_{\alphab} }) \big)}{(|\diag(\alphab)| |V_{\alphab}^{-1}|)^{\frac12}}}
 \end{align}
 
 Then, we can obtain a closed form formula for $p(\sbb | \xb)$ using
@@ -660,7 +661,7 @@ The likelihood is given by: $p(\xb) = \prod_i \Ncal(\xb_i; A_i \sbb, \sigma^2 I)
 therefore the negative log-likelihood is given up to a constant independent of
 $A_i$ and $\sbb$ by:
 \begin{align}
-  \loss = \sum_i \|A_i \sbb - \xb_i \|^2 = \| \sbb \|^2 -2 \langle A_i \sbb, \xb_i \rangle + \| \xb_i \|^2
+  \loss = \sum_i \|A_i \sbb - \xb_i \|^2 = \| \sbb \|^2 -2 \dotp{ A_i \sbb}{ \xb_i } + \| \xb_i \|^2
   \label{eq:detsrmloss}
 \end{align}
 The negative log-likelihood $\loss$ is optimized by performing alternate minimization on $(A_1 \dots A_m)$
@@ -677,7 +678,7 @@ yielding the closed form updates:
 \end{equation}
 
 From \eqref{eq:detsrmloss}, minimizing $\loss$ with respect to $A_i$ is
-equivalent to maximizing $\langle A_i, \xb_i \sbb^{\top} \rangle$ and therefore we
+equivalent to maximizing $\dotp{ A_i}{ \xb_i \sbb^{\top} }$ and therefore we
 have:
 \begin{equation}
   A_i \leftarrow  \Pcal(\xb_i \sbb^T)
@@ -709,13 +710,13 @@ Denoting $\VV[\sbb | \xb] = (\sum_i \frac1{\sigma_i^2} I +
 \Sigma_s^{-1})^{-1}$ and $\EE[\sbb | \xb] = \VV[\sbb | \xb] \sum_i \frac1{\sigma_i^2}
 A_i^{\top}\xb_i$, we have
 \begin{align}
-  p(\xb, \sbb) &= \prod_i \frac{\exp(-\frac{\|\xb_i - A_i \sbb \|^2}{2 \sigma_i^2})}{(2 \pi \sigma_i^{2v})^{\frac12}} \frac{\exp(-\frac12 \langle \sbb , \Sigma_s^{-1} \sbb \rangle )}{(2 \pi | \Sigma_s|)^{\frac12}} \\
-               &= c_1 \exp(-\frac12 \left( \sum_i \frac1{\sigma_i^2}\|\xb_i\|^2 - 2  \langle \sum_i \frac1{\sigma_i^2} A_i^{\top}\xb_i, \sbb \rangle \right. \\& \left.+ \sum_i \frac1{\sigma_i^2} \| \sbb \|^2 + \langle \sbb, \Sigma_s^{-1} \sbb \rangle  \right)) \\
-               &= c_2(\xb) \exp(-\frac12 \left( \langle  \sbb - \EE[\sbb | \xb], \VV[\sbb | \xb]^{-1} ( \sbb - \EE[\sbb | \xb])  \rangle \right)) \label{probsrmcompleted}
+  p(\xb, \sbb) &= \prod_i \frac{\exp(-\frac{\|\xb_i - A_i \sbb \|^2}{2 \sigma_i^2})}{(2 \pi \sigma_i^{2v})^{\frac12}} \frac{\exp(-\frac12 \dotp{ \sbb }{ \Sigma_s^{-1} \sbb } )}{(2 \pi | \Sigma_s|)^{\frac12}} \\
+               &= c_1 \exp(-\frac12 \left( \sum_i \frac1{\sigma_i^2}\|\xb_i\|^2 - 2  \dotp{ \sum_i \frac1{\sigma_i^2} A_i^{\top}\xb_i}{ \sbb } \right. \\& \left.+ \sum_i \frac1{\sigma_i^2} \| \sbb \|^2 + \dotp{ \sbb}{ \Sigma_s^{-1} \sbb }  \right)) \\
+               &= c_2(\xb) \exp(-\frac12 \left( \dotp{  \sbb - \EE[\sbb }{ \xb], \VV[\sbb | \xb]^{-1} ( \sbb - \EE[\sbb | \xb])  } \right)) \label{probsrmcompleted}
 \end{align}
 where $c_1 = \frac1{(2 \pi \sigma_i^{2v})^{\frac12}}\frac1{(2 \pi |
   \Sigma_s|)^{\frac12}}$ and $c_2(\xb) = c_1 \exp(-\frac12( \sum_i
-\frac1{\sigma_i^2}\|\xb_i\|^2 - \langle  \EE[\sbb | \xb], \VV[\sbb | \xb]^{-1} \EE[\sbb | \xb] \rangle))$ are independent of $\sbb$.
+\frac1{\sigma_i^2}\|\xb_i\|^2 - \dotp{  \EE[\sbb }{ \xb], \VV[\sbb | \xb]^{-1} \EE[\sbb | \xb] }))$ are independent of $\sbb$.
 Therefore $\sbb| \xb \sim \Ncal(\EE[\sbb | \xb], \VV[\sbb, \xb])$
 
 The negative completed log-likelihood is given by
@@ -733,14 +734,14 @@ It is useful to access the log-likelihood to check the implementation of the
 algorithm and monitor the convergence. From equation~\eqref{probsrmcompleted},
 the likelihood is given by:
 \begin{align}
-  p(\xb) &= c_2(\xb) \int_{\sbb} \exp(-\frac12 \left( \langle  \sbb - \EE[\sbb | \xb], \VV[\sbb | \xb]^{-1} ( \sbb - \EE[\sbb | \xb])  \rangle \right)) d\sbb \\
+  p(\xb) &= c_2(\xb) \int_{\sbb} \exp(-\frac12 \left( \dotp{  \sbb - \EE[\sbb }{ \xb], \VV[\sbb | \xb]^{-1} ( \sbb - \EE[\sbb | \xb])  } \right)) d\sbb \\
          &= c_2(\xb) (2 \pi |\VV[\sbb | \xb]|)^{\frac12}
 \end{align}
 replacing $c_2(\xb)$ by its expression and taking the log, the negative
 log-likelihood is (up to constants) given by:
 \begin{align}
   -\log(p(\xb)) = &\sum_i \frac{v}{2} \log(\sigma_i^2) + \frac12 \log(|\Sigma_s|) - \frac12 \log(|\VV[\sbb | \xb]|) \\ &+ \sum_i
-  \frac12 \frac1{\sigma_i^2}\|\xb_i\|^2 - \frac12 \langle  \EE[\sbb | \xb], \VV[\sbb | \xb]^{-1} \EE[\sbb | \xb] \rangle
+  \frac12 \frac1{\sigma_i^2}\|\xb_i\|^2 - \frac12 \dotp{  \EE[\sbb }{ \xb], \VV[\sbb | \xb]^{-1} \EE[\sbb | \xb] }
 \end{align}
 
 The complexity of Probabilistic SRM is $\bigO(\mathrm{n_{iter}} mpvn)$, the same as in

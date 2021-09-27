@@ -442,12 +442,12 @@ We assume that $f$ is differentiable everywhere.
 From a point $\xb_0$, assuming a small \emph{step size} $\alpha$ and a direction
 $\db$ such that $\|\db\| = 1$, a Taylor decomposition at first order gives:
 \begin{align}
-f(\xb_0 + \alpha \db) = f(\xb_0) + \langle \partialfrac{\xb}{f(\xb_0)} | \alpha \db \rangle + o(\alpha) 
+f(\xb_0 + \alpha \db) = f(\xb_0) + \dotp{ \partialfrac{\xb}{f(\xb_0)} }{ \alpha \db } + o(\alpha) 
 \end{align}
 The best direction is the one that minimizes $f(\xb_0 + \alpha \db)$. If we
 neglect the terms in $o(\alpha)$, it is given by
 \begin{align}
-  \argmin_{\db, \|\db\| = 1} f(\xb_0) + \langle \partialfrac{\xb}{f(\xb_0)} | \alpha \db \rangle = \frac{-\partialfrac{\xb}{f(\xb_0)}}{\|\partialfrac{\xb}{f(\xb_0)}\|}
+  \argmin_{\db, \|\db\| = 1} f(\xb_0) + \dotp{ \partialfrac{\xb}{f(\xb_0)} }{ \alpha \db } = \frac{-\partialfrac{\xb}{f(\xb_0)}}{\|\partialfrac{\xb}{f(\xb_0)}\|}
 \end{align}
 
 Therefore, gradient descent updates are given by:
@@ -481,16 +481,16 @@ gradient descent can be shown to converge to the minimum.
   We have 
   \begin{align}
     \| \xb^{k+1} - \xb_* \|^2 &= \| \xb_k -\alpha \partialfrac{\xb}{f(\xb_k)} - \xb_* \|^2 \\
-                            &= \| \xb_k - \xb_* \|^2  - 2 \langle \xb_k - \xb_* | \alpha \partialfrac{\xb}{f(\xb_k)} \rangle + \|\alpha \partialfrac{\xb}{f(\xb_k)} \|^2  \label{eq:gd:itdiff}
+                            &= \| \xb_k - \xb_* \|^2  - 2 \dotp{ \xb_k - \xb_* }{ \alpha \partialfrac{\xb}{f(\xb_k)} } + \|\alpha \partialfrac{\xb}{f(\xb_k)} \|^2  \label{eq:gd:itdiff}
  \end{align}
 
  From $\mu$-strong convexity, Lagrange inequality gives
  \begin{align}
-   &f(\xb_*) \geq f(\xb_k) + \langle \partialfrac{\xb_k}{f(\xb_k)} | \xb_* - \xb_k \rangle + \frac{\mu}{2} \|\xb_* - \xb_k \|^2
+   &f(\xb_*) \geq f(\xb_k) + \dotp{ \partialfrac{\xb_k}{f(\xb_k)} }{ \xb_* - \xb_k } + \frac{\mu}{2} \|\xb_* - \xb_k \|^2
  \end{align}
  so that 
  \begin{align}
-   -2 \alpha \langle \partialfrac{\xb_k}{f(\xb_k)} | \xb_k -  \xb_*\rangle \leq  -2 \alpha(f(\xb_k) - f(\xb_*)) - \mu \alpha \|\xb_* - \xb_k \|^2 \label{eq:mu:conv:ineq}
+   -2 \alpha \dotp{ \partialfrac{\xb_k}{f(\xb_k)} }{ \xb_k -  \xb_*} \leq  -2 \alpha(f(\xb_k) - f(\xb_*)) - \mu \alpha \|\xb_* - \xb_k \|^2 \label{eq:mu:conv:ineq}
    \end{align}
 
    and using the fact that $f$ is $l$-smooth we have: 
@@ -522,11 +522,11 @@ We assume that $f$ is twice differentiable everywhere.
 As in gradient descent, we depart from a point $\xb_0$, assume a small \emph{step size} $\alpha$ and a direction
 $\db$ such that $\|\db\| = 1$, a Taylor decomposition at the second first order gives:
 \begin{align}
-  f(\xb_0 + \alpha \db) = f(\xb_0) + \langle \partialfrac{\xb}{f(\xb_0)} | \alpha \db \rangle + \langle \alpha \db | \partialfrac{\xb^2}{^2 f(\xb_0)} \alpha \db \rangle + o(\alpha^2) 
+  f(\xb_0 + \alpha \db) = f(\xb_0) + \dotp{ \partialfrac{\xb}{f(\xb_0)} }{ \alpha \db } + \dotp{ \alpha \db }{ \partialfrac{\xb^2}{^2 f(\xb_0)} \alpha \db } + o(\alpha^2) 
 \end{align}
 If we neglect the terms in $o(\alpha^2)$, the best direction is given by
 \begin{align}
-  &\argmin_{\db, \|\db\| = 1} f(\xb_0) + \langle \partialfrac{\xb}{f(\xb_0)} | \alpha \db \rangle + \langle \alpha \db | \partialfrac{\xb^2}{^2 f(\xb_0)} \alpha \db \rangle \\
+  &\argmin_{\db, \|\db\| = 1} f(\xb_0) + \dotp{ \partialfrac{\xb}{f(\xb_0)} }{ \alpha \db } + \dotp{ \alpha \db }{ \partialfrac{\xb^2}{^2 f(\xb_0)} \alpha \db } \\
   &= - \frac{(\partialfrac{\xb^2}{^2 f(\xb_0)})^{-1}\partialfrac{\xb}{f(\xb_0)}}{\| (\partialfrac{\xb^2}{^2 f(\xb_0)})^{-1} \partialfrac{\xb}{f(\xb_0)}\|}
 \end{align}
 
@@ -581,16 +581,16 @@ exact line search is used.
    \frac{\mu^2}{h}$.
    From Lagrange inequality and denoting $\db_k = -(\partialfrac{\xb^2}{^2 f(\xb)})^{-1} \partialfrac{\xb}{f(\xb)}$ we have:
    \begin{align}
-     f(\xb_k + t \db_k) & \leq f(\xb) + t \langle \partialfrac{\xb}{f(\xb)} | \db_k \rangle  +  \frac{t^2 l}{2} \|\db_k\|^2 \\
-                        & \leq f(\xb) + t \langle \partialfrac{\xb}{f(\xb)} | \db_k \rangle  -  \frac{t^2 l}{2 \mu} \langle \partialfrac{\xb}{f(\xb)} | \db_k \rangle \\
+     f(\xb_k + t \db_k) & \leq f(\xb) + t \dotp{ \partialfrac{\xb}{f(\xb)} }{ \db_k }  +  \frac{t^2 l}{2} \|\db_k\|^2 \\
+                        & \leq f(\xb) + t \dotp{ \partialfrac{\xb}{f(\xb)} }{ \db_k }  -  \frac{t^2 l}{2 \mu} \dotp{ \partialfrac{\xb}{f(\xb)} }{ \db_k } \\
    \end{align}
    We then have 
    \begin{align}
-     &  f(\xb_k + \alpha \db_k)  \leq f(\xb) + t \langle \partialfrac{\xb}{f(\xb)} | \db_k \rangle  -  \frac{t^2 l}{2 \mu} \langle \partialfrac{\xb}{f(\xb)} | \db_k \rangle \\
+     &  f(\xb_k + \alpha \db_k)  \leq f(\xb) + t \dotp{ \partialfrac{\xb}{f(\xb)} }{ \db_k }  -  \frac{t^2 l}{2 \mu} \dotp{ \partialfrac{\xb}{f(\xb)} }{ \db_k } \\
    \end{align}
    setting $t = \frac{\mu}{l}$ gives
    \begin{align}
-       f(\xb_k +\alpha \db_k)  &\leq f(\xb) + \frac{\mu}{2l} \langle \partialfrac{\xb}{f(\xb)} | \db_k \rangle  \\
+       f(\xb_k +\alpha \db_k)  &\leq f(\xb) + \frac{\mu}{2l} \dotp{ \partialfrac{\xb}{f(\xb)} }{ \db_k }  \\
      &\leq f(\xb) - \frac{\mu}{2l^2} \|\partialfrac{\xb}{f(\xb)}\|^2  \\
      &\leq f(\xb) - \frac{\mu^5}{2h l^2} \\
    \end{align}

@@ -166,8 +166,8 @@ We have the following result:
   
   Then we consider the negative log-likelihood of probabilistic srm:
   \begin{align}
-    \loss &= \sum_i \frac12 v\log(\sigma_i^2) + \frac12 \log(|\Sigma_s|) + \int_{\sbb} \sum_i \frac1{2 \sigma_i^{2}}\|\xb_i - A_i \sbb \|^2 \\& \enspace + \frac12 \langle \sbb , \Sigma_s^{-1} \sbb \rangle  d\sbb \\
-          &= \sum_i \frac12 v \log(\sigma_i^2) + \frac12 \log(|\Sigma_s|) + \int_{\sbb} \sum_i \frac1{2 \sigma_i^{2}}\|\zb_i - \tilde{A_i} \sbb \|^2 \\& \enspace+ \frac12 \langle \sbb , \Sigma_s^{-1} \sbb \rangle  d\sbb
+    \loss &= \sum_i \frac12 v\log(\sigma_i^2) + \frac12 \log(|\Sigma_s|) + \int_{\sbb} \sum_i \frac1{2 \sigma_i^{2}}\|\xb_i - A_i \sbb \|^2 \\& \enspace + \frac12 \dotp{ \sbb }{ \Sigma_s^{-1} \sbb }  d\sbb \\
+          &= \sum_i \frac12 v \log(\sigma_i^2) + \frac12 \log(|\Sigma_s|) + \int_{\sbb} \sum_i \frac1{2 \sigma_i^{2}}\|\zb_i - \tilde{A_i} \sbb \|^2 \\& \enspace+ \frac12 \dotp{ \sbb }{ \Sigma_s^{-1} \sbb }  d\sbb
   \end{align}
   where we use equality~\eqref{eq:equality:xy}.
   Optimizing the log-likelihood via expectation maximization yields the exact

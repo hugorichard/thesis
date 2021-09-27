@@ -243,7 +243,7 @@ for $A'_1 = A_1(I_p + \Sigma_1)^{\frac12}U(I_p + \Sigma_1)^{-\frac12}$ where $U$
 % \label{app:jointdiag}
 % We use a similar approach as\pierre{do we really need the orthogonal algorithm ? anyways, this should be put in appendix} in~\cite{ablin2018beyond} and optimize this loss using a quasi-newton approach. In our case though, we have to take into account the orthogonality constraint.
 % In order to take into account orthogonality constraints, the gradient $G$ and Hessian $H$ are defined as 
-% $\loss(\exp(\eps) O) = \loss(O) + \langle \eps , G \rangle + \langle \eps , H \eps \rangle + o(\|\eps \|_F^2)$ where $\eps$ is a small skew-symmetric matrix.
+% $\loss(\exp(\eps) O) = \loss(O) + \dotp{ \eps }{ G } + \dotp{ \eps }{ H \eps } + o(\|\eps \|_F^2)$ where $\eps$ is a small skew-symmetric matrix.
 
 % Let us call $D^i = \mathcal{O} \hat{W}_i C_{ii} \hat{W}_i^{\top} \mathcal{O}^{\top}$ and notice that $D^i$ is symmetric.
 % We have
@@ -274,12 +274,12 @@ for $A'_1 = A_1(I_p + \Sigma_1)^{\frac12}U(I_p + \Sigma_1)^{-\frac12}$ where $U$
 
 % Let us call $\hat{D^i} = \frac1{n} \sum_i D^i$.
 % \begin{align}
-% \langle G , \eps \rangle + \frac12 \langle \eps , \hat{H} \eps \rangle &= \sum_{kl} \eps_{kl} G_{kl} + \frac12 \sum_{klmn} \hat{H}_{klmn} \eps_{kl} \eps_{mn} \\
+% \dotp{ G }{ \eps } + \frac12 \dotp{ \eps }{ \hat{H} \eps } &= \sum_{kl} \eps_{kl} G_{kl} + \frac12 \sum_{klmn} \hat{H}_{klmn} \eps_{kl} \eps_{mn} \\
 % &= \sum_{kl} G_{kl} \eps_{kl} + \frac12 \left[\sum_{kl} \frac{\hat{D}^i_{ll}}{\hat{D}^i_{kk}} \eps_{kl}^2 + \sum_{kl}\eps_{kl} \eps_{lk} - 2\sum_k \eps_{kk} \right]
 % \end{align}
 % Using the fact that $\eps$ is anti-symmetric gives:
 % \begin{align}
-% \langle G , \eps \rangle + \langle \eps , \hat{H} \eps \rangle
+% \dotp{ G }{ \eps } + \dotp{ \eps }{ \hat{H} \eps }
 % &= \sum_{k} \sum_{l < k} (G_{kl} - G_{lk}) \eps_{kl} + \frac12(\sum_{k} \sum_{l < k} (\frac{\hat{D}^i_{ll}}{\hat{D}^i_{kk}} + \frac{\hat{D}^i_{kk}}{\hat{D}^i_{ll}}) \eps_{kl}^2 -\sum_{k} \sum_{l < k}2\eps_{kl}^2) \\
 % &= \sum_{k} \sum_{l < k} (G_{kl} - G_{lk}) \eps_{kl} + \frac12(\sum_{k} \sum_{l < k} \left[\frac{\hat{D}^i_{ll}}{\hat{D}^i_{kk}} + \frac{\hat{D}^i_{kk}}{\hat{D}^i_{ll}} - 2\right] \eps_{kl}^2)
 % \end{align}
@@ -293,7 +293,7 @@ for $A'_1 = A_1(I_p + \Sigma_1)^{\frac12}U(I_p + \Sigma_1)^{-\frac12}$ where $U$
 
 % and the log-likelihood writes:
 % \begin{align}
-%   \mathcal{L} = &\sum_{i=1}^m\left(-\log|W_i| + \frac12 \log |\Sigma_i|\right) + \frac12 \log(|\sum_{i=1}^m \Sigma_i^{-1} + I|) + \frac12 (\sum_{i=1}^m \langle \yb_i , \Sigma_i^{-1} \yb_i \rangle \\&  - \frac12 \langle \left(\sum_{i=1}^m \Sigma_i^{-1} + I \right)^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) , \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) \rangle)
+%   \mathcal{L} = &\sum_{i=1}^m\left(-\log|W_i| + \frac12 \log |\Sigma_i|\right) + \frac12 \log(|\sum_{i=1}^m \Sigma_i^{-1} + I|) + \frac12 (\sum_{i=1}^m \dotp{ \yb_i }{ \Sigma_i^{-1} \yb_i } \\&  - \frac12 \dotp{ \left(\sum_{i=1}^m \Sigma_i^{-1} + I \right)^{-1} \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) }{ \sum_{i=1}^m \left(\Sigma_i^{-1} \yb_i \right) })
 % \end{align}
 % which yields the expected formula.
 
@@ -455,8 +455,8 @@ Therefore we get closed-form updates for $\Sigma_i$:
 % and the approximated Hessian $\widehat{\mathcal{H}^{W_i}}$
 We update $W_i$ by performing a quasi-Newton step. 
 % The gradient $\mathcal{G}^{W_i}$, the Hessian $\mathcal{H}^{W_i}$  are given by
-% $\mathcal{G}((I + \epsilon)W_i) = C(W_i) + \langle \epsilon | \mathcal{G}^{W_i} \rangle +
-% \frac12 \langle \epsilon | \mathcal{H}^{W_i} \epsilon \rangle$ so
+% $\mathcal{G}((I + \epsilon)W_i) = C(W_i) + \dotp{ \epsilon }{ \mathcal{G}^{W_i} } +
+% \frac12 \dotp{ \epsilon }{ \mathcal{H}^{W_i} \epsilon }$ so
 % \begin{align*}
 %   &\mathcal{G}^{} = -I + (\Sigma_i)^{-1}(\yb_i - \mathbb{E}[\sbb|\xb])(\yb_i)^{\top} , \enspace \mathcal{H}^{W_i}_{a, b, c, d} = \delta_{a, c} \frac{y_{ib} y_{id}}{\Sigma_i_a}, \enspace \widehat{\mathcal{H}^{W_i}_{a, b, c, d}} =  \delta_{a, c} \delta_{b, d}\frac{(y_{ib})^2}{\Sigma_i_a}
 % \end{align*}
@@ -465,15 +465,13 @@ We update $W_i$ by performing a quasi-Newton step.
 We use the relative gradient $\mathcal{G}^{W_i}$ and $\mathcal{H}^{W_i}$ defined
 by
 \begin{align}
-\mathcal{J}(W_i + \varepsilon W_i) = \mathcal{J}(W_i) + \langle
- \varepsilon|\mathcal{G}^{W_i}\rangle + \frac12 \langle
- \varepsilon|\mathcal{H}^{W_i} \varepsilon \rangle
+\mathcal{J}(W_i + \varepsilon W_i) = \mathcal{J}(W_i) + \dotp{ \varepsilon}{\mathcal{G}^{W_i}} + \frac12 \dotp{ \varepsilon}{\mathcal{H}^{W_i} \varepsilon }
 \end{align}
 
  We get:
  \begin{align}
    \mathcal{J}(W_i + \varepsilon W_i) &= \sum_{i=1}^m \bigg[ -\log(|W_i|) -\log(|I_k + \varepsilon|) \nonumber \\&- \log(\mathcal{N}(\yb_i + \varepsilon \yb_i; \sbb; \Sigma_i)) \bigg] + const \\
-                                      &= \mathcal{J}(W_i) - \tr(\varepsilon) + \frac12 \tr(\varepsilon^2) \nonumber \\& \enspace \enspace + \frac12 \bigg[\langle \varepsilon \yb_i| (\Sigma_i)^{-1} (\yb_i - \sbb) \rangle + \nonumber \\& \enspace \enspace \langle (\yb_i - \sbb)| (\Sigma_i)^{-1} \varepsilon \yb_i \rangle + \langle \varepsilon \yb_i| (\Sigma_i)^{-1} \varepsilon \yb_i \rangle \bigg] \nonumber \\ & \enspace + o(\|\varepsilon\|^2) \\
+                                      &= \mathcal{J}(W_i) - \tr(\varepsilon) + \frac12 \tr(\varepsilon^2) \nonumber \\& \enspace \enspace + \frac12 \bigg[\dotp{ \varepsilon \yb_i}{ (\Sigma_i)^{-1} (\yb_i - \sbb) } + \nonumber \\& \enspace \enspace \dotp{ (\yb_i - \sbb)}{ (\Sigma_i)^{-1} \varepsilon \yb_i } + \dotp{ \varepsilon \yb_i}{ (\Sigma_i)^{-1} \varepsilon \yb_i } \bigg] \nonumber \\ & \enspace + o(\|\varepsilon\|^2) \\
                                       &= \mathcal{J}(W_i) - \sum_a \varepsilon_{a, a} + \frac12 \sum_{a, b} \varepsilon_{a,b} \varepsilon_{b, a} \nonumber \\& \enspace \enspace + \sum_{a, b} \varepsilon_{a, b} \left[(\Sigma_i)^{-1}(\yb_i - \sbb) (\yb_i)^{\top} \right]_{a, b} \nonumber \\& \enspace \enspace + \frac12 \sum_{a, b} \varepsilon_{a, b} \left[(\Sigma_i)^{-1} \varepsilon \yb_i (\yb_i)^{\top}\right]_{a, b} \nonumber \\ & \enspace + o(\|\varepsilon\|^2) \\
                                       &= \mathcal{J}(W_i) - \sum_a \varepsilon_{a, a} + \frac12 \sum_{a, b} \varepsilon_{a,b} \varepsilon_{b, a} \nonumber \\& \enspace \enspace + \sum_{a, b} \varepsilon_{a, b} \left[(\Sigma_i)^{-1}(\yb_i - \sbb) (\yb_i)^{\top} \right]_{a, b} + \nonumber \\& \enspace \enspace \frac12 \sum_{a, b, d} \varepsilon_{a, b} (\Sigma_i)^{-1}_{a, a} \varepsilon_{a, d} \left[\yb_i (\yb_i)^{\top}\right]_{d, b} \nonumber \\ & \enspace + o(\|\varepsilon\|^2)
  \end{align}
