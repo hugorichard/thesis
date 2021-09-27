@@ -13,21 +13,26 @@ model are predictive of age.
 
 \section{Comparing Fitting time and performance of FastSRM and
   SRM on synthetic data}
-We generate data $\xb_i$ according to the model of Probabilistic SRM. We sample the value of the subject specific noise level from a normal
+We generate synthetic data $\xb_i$ according to the model of Probabilistic SRM.
+The parameters $\sigma_i$, $A_i$ and $\Sigma_s$ are generated randomly. We sample the value of the subject specific noise level from a normal
 distribution: $\sigma_i \sim \Ncal(0, 0.1)$. The mixing matrices $A_i$
 are obtained by sampling their coefficient from a standardized normal distribution.
 Lastly, the covariance of the shared response $\Sigma_s$ is diagonal and the
 diagonal values are obtained by sampling from a Dirichlet distribution with
 parameter $(1 \dots 1)$.
-The number of voxels is fixed to $v=125~000$. The number of samples is given by
-$n=1000$. We use $m=10$ subjects and $p=50$ components.
+We set the number of voxels to $v=125~000$, the number of subjects to $m=10$ and
+the number of components to $p=50$. We generate $n=1000$ samples.
 
 We benchmark deterministic SRM, probabilistic
 SRM and their FastSRM counterparts in terms of fitting time and performance.
 Algorithms are designated by the atlas they use and therefore SRM algorithms described in
 section~\ref{sec:probabilisticsrm} and~\ref{sec:deterministicsrm} are refered to
-as \emph{None} because no atlas is used and  FastSRM algorithms will have the
-label \emph{Optimal}.
+as \emph{None} because no atlas is used and FastSRM algorithms will have the
+label \emph{Optimal}. Note that it would be possible to use FastSRM with sub-optimal
+atlases (there exists a wide variety of atlases
+available~\cite{schaefer2017local, bellec2010multi, mensch2018extracting}) but
+without any guarantees that the performance are the same as SRM.
+
 
 We use a number of iterations between 1 and 100 and report the performance,
 fitting time and a measure of convergence. In FastSRM, we do not compute the
@@ -88,7 +93,7 @@ In a nutshell, the time-segment matching accuracy measures the similarity betwee
 In the context of movie watching, this measure has a lot of sense: if we split
 the movies in scenes and compute a representation per scene and per subject, it makes
 sense to assume that different subjects watching the movie would still have closer representation of the same scenes than of different scenes.
-This explains why timesegment matching is a standard evaluation of SRM-like methods also used in  \cite{chen2015reduced}, \cite{guntupalli2018computational}, \cite{Nastase741975} or
+This explains why timesegment matching is a standard evaluation of SRM-like methods also used in  \cite{guntupalli2018computational}, \cite{Nastase741975} or
 \cite{zhang2016searchlight}.
 
 We now describe more precisely the experimental design.
@@ -140,7 +145,8 @@ Functionally matched spatial components $A_i$ are obtained using FastSRM.
 %
 They are divided into two groups (train and test data) where the train set contains 80\% of the data and the test set 20\%.
 %
-Within the train set we split again our data into two groups: the first group is used to train one Ridge model per spatial components, the second group is used to train a Random Forest to predict age from Ridge predictions. This way of stacking models is similar to the pipeline used in \cite{rahim2017joint}.
+Within the train set we split again our data into two groups: the first group is
+used to train one Ridge model per spatial components to predict age, the second group is used to train a Random Forest to predict age from Ridge predictions. This way of stacking models is similar to the pipeline used in \cite{rahim2017joint}.
 %
 We use 5 fold cross validation to split the train set (so that the number of samples used to train the Random Forest is the number of elements in the train set).
 %
@@ -153,7 +159,13 @@ An illustration of the process is available in Figure~\ref{fig:experiment_age_pr
 In each Ridge model, the coefficient that determines the level of l2 penalization is set by generalized cross validation, an efficient form of leave-one-out cross validation.
 
 The train and test sets are chosen randomly. In Figure~\ref{fig:predict_age}, we report the average mean absolute error (MAE) on the test set averaged over the 5 splits.
-FastSRM predicts age with an accuracy much better than chance resulting in a mean absolute error (MAE) of 7.5 years.
+FastSRM predicts age with an accuracy much better than chance resulting in a
+mean absolute error (MAE) of $7.5$ years. Note that this is far from being the
+most accurate method. Using a combination of different modalities, it is
+possible to obtain a MAE of approximately $4.5$
+years~\cite{engemann2019combining}. However, as will be shown in the next
+paragraph, our method extracts a set of
+components specific to each individual making it more interpretable than other approaches.
 
 \begin{figure}
 \centering

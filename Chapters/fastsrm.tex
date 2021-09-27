@@ -36,7 +36,7 @@ mixing matrices, $(\sigma_i)_{i=1}^m$ the noise levels and $\Sigma_s$ the
 components variance.
 
 In fMRI, the classical approach used to reduce the data is to apply an atlas.
-Deterministic atlases~\cite{bellec2010multi} correspond to a parcellation of the
+A deterministic atlas such as~\cite{bellec2010multi} is a parcellation of the
 brain into $r$ regions. Reducing an image using a deterministic atlas corresponds to
 averaging the signal within each region of the atlas. A probabilistic atlases such
 as~\cite{dadi_fine-grain_2020} describes each region as a set of weights across
@@ -88,23 +88,21 @@ a factor of $\frac{v}{r}$. The number of regions in large atlases is about $r=10
 It remains to show how to draw a correspondence between FastSRM and SRM which is addressed in the following section.
 
 \section{Optimal atlases}
-In general, working with reduced data induces a loss of information and
+In principle, FastSRM can be used with any atlas. 
+However, in general, working with reduced data induces a loss of information and
 therefore there is little hope to recover the parameters that would have been obtained from SRM from the parameters of FastSRM.
 However, in this section, we show that there exists an optimal atlas in the sense that SRM and FastSRM yield the same results.
-
-While it is possible in principle to use FastSRM with a sub-optimal atlas,
-we will only use the optimal atlas and therefore, in the rest of the thesis, we refer to FastSRM with the optimal atlas as just FastSRM.
 
 Let us consider $\xb_i = U_{\xb_i} \zb_i$ a PCA of $\xb_i$. As the number of
 samples $n$ is lower than the number of features $U_{\xb_i} \in \RR^{v, n}$ and $\zb_i \in \RR^{n}$.  We also have $U_{\xb_i}^{\top}U_{\xb_i} = I$.
 Therefore $U_{\xb_i}$ constitutes a possible choice of subject specific atlas.
 
-As the next property shows, $U_{\xb_i}$ constitutes an optimal atlas when
-fitting deterministic SRM.
-\begin{prop}[Optimal dimension reduction via PCA for deterministic SRM]
+As the next property shows, $U_{\xb_i}$ constitutes an optimal atlas for deterministic FastSRM.
+\begin{prop}[Optimal atlas for deterministic FastSRM]
   Let $(A_i)_i, \sbb$ be the solution obtained by deterministic SRM on data
-  $\xb_i$ and $(A_i')_i, \sbb'$ the solution obtained by deterministic SRM on
-  data $\zb_i = U_{\xb_i}^{\top} \xb_i$. Then $A_i = U_{\xb_i}A_i'$ and $\sbb = \sbb'$. 
+  $\xb_i$ and $(A_i')_i, \sbb'$ the solution obtained by deterministic FastSRM on
+  data $\xb_i$ using atlas $U_{\xb_i}$ where $\xb_i = U_{\xb_i} \zb_i$ is a PCA
+  of $\xb_i$. Then $A_i = U_{\xb_i}A_i'$ and $\sbb = \sbb'$. 
 \label{prop:optimaldetsrm}
 \end{prop}
 \begin{proof}
@@ -149,7 +147,7 @@ are replaced by updates
 \end{align}
 
 We have the following result:
-\begin{prop}[Optimal dimension reduction via PCA for probabilistic SRM]
+\begin{prop}[Optimal atlas for probabilistic FastSRM]
   Let $(A_i)_i, \sigma_i, \Sigma_s$ be the solution obtained by probabilistic SRM on data
   $\xb_i$ and $(A_i')_i, \sigma_i', \Sigma_s'$ the solution obtained by ProbSRM($v$) on
   data $\zb_i = U_{\xb_i}^{\top} \xb_i$.Then $A_i = U_{\xb_i}A_i'$, $\sigma_i =
@@ -261,31 +259,37 @@ We first show why deterministic SRM and probabilistic SRM without any
 restriction on the covariance of the components can
 only recover unmixing matrices up to an arbitrary rotation.
 
-Let us consider data $\xb_i$ generated from deterministic SRM with
+Let us consider data $\xb_i$ generated from deterministic SRM (meaning
+deterministic SRM holds exactly for these data) with
 mixing matrices $A_i$, shared response $\sbb$ and noise covariance $\sigma$.
-Then, deterministic SRM with parameters $A'_i = A_i \theta$ and $\sbb' = \theta^{\top} \sbb$ where
-$\theta \in \RR^{k, k}$ is an orthogonal matrix also
-generate $\xb_i$.
+Then deterministic SRM, with parameters $A'_i = A_i R$ and $\sbb' = R^{\top} \sbb$ where
+$R \in \RR^{k, k}$ is an orthogonal matrix, also
+generates $\xb_i$.
+This shows that deterministic SRM is not identifiable.
 
 Similarly, in the probabilistic SRM case, if data $\xb_i$ are generated from the
 probabilistic SRM model with 
 parameters $A_i$, $\Sigma_s$, $\sigma_i^2$ (where $\Sigma_s$ can be any
 symmetric positive definite
-matrix) then the probabilistic SRM model with parameters $A_i\theta$, $\theta^{\top} \Sigma_s \theta$, $\sigma_i^2$  where
-$\theta \in \RR^{k, k}$ is an orthogonal matrix also generate $\xb_i$.
+matrix) then the probabilistic SRM model with parameters $A_iR$, $R^{\top} \Sigma_s R$, $\sigma_i^2$  where
+$R \in \RR^{k, k}$ is an orthogonal matrix also generate $\xb_i$.
+This shows that if no constrains are imposed on $\Sigma_s$,
+then probabilistic SRM is not identifiable.
 
-Then, we show that if the covariance of the components are diagonal, under some
-assumptions probabilistic SRM is identifiable:
+
+Then, we show that if $\Sigma_s$ is assumed to be diagonal, then probabilistic
+SRM is identifiable under weak assumptions :
 \begin{prop}[Identifiability of probabilistic SRM]
   \label{prop:fastsrm:identifiability}
-  Let $\xb_i$ be generated from the probabilistic SRM model with parameters 
+  Let $\xb_i$ be generated from a probabilistic SRM with parameters 
   $A_i$, $\Sigma_s$, $\sigma_i^2$ (where $\Sigma_s$ is diagonal positive with
   distinct values on the diagonal) and assume there exists another set of parameters $A_i'$, $\Sigma_s'$,
   ${\sigma_i'}^2$ (where $\Sigma_s'$ is diagonal positive with
   distinct values on the diagonal) that also generate $\xb_i$.
 Then if $m\geq 3$, $A_i' = A_i P^{\top}$, $\Sigma_s'= P\Sigma_sP^{\top}$ and
   ${\sigma_i^2}' = {\sigma_i}^2$ where $P$ is a sign and permutation matrix
-  independent (the same for all subjects).
+  (meaning $P$ is the product of a diagonal matrix with values in $\{-1, 1\}$
+  and a permutation matrix).
 \end{prop}
 \begin{proof}
   Let us consider $\EE[\xb_i \xb_j^{\top}]$ for $i \neq j$.
