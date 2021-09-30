@@ -9,19 +9,30 @@ and from~\cite{neal1998view}.
 
 \section{Probabilistic generative models}
 \label{sec:probgenmodel}
-In a probabilistic generative modeling framework, learning from experience means indetifying the underlying process that generates the data we observe.
+In a probabilistic generative modeling framework, learning from experience means identifying the underlying process that generates the data we observe.
 
-More formally, let us consider $n$ observations $\xb_1, \dots, \xb_n \in \RR^k$ generated according to the density $\nu_*$.  The broad goal is to recover $\nu_*$.
+More formally, consider $\Xcal = \xb^{(1)}, \dots, \xb^{(n)} \in \RR^k$, $n$ random
+vectors with joint density $\nu^*_{\Xcal}$ and consider the available data $X \in \RR^{k,
+  n}$ as an observation of $\Xcal$. We also say that data $X$ are \emph{generated from} $\nu^*_{\Xcal}$.
+The broad
+goal is to recover $\nu^*_{\Xcal}$ from $X$. When samples $\xb^{(1)},
+\dots, \xb^{(n)}$ are independent and identically distributed,
+$\nu^*_{\Xcal} = \otimes_{i=1}^n \nu^*_{\xb}$ so that
+$X$ can be seen as $n$ observations of the random variable $\xb$ with density
+$\nu^*_{\xb}$. In the remaining of the thesis, we use the same notation $\xb^{(i)}$ for the random variable associated to the $i$-th sample and its observation (the $i$-th column
+of $X$). In addition, we use $\nu^*$ to denote both $\nu^*_{\xb}$ and $\nu^*_{\Xcal}$ 
+depending on whether samples are independent and identically
+distributed or not.
 
-In practice, we assume a model for the true density $\nu_*$ meaning that we
-assume that $\nu_*$ belongs to a family of densities $\mathcal{F}$.
-When it is indeed true that $\nu_* \in \Fcal$, we say that \emph{the model holds}.
+In practice, we assume a model for the true density $\nu^*$ meaning that we
+assume that $\nu^*$ belongs to a family of densities $\mathcal{F}$.
+When it is indeed true that $\nu^* \in \Fcal$, we say that \emph{the model holds}.
 
 Often, we assume $\Fcal$ to be a set of parameterized densities so
 that any density in $\Fcal$ can be written as $\nu_{\thetab}$ where
 $\thetab \in \Theta$ is a set of parameters and $\Theta$ is the set of all
 possible $\thetab$. When the model holds, there exists an optimal
-set of parameters $\thetab_*$ such that $\nu_* = \nu_{\thetab_*}$. The goal is then
+set of parameters $\thetab_*$ such that $\nu^* = \nu_{\thetab_*}$. The goal is then
 to find $\thetab_*$.
 
 
@@ -33,13 +44,13 @@ When this is the case, we say that the model is \emph{identifiable}.
 In all the proofs in this section, we assume that the integration and
 differentiation operators can always be exchanged and that all quantities
 introduced are well defined. The set of parameters $\thetab$ is viewed as a
-vector and the set of $n$ observations is viewed as a vector $\xb$.
+vector.
 
 \subsection{Desirable properties of estimators}
 \label{sec:desirable}
 An \emph{estimator} $\hat{\thetab}_n$ of $\thetab_*$ is a function of the
-observations $\xb$ that aims at finding $\thetab_*$.
-An estimator is a random variable, as it depends on $\xb$. Therefore, it can almost never be perfectly accurate and that
+observations $\Xcal = \xb^{(1)}, \dots, \xb^{(n)}$ that aims at finding $\thetab_*$.
+An estimator is a random variable, as it depends on $\Xcal$. Therefore, it can almost never be perfectly accurate and that
 is why we need a criterion to measure its inaccuracy.
 
 A common choice is the mean squared error criterion given by:
@@ -52,38 +63,37 @@ A common choice is the mean squared error criterion given by:
 where the right hand side in equation~\ref{eq:mse:biasvariance} gives the
 \emph{bias-variance decomposition}: the left term is the trace of the \emph{covariance} $\VV(\hat{\thetab}_n) = \Cov(\hat{\thetab}_n -
 \EE[\hat{\thetab}_n], \hat{\thetab}_n -
-\EE[\hat{\thetab}_n])$ where $\Cov(\ab, \bb) = \EE[(\ab - \EE[\ab]) \times (\bb -
-\EE[\bb])]$ and the right term is the squared norm of the \emph{bias} given by $\EE[\hat{\thetab}_n] - \thetab_*$ .
+\EE[\hat{\thetab}_n])$ where $\Cov(\ab, \bb) = \EE[(\ab - \EE[\ab]) (\bb -
+\EE[\bb])^{\top}]$ and the right term is the squared norm of the \emph{bias} given by $\EE[\hat{\thetab}_n] - \thetab_*$ .
 
-The norm of the bias can be minimized exactly, such estimators that achieve $\EE[\hat{\thetab}_n] - \thetab_* = \bzero$ are called \emph{unbiased}.
+The norm of the bias can be minimized exactly and such estimators that achieve $\EE[\hat{\thetab}_n] - \thetab_* = \bzero$ are called \emph{unbiased}.
 
-In example~\ref{ex:biased:var}, data are generated from a one-dimensional
-Gaussian. The empirical estimator of the mean is shown to be unbiased. In
-contrast, the empirical estimate of the variance is biased: we show how to
+In example~\ref{ex:biased:var}, we study the bias of the sample mean and sample variance. The sample mean is shown to be unbiased. In
+contrast, the sample variance is biased: we show how to
 correct the estimator of the variance so that it becomes unbiased.
 
 \begin{example}[Biased and unbiased estimate of the parameters of a 1D Gaussian]
   \label{ex:biased:var}
-  Consider independent and identically distributed samples $x_1, \dots x_n$ generated from a Gaussian distribution
-  $\Ncal(\mu, \sigma^2)$.
-  Consider the empirical estimate of the mean: $\hat{\mu}_e = \frac1{n}
-  \sum_{i=1}^n x_i$. This estimate is unbiased as $\EE[\hat{\mu}_e] = \frac1{n}
-  \sum_{i=1}^n \EE[x_i] = \mu$
+  Consider $n$ observations $x^{(1)},
+  \dots x^{(n)}$ of $x$ with mean $\mu_*$ and variance $\sigma_*^2$.
+  Consider the sample mean: $\hat{\mu}_e = \frac1{n}
+  \sum_{i=1}^n x^{(i)}$. This estimate is unbiased as $\EE[\hat{\mu}_e] = \frac1{n}
+  \sum_{i=1}^n \EE[x^{(i)}] = \mu_*$.
   
 
-  Consider the empirical estimate of the variance:
-  $\hat{\sigma}_e^2 = \frac1{n} \sum_{i=1}^n (x_i - \sum_{z=1}^n \frac1{n} x_z)^2$. 
+  Consider the sample variance:
+  $\hat{\sigma}_e^2 = \frac1{n} \sum_{i=1}^n (x^{(i)} - \sum_{z=1}^n \frac1{n} x^{(z)})^2$. 
 
   We have
   \begin{align}
-    \EE[\hat{\sigma}_e^2] &= \frac1{n} \sum_{i=1}^n \EE[ (x_i - \sum_{z=1}^n \frac1{n} x_z)^2] \\
-                        &= \frac1{n} \sum_{i=1}^n \EE [x_i^2 - 2 x_i (\sum_{z=1}^n \frac1{n} x_z ) +(\sum_{z=1}^n \frac1{n} x_z )^2] \\
-                        &= \frac1{n} \sum_{i=1}^n \EE [x_i^2 - 2 x_i (\sum_{z=1}^n \frac1{n} x_z ) + \frac1{n^2}\sum_{y=1, z=1}^n  x_y x_z ] \\
-                        &= \frac1{n} \sum_{i=1}^n (\sigma^2 + \mu^2 - \frac{2}{n}\sigma^2 -2\mu^2 +  \frac1{n^2} (\sum_{z=1}^n \sigma^2 + n^2 \mu^2)) \\
-                        &= \sigma^2 - \frac1{n} \sigma^2 \\
-                        &= \frac{n-1}{n}\sigma^2
+    \EE[\hat{\sigma}_e^2] &= \frac1{n} \sum_{i=1}^n \EE[ (x^{(i)} - \sum_{z=1}^n \frac1{n} x^{(z)})^2] \\
+                        &= \frac1{n} \sum_{i=1}^n \EE [(x^{(i)})^2 - 2 x^{(i)} (\sum_{z=1}^n \frac1{n} x^{(z)} ) +(\sum_{z=1}^n \frac1{n} x^{(z)} )^2] \\
+                        &= \frac1{n} \sum_{i=1}^n \EE [(x^{(i)})^2 - 2 x^{(i)} (\sum_{z=1}^n \frac1{n} x^{(z)} ) + \frac1{n^2}\sum_{y=1, z=1}^n  x^{(y)} x^{(z)} ] \\
+                        &= \frac1{n} \sum_{i=1}^n (\sigma_*^2 + \mu_*^2 - \frac{2}{n}\sigma_*^2 -2\mu_*^2 +  \frac1{n^2} (\sum_{z=1}^n \sigma_*^2 + n^2 \mu_*^2)) \\
+                        &= \sigma_*^2 - \frac1{n} \sigma_*^2 \\
+                        &= \frac{n-1}{n}\sigma_*^2
   \end{align}
-  so this empirical estimator is biased.
+  so the sample covariance is biased.
   In contrast, if we consider the estimator
   \begin{align}
     \hat{\sigma}_u^2 = \frac{n}{n-1}\hat{\sigma_e}^2
@@ -97,12 +107,12 @@ proposition~\ref{prop:cramerrao} (Cramer-Rao bound) shows:
   \label{prop:cramerrao}
   Let $\hat{\thetab}_n$ be an estimator of $\thetab_*$.
   Then, $\VV(\hat{\thetab}_n) \geq
-  \partialfrac{\thetab}{\EE[\hat{\thetab}_n]}I(\thetab_*)^{-1} (\partialfrac{\thetab}{\EE[\hat{\thetab}_n]})^{\top}$
+  \partialfrac{\thetab}{\EE[\hat{\thetab}_n]}I_n(\thetab_*)^{-1} (\partialfrac{\thetab}{\EE[\hat{\thetab}_n]})^{\top}$
 \end{prop}
 where $A \geq B$ is understood as $A-B$ is positive semi-definite.
-We introduced $I(\thetab)$, the Fisher information matrix given by
+We introduced $I_n(\thetab)$, the Fisher information matrix given by
 \begin{align}
-  I(\thetab) = \EE[\partialfrac{\thetab}{\log(\nu_{\thetab}(\xb))} \times \partialfrac{\thetab}{\log(\nu_{\thetab}(\xb))}]
+  I_n(\thetab) = \EE[\partialfrac{\thetab}{\log(\nu_{\thetab}(\Xcal))} \partialfrac{\thetab}{\log(\nu_{\thetab}(\Xcal))}^{\top}]
 \end{align}
 Lastly, the quantity $l(\xb, \thetab) = \log(\nu_{\thetab}(\xb))$ is called
 \emph{log-likelihood of $\xb$} and its derivative $\psib(\xb, \thetab) =
@@ -112,77 +122,84 @@ Lastly, the quantity $l(\xb, \thetab) = \log(\nu_{\thetab}(\xb))$ is called
   First let us show that when the optimal parameter is used, the expected score
   function cancels:
   \begin{align}
-    \EE[\psib(\thetab_*)] 
-    &= \EE[\partialfrac{\thetab}{\log(\nu_{\thetab_*}(\xb))}] \\
-                         &= \EE[\frac1{\nu_{\thetab_*}(\xb)}\partialfrac{\thetab}{\nu_{\thetab_*}(\xb)}] \\
-    &= \int_{\xb} \frac1{\nu_{\thetab_*}(\xb)}\partialfrac{\thetab}{\nu_{\thetab_*}(\xb)} \nu_{\thetab_*}(\xb) d\xb \\
-    &= \int_{\xb} \partialfrac{\thetab}{\nu_{\thetab_*}(\xb)} d\xb \\
-    &= \partialfrac{\thetab}{\int_{\xb} \nu_{\thetab_*}(\xb)d\xb}  \\
+    \EE_{\Xcal}[\psib(\thetab_*)] 
+    &= \EE_{\Xcal}[\partialfrac{\thetab}{\log(\nu_{\thetab_*}(\Xcal))}] \\
+    &= \EE_{\Xcal}[\frac1{\nu_{\thetab_*}(\Xcal)}\partialfrac{\thetab}{\nu_{\thetab_*}(\Xcal)}] \\
+    &= \int_{\Xcal} \frac1{\nu_{\thetab_*}(\Xcal)}\partialfrac{\thetab}{\nu_{\thetab_*}(\Xcal)} \nu_{\thetab_*}(\Xcal) d\Xcal \\
+    &= \int_{\Xcal} \partialfrac{\thetab}{\nu_{\thetab_*}(\Xcal)} d\Xcal \\
+    &= \partialfrac{\thetab}{\int_{\Xcal} \nu_{\thetab_*}(\Xcal)d\Xcal}  \\
     &= \partialfrac{\thetab}{1} \\
     &= \bzero
   \end{align}
-  so that $\VV[\psib(\thetab_*)] = I(\thetab_*)$.
+  so that $\VV[\psib(\thetab_*)] = I_n(\thetab_*)$.
 
   We also have that:
   \begin{align}
-    \Cov(\hat{\thetab}_n, \psib(\thetab_*)) &= \EE[ (\hat{\thetab}_n - \EE[\hat{\thetab}_n]) \times (\psib(\thetab_*) -  \EE[\psib(\thetab_*)])]\\
-                                           &= \EE[ \hat{\thetab}_n \times \psib(\thetab_*)]\\
-                                           &= \int_{\xb} \hat{\thetab}_n \times \partialfrac{\thetab}{\nu_{\thetab_*}(\xb)} d\xb \\
-                                           &= \partialfrac{\thetab}{\int_{\xb} \hat{\thetab}_n \times \nu_{\thetab_*}(\xb) d\xb} \\
+    \Cov(\hat{\thetab}_n, \psib(\thetab_*)) &= \EE[ (\hat{\thetab}_n - \EE[\hat{\thetab}_n]) (\psib(\thetab_*) -  \EE[\psib(\thetab_*)])^{\top}]\\
+                                           &= \EE[ \hat{\thetab}_n \psib(\thetab_*)^{\top}]\\
+                                           &= \int_{\Xcal} \hat{\thetab}_n \partialfrac{\thetab}{\nu_{\thetab_*}(\Xcal)}^{\top} d\Xcal \\
+                                           &= \partialfrac{\thetab}{\int_{\Xcal} \hat{\thetab}_n \nu_{\thetab_*}(\Xcal) d\Xcal} \\
                                            &= \partialfrac{\thetab}{\EE[\hat{\thetab}_n]}
   \end{align}
-  and similarly $\Cov(\hat{\thetab}_n, \psib(\thetab_*)) = (\partialfrac{\thetab}{\EE[\hat{\thetab}_n]})^{\top}$.
+  and similarly $\Cov(\psib(\thetab_*), \hat{\thetab}_n) = (\partialfrac{\thetab}{\EE[\hat{\thetab}_n]})^{\top}$.
 
   Then we apply the following Cauchy Schwartz inequality for random vectors:
   \begin{equation}
-  \Var(\yb) \geq  \Cov(\yb, \xb) \Var(\xb)^{-1} \Cov(\xb, \yb)
+  \forall \xb, \yb \enspace \Var(\yb) \geq  \Cov(\yb, \xb) \Var(\xb)^{-1} \Cov(\xb, \yb)
   \end{equation}
 (see a proof in \cite{tripathi1999matrix})
 and therefore get the expected result:
   \begin{align}
-    \Var(\hat{\thetab}_n) \geq  \partialfrac{\thetab}{\EE[\hat{\thetab}_n]} I(\thetab_*)^{-1} (\partialfrac{\thetab}{\EE[\hat{\thetab}_n]})^{\top} 
+    \Var(\hat{\thetab}_n) \geq  \partialfrac{\thetab}{\EE[\hat{\thetab}_n]} I_n(\thetab_*)^{-1} (\partialfrac{\thetab}{\EE[\hat{\thetab}_n]})^{\top} 
   \end{align}
 \end{proof}
 
 When an estimator is both unbiased and reaches the Cramer-Rao bound we call the
 estimator \emph{efficient}.
-If we assume that the samples are independent and identically distributed we
-have $\psi(\xb, \theta) = \sum_{i=1}^n \psi(\xb_i, \theta)$ and therefore
-$I(\theta_*) = nI_m(\theta_*)$ where $I_m$ is the Fisher information where only
-one sample is considered.
-When samples are independent and $\hat{\thetab}_n$ is unbiased the Cramer-Rao
+If we assume that samples are independent and identically distributed we
+have: $\psi(\Xcal, \theta) = \sum_{i=1}^n \psi(\xb^{(i)}, \theta)$ and therefore
+\begin{align}
+  I_n(\thetab_*) &= \EE[\psi(\Xcal, \theta_*) \psi(\Xcal, \theta_*)^{\top}] \\
+               &= \sum_{i=1}^n \EE[\psi(\xb, \theta_*) \psi(\xb, \theta_*)^{\top}] \\
+               &= n I(\thetab_*)
+\end{align}
+where
+\begin{align}
+  I(\thetab_*) = \EE[\psi(\xb, \theta_*) \psi(\xb, \theta_*)^{\top}]
+\end{align}
+
+When samples are independent and identically distributed and $\hat{\thetab}_n$ is unbiased the Cramer-Rao
 bound is given by:
 \begin{equation}
-  \Var(\hat{\thetab}_n) \geq \frac1{n} I_m(\theta_*)^{-1}
+  \Var(\hat{\thetab}_n) \geq \frac1{n} I(\theta_*)^{-1}
 \end{equation}
 
-The example~\ref{ex:efficient_mean} uses the same data as in
-example~\ref{ex:biased:var} and shows that the empirical estimate of the mean
+The example~\ref{ex:efficient_mean} hows that the sample mean
 is efficient.
-\begin{example}[Empirical mean is efficient]
+\begin{example}[Sample mean is efficient]
   \label{ex:efficient_mean}
-  Let $x_1, \dots, x_n$ be generated according to $\nu_{\mu}(x) = \Ncal(x; \mu, \sigma^2)$ and
-  consider the empirical estimate of the mean $\hat{\mu}_e = \frac1{n}
-  \sum_{i=1}^n x_i$.
+  Consider $n$ observations $x^{(1)},
+  \dots x^{(n)}$ of $x$ generated from $\nu_{\mu_*}(x) = \Ncal(x; \mu_*, \sigma_*^2)$
+  and consider the sample mean $\hat{\mu}_e = \frac1{n} \sum_{i=1}^n x^{(i)}$.
   The variance is given by:
   \begin{align}
-    \VV[\hat{\mu}_e] &= \VV[\frac1{n} \sum_{i=1}^n x_i] \\
-    &= \frac{\sigma^2}{n}
+    \VV[\hat{\mu}_e] &= \VV[\frac1{n} \sum_{i=1}^n x^{(i)}] \\
+    &= \frac{\sigma_*^2}{n}
   \end{align}
 
-  The Fisher information matrix (where only one sample $x \sim \Ncal(\mu, \sigma^2)$ is considered) is given by
+  The Fisher information matrix is given by
   \begin{align}
-    I_m &= \EE[(\partialfrac{\mu}{\log(\nu_{\mu}(x))})^2] \\
-      &= \EE[(\partialfrac{\mu}{-\frac1{2 \sigma^2} (x - \mu)^2 - \frac12\log(2\pi \sigma^2)})^2] \\
-      &= \EE[(-\frac1{\sigma^2} (\mu - x))^2] \\
-      &= \frac1{\sigma^4}\EE [(\mu - x)^2] \\
-      &= \frac1{\sigma^2}
+    I &= \EE[(\partialfrac{\mu}{\log(\nu_{\mu_*}(x))})^2] \\
+      &= \EE[(\partialfrac{\mu}{-\frac1{2 \sigma_*^2} (x - \mu_*)^2 - \frac12\log(2\pi \sigma_*^2)})^2] \\
+      &= \EE[(-\frac1{\sigma_*^2} (\mu_* - x))^2] \\
+      &= \frac1{\sigma_*^4}\EE [(\mu_* - x)^2] \\
+      &= \frac1{\sigma_*^2}
   \end{align}
   and therefore we have
   \begin{equation}
-  \VV[\hat{\mu}_e]  = \frac1{n} I_m^{-1}
+  \VV[\hat{\mu}_e]  = \frac1{n} I^{-1}
   \end{equation}
-  so the empirical estimate of the mean is efficient.
+  so the sample mean is efficient.
 \end{example}
 In practice, efficient estimators are extremely rare. In the next section, we
 introduce the maximum likelihood estimator which is not always unbiased nor
@@ -191,27 +208,40 @@ efficient in the finite sample case, but satisfies these properties asymptotical
 \subsection{Maximum likelihood}
 \label{sec:mlintro}
 The maximum likelihood estimates the parameters $\hat{\thetab}$ such that the
-density $\nu_{\hat{\thetab}}$ at observed data $\xb_1, \dots, \xb_n$ is the highest among all possible
+density $\nu_{\hat{\thetab}}$ at $\xb^{(1)}, \dots, \xb^{(n)}$ is the highest among all possible
 values for $\thetab \in \Theta$:
 \begin{align}
-  \hat{\thetab}_n = \argmax_{\thetab \in \Theta} \nu_{\thetab}(\xb_1, \dots, \xb_n)
+  \hat{\thetab}_n = \argmax_{\thetab \in \Theta} \nu_{\thetab}(\xb^{(1)}, \dots, \xb^{(n)})
 \end{align}
 
-The quantity $\nu_{\thetab}(\xb_1, \dots, \xb_n)$ is called the
+The quantity $\nu_{\thetab}(\xb^{(1)}, \dots, \xb^{(n)})$ is called the
 \emph{likelihood} and we call $\hat{\thetab}_n$ the \emph{maximum likelihood estimator}.
 
 It is often assumed that samples are independent and identically distributed so that
 the joint density can be written:
-$\nu_{\thetab}(\xb_1, \dots, \xb_n) = \prod_{i=1}^n \nu_{\thetab}(\xb_i)$
+$\nu_{\thetab}(\xb^{(1)}, \dots, \xb^{(n)}) = \prod_{i=1}^n \nu_{\thetab}(\xb^i)$
+
+Let us define the empirical expected log-likelihood:
+\begin{align}
+  l_n(\thetab) &= \frac1n
+  \sum_{i=1}^n l(\xb^{(i)}, \thetab) \\
+               &= \EE_n l(\xb, \thetab)
+\end{align}
+where $\EE_n$ is the empirical expectation operator defined by
+\begin{align}
+\EE_n f(\xb) = \frac1{n} \sum_{i=1}^n f(\xb^{(i)})
+\end{align}
+
 
 The next lines show that finding the maximum likelihood is done by optimizing
-the \emph{empirical expected log-likelihood}: $l_n(\thetab) = \frac1n
-\sum_{i=1}^n l(\xb_i, \thetab)$ 
+the \emph{empirical expected log-likelihood}
+
+
 \begin{align}
-  \hat{\thetab}_n &= \argmax_{\thetab \in \Theta} \nu_{\thetab}(\xb_1, \dots, \xb_n) \\
-               &= \argmax_{\thetab \in \Theta} \prod_{i=1}^n \nu_{\thetab}(\xb_i) \\ 
-               &= \argmax_{\thetab \in \Theta} \sum_{i=1}^n \log(\nu_{\thetab, i}(\xb_i))  \\
-               &= \argmax_{\thetab \in \Theta} \frac1n \sum_{i=1}^n l(\xb_i, \thetab) \\ 
+  \hat{\thetab}_n &= \argmax_{\thetab \in \Theta} \nu_{\thetab}(\xb^{(1)}, \dots, \xb^{(n)}) \\
+               &= \argmax_{\thetab \in \Theta} \prod_{i=1}^n \nu_{\thetab}(\xb^{(i)}) \\ 
+               &= \argmax_{\thetab \in \Theta} \sum_{i=1}^n \log(\nu_{\thetab}(\xb^{(i)}))  \\
+               &= \argmax_{\thetab \in \Theta} \frac1n \sum_{i=1}^n l(\xb^{(i)}, \thetab) \\ 
                   &= \argmax_{\thetab \in \Theta} l_n(\thetab) \\ 
 \end{align}
 
@@ -219,30 +249,31 @@ By the law of large numbers, as the number of samples increase, the empirical
 expected likelihood converges almost surely to the \emph{expected
   log-likelihood}: $l(\thetab) = \EE_{\xb}[l(\xb, \thetab)]$.
 
-Example~\ref{ex:mse:variance} shows that the maximum likelihood of the mean and the variance is the empirical estimate. 
+Example~\ref{ex:mse:variance} shows that the maximum likelihood estimator of the
+mean and the variance is the sample mean and sample variance respectively.
 \begin{example}
   \label{ex:mse:variance}
-  Let $x_1, \dots, x_n$ data with mean $\mu_*$ and variance $\sigma_*^2$ and we
-  assume the model $\Ncal(\mu, \sigma^2)$.
+  Consider $n$ observations $x^{(1)}, \dots, x^{(n)}$ of an unknown random variable $x$
+  and consider the model $x \sim \Ncal(\mu, \sigma^2)$.
   The empirical expected log-likelihood is:
   \begin{align}
-    l_n(\mu, \sigma^2) = -\frac1{n} \sum_{i=1}^n \frac1{2 \sigma^2}(x_i - \mu)^2 - \frac12 \log(2\pi \sigma^2)
+    l_n(\mu, \sigma^2) = -\frac1{n} \sum_{i=1}^n \frac1{2 \sigma^2}(x^{(i)} - \mu)^2 - \frac12 \log(2\pi \sigma^2)
   \end{align}
   First order conditions
   yield:
   \begin{align}
-    &\sum_{i=1}^n (\mu - x_i) = 0 \iff \mu = \frac1{n} \sum_{i=1}^n x_i \\
-    &\frac1{n} \sum_{i=1}^n \frac1{(\sigma^2)^2}(x_i - \mu)^2 - \frac1{\sigma^2} = 0 \iff \sigma^2 = \frac1{n} \sum_{i=1}^n(x_i - \mu)^2
+    &\sum_{i=1}^n (\mu - x^{(i)}) = 0 \iff \mu = \frac1{n} \sum_{i=1}^n x^{(i)} \\
+    &\frac1{n} \sum_{i=1}^n \frac1{(\sigma^2)^2}(x^{(i)} - \mu)^2 - \frac1{\sigma^2} = 0 \iff \sigma^2 = \frac1{n} \sum_{i=1}^n(x^{(i)} - \mu)^2
   \end{align}
   So the maximum likelihood estimators of the mean and the variance are the
-  empirical estimators.
+  sample mean and sample variance respectively.
 \end{example}
-As we have ween in example~\ref{ex:biased:var}, the empirical estimate of the variance is biased.
+As we have ween in example~\ref{ex:biased:var}, the sample variance is biased.
 
 However, in the large sample limit the bias disappears. This is general as
 Proposition~\ref{prop:mse_consistent} shows that the maximum likelihood
 estimator is \emph{consistent} meaning that the maximum likelihood estimator
-always converges to the optimal set of parameters:
+asymptotically converges to the optimal set of parameters. Note that under bounded variance consistency implies asymptotic un-biasedness.
 
 \begin{prop}[Consistency of the maximum likelihood estimator]
   \label{prop:mse_consistent}
@@ -298,14 +329,15 @@ l(\thetab)\| \xrightarrow[n \rightarrow \infty]{P} 0$.
 
 We now focus on the statistical fluctuation of the difference between the
 maximum likelihood estimate and the actual value: $\|\hat{\thetab}_n -
-\thetab_*\|$. Property~\ref{prop:asymp:norm} states that
+\thetab_*\|$. Proposition~\ref{prop:asymp:norm} states that
 $\sqrt{n}\|\hat{\thetab}_n - \thetab_*\|$ approaches the normal density
 $\Ncal(0, I(\thetab_*)^{-1})$ as $n$ gets large. This property is called \emph{asymptotic normality}.
 
 \begin{prop}[Asymptotic normality of maximum likelihood estimators]
   \label{prop:asymp:norm}
-  We assume that $\thetab_*$ is in the interior of $\Theta$.
-  Denoting $J_n(\thetab_n) =
+  We assume the same hypothesis as in Proposition~\ref{prop:mse_consistent}
+  We further assume that $\thetab_*$ is in the interior of $\Theta$.
+  Lastly, denoting $J_n(\thetab_n) =
   \partialfrac{\thetab^2}{^2l_n(\theta_b)}(\thetab_n)$ and $J(\thetab_*) =
   \partialfrac{\thetab^2}{^2l(\theta_b)}(\thetab_*)$ we assume that \\
   $\thetab_n \xrightarrow[n \rightarrow
@@ -316,7 +348,7 @@ $\Ncal(0, I(\thetab_*)^{-1})$ as $n$ gets large. This property is called \emph{a
   \infty]{D}  \Ncal(0,
   I(\thetab_*)^{-1})$
 \end{prop}
-where the convergence in distribution $ x_n \xrightarrow[n \rightarrow \infty]{D} x$ means  $\forall t, \enspace F_{x_n}(t)
+where the convergence in distribution $ x^{(n)} \xrightarrow[n \rightarrow \infty]{D} x$ means  $\forall t, \enspace F_{x^{(n)}}(t)
 \xrightarrow[n \rightarrow \infty]{} F_x(t)$ where $F_x$ is the distribution
 function of $x$.
 \begin{proof}
@@ -326,14 +358,14 @@ function of $x$.
   From the mean value theorem there exists $\thetab_0$ such that
   \begin{align}
     &\partialfrac{\thetab}{l_n(\hat{\thetab}_n)} - \partialfrac{\thetab}{l_n(\thetab_*)} = J(\thetab_0)(\hat{\thetab}_n - \thetab_*) \\
-    &\iff -\frac1{\sqrt{n}} \sum_{i=1}^n  \psi_{\thetab_*}(\xb_i) = J_n(\thetab_0)\sqrt{n}(\hat{\thetab}_n - \thetab_*)
+    &\iff -\frac1{\sqrt{n}} \sum_{i=1}^n  \psi_{\thetab_*}(\xb^{(i)}) = J_n(\thetab_0)\sqrt{n}(\hat{\thetab}_n - \thetab_*)
   \end{align}
 
   We know from the proof of the Cramer-Rao bound
   (proposition~\ref{prop:cramerrao}) that $\EE_{\xb} [\psi_{\thetab_*}(\xb)]=
   0$.  We can use the central limit theorem and write:
   \begin{align}
-  \frac1{\sqrt{n}} \sum_{i=1}^n  \psi_{\thetab_*}(\xb_i) \xrightarrow[]{D}
+  \frac1{\sqrt{n}} \sum_{i=1}^n  \psi_{\thetab_*}(\xb^{(i)}) \xrightarrow[]{D}
   \Ncal(0, I(\thetab_*))
   \end{align}
 
@@ -341,7 +373,7 @@ function of $x$.
   \begin{align}
   J(\thetab_*) &= \EE_{\xb}[\partialfrac{\thetab}{\psi_{\thetab_*}(\xb)}] \\
               &=  \EE_{\xb} [\partialfrac{\thetab}{ \frac1{\nu_{\thetab_*}(\xb)} \partialfrac{\thetab}{ \nu_{\thetab_*}(\xb)}} ] \\
-              &= \EE_{\xb}[\frac1{\nu_{\thetab_*}(\xb)} \partialfrac{\thetab^2}{^2 \nu_{\thetab_*}(\xb)}-\frac{\partialfrac{\thetab}{ \nu_{\thetab_*}(\xb)}}{\nu_{\thetab_*}(\xb)}  \times  \frac{\partialfrac{\thetab}{\nu_{\thetab_*}(\xb)}}{\nu_{\thetab_*}(\xb)}  ] \\
+              &= \EE_{\xb}[\frac1{\nu_{\thetab_*}(\xb)} \partialfrac{\thetab^2}{^2 \nu_{\thetab_*}(\xb)}-\frac{\partialfrac{\thetab}{ \nu_{\thetab_*}(\xb)}}{\nu_{\thetab_*}(\xb)}   \frac{\partialfrac{\thetab}{\nu_{\thetab_*}(\xb)}}{\nu_{\thetab_*}(\xb)}^{\top}  ] \\
               &= - I(\thetab_*) \\
   \end{align}
 
@@ -366,18 +398,19 @@ Because of this, the maximum likelihood estimator is called \emph{asymptotically
   efficient}.
 
 \subsection{Some shortcomings}
-It may look like an efficient and unbiased estimator can never be beaten.
-However, this is not the case. A striking example is given by the Stein paradox.
+It may look like an efficient and unbiased estimator should always yield the
+best possible mean squared error.
+However, this is not the case. A striking example is given by the Stein paradox~\cite{stein1956inadmissibility}.
 As can be seen in example~\ref{ex:stein}, there exists an estimator of the mean
-strictly better than the empirical estimate.
-However, we have shown that the empirical estimate (which is also the maximum
+that achieve a strictly better mean squared error than the sample mean.
+However, we have shown that the sample mean (which is also the maximum
 likelihood estimator) is unbiased and efficient. 
 \begin{example}[Stein's estimate of the mean]
   \label{ex:stein}
-  Let us consider data $\xb$ generated from a multivariate Gaussian
-  of dimension $v \geq 3$:
-  $\Ncal(\mub, I)$ where $I$ is the identity matrix and $\mub \in \RR^v$.
-  As in the one-dimensional case, the empirical mean $e(\xb) =\xb$ is unbiased and efficient.
+  Let us consider a single observation $\xb$ generated from a multivariate Gaussian
+  of dimension $v \geq 3$: $\Ncal(\mub_*, I)$ where $I$ is the identity matrix and
+  $\mub \in \RR^v$ is the unknown mean that we want to estimate.
+  As in the one-dimensional case, the sample mean $e(\xb) =\xb$ is unbiased and efficient.
   The mean squared error is given by:
   \begin{align}
     \EE[(e(\xb) - \mub)^2] = \tr(V(e(\xb))) = v
@@ -409,11 +442,10 @@ likelihood estimator) is unbiased and efficient.
  $e(\xb)$.
 \end{example}
 
-Example~\ref{ex:stein} shows that shrinking the empirical estimate of the mean towards the
-origin improves the quality of the estimate in high dimensions. A similar technique can also be used for
-estimating the covariance of variables in large dimension. For instance, Ledoit
-and Wolf showed in~\cite{ledoit2004well} that shrinking the empirical estimator
-of covariance towards identity improves the quality of the estimator in high dimensions.
+Example~\ref{ex:stein} shows that shrinking the sample mean towards the
+origin decreases the mean squared error of the estimate in high dimensions. A similar technique can also be used for estimating the covariance of variables. For instance, Ledoit
+and Wolf showed in~\cite{ledoit2004well} that shrinking the sample covariance
+towards identity decreases lower expected mean squared error in high dimensions.
 
 \section{Optimization}
 \label{sec:optimintro}
@@ -428,7 +460,7 @@ to resort to iterative methods.
 \subsection{Some iterative optimization algorithms}
 Let us consider a function $f: \RR^v \rightarrow \RR$ that we
 want to minimize. We use the canonical scalar product of $\RR^v$ and the
-associated norm to measure distances between parameters $\xb \in \RR^v$.
+associated norm to measure distances between parameters $\thetab \in \RR^v$.
 
 
 Optimization algorithms that only use first order derivatives to make a step are
@@ -439,20 +471,20 @@ called \emph{first order methods}. We will begin by presenting the famous
 \subsubsection{Gradient descent}
 \label{sec:gd}
 We assume that $f$ is differentiable everywhere.
-From a point $\xb_0$, assuming a small \emph{step size} $\alpha$ and a direction
+From a point $\thetab_0$, assuming a small \emph{step size} $\alpha$ and a direction
 $\db$ such that $\|\db\| = 1$, a Taylor decomposition at first order gives:
 \begin{align}
-f(\xb_0 + \alpha \db) = f(\xb_0) + \dotp{ \partialfrac{\xb}{f(\xb_0)} }{ \alpha \db } + o(\alpha) 
+f(\thetab_0 + \alpha \db) = f(\thetab_0) + \dotp{ \partialfrac{\thetab}{f(\thetab_0)} }{ \alpha \db } + o(\alpha) 
 \end{align}
-The best direction is the one that minimizes $f(\xb_0 + \alpha \db)$. If we
+The best direction is the one that minimizes $f(\thetab_0 + \alpha \db)$. If we
 neglect the terms in $o(\alpha)$, it is given by
 \begin{align}
-  \argmin_{\db, \|\db\| = 1} f(\xb_0) + \dotp{ \partialfrac{\xb}{f(\xb_0)} }{ \alpha \db } = \frac{-\partialfrac{\xb}{f(\xb_0)}}{\|\partialfrac{\xb}{f(\xb_0)}\|}
+  \argmin_{\db, \|\db\| = 1} f(\thetab_0) + \dotp{ \partialfrac{\thetab}{f(\thetab_0)} }{ \alpha \db } = \frac{-\partialfrac{\thetab}{f(\thetab_0)}}{\|\partialfrac{\thetab}{f(\thetab_0)}\|}
 \end{align}
 
 Therefore, gradient descent updates are given by:
 \begin{align}
-  \xb_{k+1} = \xb_k -\alpha \partialfrac{\xb}{f(\xb_k)} \label{eq:update:gd}
+  \thetab_{k+1} = \thetab_k -\alpha \partialfrac{\thetab}{f(\thetab_k)} \label{eq:update:gd}
 \end{align}
 where $\alpha$ is a small quantity.
 
@@ -463,136 +495,136 @@ gradient descent can be shown to converge to the minimum.
   \label{prop:conv:gd}
   Assume that $f$ is two times differentiable and $\mu$-strongly convex:
   \begin{equation}
-    \partialfrac{\xb^2}{^2f(\xb)} \geq \mu I
+    \partialfrac{\thetab^2}{^2f(\thetab)} \geq \mu I
   \end{equation}
-  In addition, assume that $f$ is $l$-smooth:
+  In addition, assume that $f$ is $\ell$-smooth:
   \begin{equation}
-    \partialfrac{\xb^2}{^2f(\xb)} \leq lI
+    \partialfrac{\thetab^2}{^2f(\thetab)} \leq \ell I
   \end{equation}
   where $I$ is the identity matrix.
-  From $\xb_0 \in \RR^v$ and given $\alpha \in \RR$ such that $\frac1{L} \geq \alpha > 0$, the iterates
-  $\xb_{k+1} = \xb_k -\alpha \partialfrac{\xb}{f(\xb_k)}$ converge to the
-  minimum $\xb_*$ according to
+  From $\thetab_0 \in \RR^v$ and given $\alpha \in \RR$ such that $\frac1{\ell} \geq \alpha > 0$, the iterates
+  $\thetab_{k+1} = \thetab_k -\alpha \partialfrac{\thetab}{f(\thetab_k)}$ converge to the
+  minimum $\thetab_*$ according to
   \begin{equation}
-    \| \xb^{k+1} - \xb_* \|^2 \leq (1 - \alpha \mu)^{k + 1} \| \xb_0 - \xb_* \|^2
+    \| \thetab^{k+1} - \thetab_* \|^2 \leq (1 - \alpha \mu)^{k + 1} \| \thetab_0 - \thetab_* \|^2
   \end{equation}
 \end{prop}
 \begin{proof}
   We have 
   \begin{align}
-    \| \xb^{k+1} - \xb_* \|^2 &= \| \xb_k -\alpha \partialfrac{\xb}{f(\xb_k)} - \xb_* \|^2 \\
-                            &= \| \xb_k - \xb_* \|^2  - 2 \dotp{ \xb_k - \xb_* }{ \alpha \partialfrac{\xb}{f(\xb_k)} } + \|\alpha \partialfrac{\xb}{f(\xb_k)} \|^2  \label{eq:gd:itdiff}
+    \| \thetab^{k+1} - \thetab_* \|^2 &= \| \thetab_k -\alpha \partialfrac{\thetab}{f(\thetab_k)} - \thetab_* \|^2 \\
+                            &= \| \thetab_k - \thetab_* \|^2  - 2 \dotp{ \thetab_k - \thetab_* }{ \alpha \partialfrac{\thetab}{f(\thetab_k)} } + \|\alpha \partialfrac{\thetab}{f(\thetab_k)} \|^2  \label{eq:gd:itdiff}
  \end{align}
 
  From $\mu$-strong convexity, Lagrange inequality gives
  \begin{align}
-   &f(\xb_*) \geq f(\xb_k) + \dotp{ \partialfrac{\xb_k}{f(\xb_k)} }{ \xb_* - \xb_k } + \frac{\mu}{2} \|\xb_* - \xb_k \|^2
+   &f(\thetab_*) \geq f(\thetab_k) + \dotp{ \partialfrac{\thetab_k}{f(\thetab_k)} }{ \thetab_* - \thetab_k } + \frac{\mu}{2} \|\thetab_* - \thetab_k \|^2
  \end{align}
  so that 
  \begin{align}
-   -2 \alpha \dotp{ \partialfrac{\xb_k}{f(\xb_k)} }{ \xb_k -  \xb_*} \leq  -2 \alpha(f(\xb_k) - f(\xb_*)) - \mu \alpha \|\xb_* - \xb_k \|^2 \label{eq:mu:conv:ineq}
+   -2 \alpha \dotp{ \partialfrac{\thetab_k}{f(\thetab_k)} }{ \thetab_k -  \thetab_*} \leq  -2 \alpha(f(\thetab_k) - f(\thetab_*)) - \mu \alpha \|\thetab_* - \thetab_k \|^2 \label{eq:mu:conv:ineq}
    \end{align}
 
-   and using the fact that $f$ is $l$-smooth we have: 
+   and using the fact that $f$ is $\ell$-smooth we have: 
    \begin{align}
-     &\forall \xb, \yb, \enspace f(\yb) \leq f(\xb) + \partialfrac{\xb}{f(\xb)} (\yb - \xb) + \frac{l}{2} \| \yb - \xb \|^2 \\
-     &\implies \forall \xb, \enspace f(\xb - \frac1{l} \partialfrac{\xb}{f(\xb)}) - f(\xb) \leq -\frac1{2l} \| \partialfrac{\xb}{f(\xb)} \|^2 \\
-     &\implies \forall \xb, \enspace f(\xb_*) - f(\xb) \leq -\frac1{2l} \| \partialfrac{\xb}{f(\xb)} \|^2  \\
-     &\implies \|\alpha \partialfrac{\xb}{f(\xb_k)} \|^2 \leq 2\alpha^2 l(f(\xb_k) - f(\xb_*)) \label{eq:lsmooth:ineq}
+     &\forall \thetab, \yb, \enspace f(\yb) \leq f(\thetab) + \partialfrac{\thetab}{f(\thetab)} (\yb - \thetab) + \frac{\ell}{2} \| \yb - \thetab \|^2 \\
+     &\implies \forall \thetab, \enspace f(\thetab - \frac1{\ell} \partialfrac{\thetab}{f(\thetab)}) - f(\thetab) \leq -\frac1{2\ell} \| \partialfrac{\thetab}{f(\thetab)} \|^2 \\
+     &\implies \forall \thetab, \enspace f(\thetab_*) - f(\thetab) \leq -\frac1{2\ell} \| \partialfrac{\thetab}{f(\thetab)} \|^2  \\
+     &\implies \|\alpha \partialfrac{\thetab}{f(\thetab_k)} \|^2 \leq 2\alpha^2 l(f(\thetab_k) - f(\thetab_*)) \label{eq:lsmooth:ineq}
    \end{align}
 
    So from~\eqref{eq:gd:itdiff} using the inequalities~\eqref{eq:mu:conv:ineq}
    and~\eqref{eq:lsmooth:ineq} we get
    \begin{align}
-     \| \xb^{k+1} - \xb_* \|^2 \leq (1 - \alpha \mu)\| \xb_k - \xb_* \|^2 -2 \alpha (1 - \alpha l) (f(\xb_k) - f(\xb_*))
+     \| \thetab^{k+1} - \thetab_* \|^2 \leq (1 - \alpha \mu)\| \thetab_k - \thetab_* \|^2 -2 \alpha (1 - \alpha \ell) (f(\thetab_k) - f(\thetab_*))
    \end{align} 
-   and since $0 < \alpha < \frac1{l}$ we get that 
+   and since $0 < \alpha < \frac1{\ell}$ we get that 
    \begin{align}
-     \| \xb^{k+1} - \xb_* \|^2 \leq (1 - \alpha \mu)\| \xb_k - \xb_* \|^2
+     \| \thetab^{k+1} - \thetab_* \|^2 \leq (1 - \alpha \mu)\| \thetab_k - \thetab_* \|^2
    \end{align}
    which by induction yields the desired result.
 \end{proof}
 The type of convergence we get in proposition~\ref{prop:conv:gd} is called a
-\emph{linear convergence} (because $\| \xb^{k+1} - \xb_*
-\|^2$ is bounded by a linear function of  $\|\xb^{k} - \xb_* \|^2$) .
+\emph{linear convergence} (because $\| \thetab^{k+1} - \thetab_*
+\|^2$ is bounded by a linear function of  $\|\thetab^{k} - \thetab_* \|^2$) .
 
 \subsubsection{Newton method and quasi-Newton methods}
 \label{sec:qn}
 We assume that $f$ is twice differentiable everywhere.
-As in gradient descent, we depart from a point $\xb_0$, assume a small \emph{step size} $\alpha$ and a direction
+As in gradient descent, we depart from a point $\thetab_0$, assume a small \emph{step size} $\alpha$ and a direction
 $\db$ such that $\|\db\| = 1$, a Taylor decomposition at the second first order gives:
 \begin{align}
-  f(\xb_0 + \alpha \db) = f(\xb_0) + \dotp{ \partialfrac{\xb}{f(\xb_0)} }{ \alpha \db } + \dotp{ \alpha \db }{ \partialfrac{\xb^2}{^2 f(\xb_0)} \alpha \db } + o(\alpha^2) 
+  f(\thetab_0 + \alpha \db) = f(\thetab_0) + \dotp{ \partialfrac{\thetab}{f(\thetab_0)} }{ \alpha \db } + \dotp{ \alpha \db }{ \partialfrac{\thetab^2}{^2 f(\thetab_0)} \alpha \db } + o(\alpha^2) 
 \end{align}
 If we neglect the terms in $o(\alpha^2)$, the best direction is given by
 \begin{align}
-  &\argmin_{\db, \|\db\| = 1} f(\xb_0) + \dotp{ \partialfrac{\xb}{f(\xb_0)} }{ \alpha \db } + \dotp{ \alpha \db }{ \partialfrac{\xb^2}{^2 f(\xb_0)} \alpha \db } \\
-  &= - \frac{(\partialfrac{\xb^2}{^2 f(\xb_0)})^{-1}\partialfrac{\xb}{f(\xb_0)}}{\| (\partialfrac{\xb^2}{^2 f(\xb_0)})^{-1} \partialfrac{\xb}{f(\xb_0)}\|}
+  &\argmin_{\db, \|\db\| = 1} f(\thetab_0) + \dotp{ \partialfrac{\thetab}{f(\thetab_0)} }{ \alpha \db } + \dotp{ \alpha \db }{ \partialfrac{\thetab^2}{^2 f(\thetab_0)} \alpha \db } \\
+  &= - \frac{(\partialfrac{\thetab^2}{^2 f(\thetab_0)})^{-1}\partialfrac{\thetab}{f(\thetab_0)}}{\| (\partialfrac{\thetab^2}{^2 f(\thetab_0)})^{-1} \partialfrac{\thetab}{f(\thetab_0)}\|}
 \end{align}
 
 
 Therefore, Newton updates are given by:
 \begin{align}
-  \xb_{k+1} = \xb_k -\alpha (\partialfrac{\xb^2}{^2 f(\xb_k)})^{-1} \partialfrac{\xb}{f(\xb_k)} \label{eq:update:newton}
+  \thetab_{k+1} = \thetab_k -\alpha (\partialfrac{\thetab^2}{^2 f(\thetab_k)})^{-1} \partialfrac{\thetab}{f(\thetab_k)} \label{eq:update:newton}
 \end{align}
 where $\alpha$ is a small quantity.
 
 Unfortunately, Newton's method is not guaranteed to converge. This contrasts with the gradient descent method that is guaranteed to converge when the step-size is small enough.
 In order to converge, Newton's method need to ensure that each step yields a sufficient decrease of the loss. This is done by a line search.
 
-The \emph{exact line search} sets $\alpha = \argmin_{t \in [0, 1]} f(\xb_k - t
-(\partialfrac{\xb^2}{^2 f(\xb_0)})^{-1} \partialfrac{\xb}{f(\xb_k)})$ while the \emph{backtracking line search} is an iterative procedure where one starts with $\alpha=1$ and halve its value until it yields to a decrease of the loss.
+The \emph{exact line search} sets $\alpha = \argmin_{t \in [0, 1]} f(\thetab_k - t
+(\partialfrac{\thetab^2}{^2 f(\thetab_0)})^{-1} \partialfrac{\thetab}{f(\thetab_k)})$ while the \emph{backtracking line search} is an iterative procedure where one starts with $\alpha=1$ and halve its value until it yields to a decrease of the loss.
 
-As shown by proposition~\ref{eq:conv:newton}, Newton's method is guaranteed to converges when an
+As shown by proposition~\ref{eq:conv:newton}, Newton's method is guaranteed to converge when an
 exact line search is used.
 
 \begin{prop}[Convergence of Newton's method]
   \label{eq:conv:newton}
-  Assume that $f$ is two times differentiable, $\mu$-strongly convex and $l$-smooth:
+  Assume that $f$ is two times differentiable, $\mu$-strongly convex and $\ell$-smooth:
   \begin{equation}
-    \mu I \leq \partialfrac{\xb^2}{^2 f(\xb)} \leq l I
+    \mu I \leq \partialfrac{\thetab^2}{^2 f(\thetab)} \leq \ell I
   \end{equation}
   where $I$ is the identity matrix.
   Assume that the Hessian is Lipschitz with constant $h$:
   \begin{equation}
-  \| \partialfrac{\xb^2}{^2 f(\xb)} - \partialfrac{\xb^2}{^2 f(\yb)} \| \leq h \| \xb
+  \| \partialfrac{\thetab^2}{^2 f(\thetab)} - \partialfrac{\thetab^2}{^2 f(\yb)} \| \leq h \| \thetab
   - \yb \|
  \end{equation}
 
-  From $\xb_0 \in \RR^v$  the iterates
-  $\xb_{k+1} = \xb_k -\alpha (\partialfrac{\xb^2}{^2 f(\xb_0)})^{-1}
-  \partialfrac{\xb}{f(\xb_k)}$ where $\alpha$ is chosen using an exact line
+  From $\thetab_0 \in \RR^v$  the iterates
+  $\thetab_{k+1} = \thetab_k -\alpha (\partialfrac{\thetab^2}{^2 f(\thetab_0)})^{-1}
+  \partialfrac{\thetab}{f(\thetab_k)}$ where $\alpha$ is chosen using an exact line
   search converge to the
-  minimum $\xb_*$.
+  minimum $\thetab_*$.
   Depending on the norm of the gradient two phases exist:
   \begin{itemize}
-  \item The damped phase where $\| \partialfrac{\xb}{f(\xb)} \| \geq \frac{\mu^2}{h}$.
-    In this phase we have $f(\xb_{k+1}) - f(\xb_k) \leq \frac{\mu^5}{2h^2 l^2}$.
+  \item The damped phase where $\| \partialfrac{\thetab}{f(\thetab)} \| \geq \frac{\mu^2}{h}$.
+    In this phase we have $f(\thetab_{k+1}) - f(\thetab_k) \leq \frac{\mu^5}{2h^2 \ell^2}$.
     Therefore the number of iterations in this phase $i$ cannot be larger than
-    $\frac{2 h^2 l^2}{\mu^5}(f(\xb_0) - f(\xb_*))$.
-  \item The pure Newton phase where $\| \partialfrac{\xb}{f(\xb)} \| < \frac{\mu^2}{h}$.
-      In this phase $\|f(\xb_{k}) - f(\xb_*)\| \leq \frac{2 \mu^3}{h^2}
+    $\frac{2 h^2 \ell^2}{\mu^5}(f(\thetab_0) - f(\thetab_*))$.
+  \item The pure Newton phase where $\| \partialfrac{\thetab}{f(\thetab)} \| < \frac{\mu^2}{h}$.
+      In this phase $\|f(\thetab_{k}) - f(\thetab_*)\| \leq \frac{2 \mu^3}{h^2}
       (\frac12)^{2^{k -i +1}}$
  \end{itemize}
  Once the Newton phase is entered, it is never left.
 \end{prop}
  \begin{proof}
-   In the damped phase we have  $\| \partialfrac{\xb}{f(\xb)} \| \geq
+   In the damped phase we have  $\| \partialfrac{\thetab}{f(\thetab)} \| \geq
    \frac{\mu^2}{h}$.
-   From Lagrange inequality and denoting $\db_k = -(\partialfrac{\xb^2}{^2 f(\xb)})^{-1} \partialfrac{\xb}{f(\xb)}$ we have:
+   From Lagrange inequality and denoting $\db_k = -(\partialfrac{\thetab^2}{^2 f(\thetab)})^{-1} \partialfrac{\thetab}{f(\thetab)}$ we have:
    \begin{align}
-     f(\xb_k + t \db_k) & \leq f(\xb) + t \dotp{ \partialfrac{\xb}{f(\xb)} }{ \db_k }  +  \frac{t^2 l}{2} \|\db_k\|^2 \\
-                        & \leq f(\xb) + t \dotp{ \partialfrac{\xb}{f(\xb)} }{ \db_k }  -  \frac{t^2 l}{2 \mu} \dotp{ \partialfrac{\xb}{f(\xb)} }{ \db_k } \\
+     f(\thetab_k + t \db_k) & \leq f(\thetab) + t \dotp{ \partialfrac{\thetab}{f(\thetab)} }{ \db_k }  +  \frac{t^2 \ell}{2} \|\db_k\|^2 \\
+                        & \leq f(\thetab) + t \dotp{ \partialfrac{\thetab}{f(\thetab)} }{ \db_k }  -  \frac{t^2 \ell}{2 \mu} \dotp{ \partialfrac{\thetab}{f(\thetab)} }{ \db_k } \\
    \end{align}
    We then have 
    \begin{align}
-     &  f(\xb_k + \alpha \db_k)  \leq f(\xb) + t \dotp{ \partialfrac{\xb}{f(\xb)} }{ \db_k }  -  \frac{t^2 l}{2 \mu} \dotp{ \partialfrac{\xb}{f(\xb)} }{ \db_k } \\
+     &  f(\thetab_k + \alpha \db_k)  \leq f(\thetab) + t \dotp{ \partialfrac{\thetab}{f(\thetab)} }{ \db_k }  -  \frac{t^2 \ell}{2 \mu} \dotp{ \partialfrac{\thetab}{f(\thetab)} }{ \db_k } \\
    \end{align}
-   setting $t = \frac{\mu}{l}$ gives
+   setting $t = \frac{\mu}{\ell}$ gives
    \begin{align}
-       f(\xb_k +\alpha \db_k)  &\leq f(\xb) + \frac{\mu}{2l} \dotp{ \partialfrac{\xb}{f(\xb)} }{ \db_k }  \\
-     &\leq f(\xb) - \frac{\mu}{2l^2} \|\partialfrac{\xb}{f(\xb)}\|^2  \\
-     &\leq f(\xb) - \frac{\mu^5}{2h l^2} \\
+       f(\thetab_k +\alpha \db_k)  &\leq f(\thetab) + \frac{\mu}{2\ell} \dotp{ \partialfrac{\thetab}{f(\thetab)} }{ \db_k }  \\
+     &\leq f(\thetab) - \frac{\mu}{2\ell^2} \|\partialfrac{\thetab}{f(\thetab)}\|^2  \\
+     &\leq f(\thetab) - \frac{\mu^5}{2h \ell^2} \\
    \end{align}
    which gives the desired result.
 
@@ -600,27 +632,27 @@ exact line search is used.
    only be better than this).
    We have
    \begin{align}
-     \partialfrac{\xb}{f(\xb_{k+1})} &= \partialfrac{\xb}{f(\xb_{k} + \db_k)} -\partialfrac{\xb}{f(\xb_k)} -  \partialfrac{\xb^2}{^2 f(\xb_k)} \db_k \\
-                                     &= \int_{t \in [0, 1]} \partialfrac{\xb^2}{^2 f(\xb_{k} + t \db_k)} \db_k dt  -  \partialfrac{\xb^2}{^2 f(\xb_k)} \db_k \\
-                                     &=\int_{t \in [0, 1]} (\partialfrac{\xb^2}{^2 f(\xb_{k} + t \db_k)} -  \partialfrac{\xb^2}{^2 f(\xb_k)}) \db_k dt  \\
+     \partialfrac{\thetab}{f(\thetab_{k+1})} &= \partialfrac{\thetab}{f(\thetab_{k} + \db_k)} -\partialfrac{\thetab}{f(\thetab_k)} -  \partialfrac{\thetab^2}{^2 f(\thetab_k)} \db_k \\
+                                     &= \int_{t \in [0, 1]} \partialfrac{\thetab^2}{^2 f(\thetab_{k} + t \db_k)} \db_k dt  -  \partialfrac{\thetab^2}{^2 f(\thetab_k)} \db_k \\
+                                     &=\int_{t \in [0, 1]} (\partialfrac{\thetab^2}{^2 f(\thetab_{k} + t \db_k)} -  \partialfrac{\thetab^2}{^2 f(\thetab_k)}) \db_k dt  \\
    \end{align}
    Then 
    \begin{align}
-     \|\partialfrac{\xb}{f(\xb_{k+1})}\| &\leq \int_{t \in [0, 1]} \|(\partialfrac{\xb^2}{^2 f(\xb_{k} + t \db_k)} -  \partialfrac{\xb^2}{^2 f(\xb_k)}) \db_k\| dt  \\
-     &\leq \int_{t \in [0, 1]} \|(\partialfrac{\xb^2}{^2 f(\xb_{k} + t \db_k)} -  \partialfrac{\xb^2}{^2 f(\xb_k)})\| \| \db_k\| dt  \\
+     \|\partialfrac{\thetab}{f(\thetab_{k+1})}\| &\leq \int_{t \in [0, 1]} \|(\partialfrac{\thetab^2}{^2 f(\thetab_{k} + t \db_k)} -  \partialfrac{\thetab^2}{^2 f(\thetab_k)}) \db_k\| dt  \\
+     &\leq \int_{t \in [0, 1]} \|(\partialfrac{\thetab^2}{^2 f(\thetab_{k} + t \db_k)} -  \partialfrac{\thetab^2}{^2 f(\thetab_k)})\| \| \db_k\| dt  \\
                                          &\leq  \int_{t \in [0, 1]} t h\|\db_k\|^2 dt  \\
-                                         &\leq  \frac{h}{2 \mu^2}\|\partialfrac{\xb}{f(\xb_{k})}\|^2 \\
+                                         &\leq  \frac{h}{2 \mu^2}\|\partialfrac{\thetab}{f(\thetab_{k})}\|^2 \\
    \end{align}
-   Since $\|\partialfrac{\xb}{f(\xb_{k})}\| \leq \frac{\mu^2}{h}$ the sequence
+   Since $\|\partialfrac{\thetab}{f(\thetab_{k})}\| \leq \frac{\mu^2}{h}$ the sequence
    of gradients converges to zero. The convergence is quadratic.
    At iteration $k$ we therefore have:
    \begin{align}
-   \frac{h}{2 \mu^2} \|\partialfrac{\xb}{f(\xb_{k})}\|
+   \frac{h}{2 \mu^2} \|\partialfrac{\thetab}{f(\thetab_{k})}\|
      &\leq  (\frac12)^{2^{k-i}} \\
    \end{align}
    Using strong convexity we conclude that
    \begin{align}
-     f(\xb_k) - f(\xb_*) \leq \frac1{2 \mu} \|\partialfrac{\xb}{f(\xb_{k})}\|^2 \leq  2 \frac{\mu^3}{h^2} (\frac12)^{2^{k-i}}
+     f(\thetab_k) - f(\thetab_*) \leq \frac1{2 \mu} \|\partialfrac{\thetab}{f(\thetab_{k})}\|^2 \leq  2 \frac{\mu^3}{h^2} (\frac12)^{2^{k-i}}
    \end{align}
  \end{proof}
 
@@ -628,30 +660,31 @@ In the pure Newton phase, the convergence is quadratic. This is a very strong
 advantage of Newton methods.
 A second advantage of Newton method is its \emph{equivariance} as demonstrated
 in proposition~\ref{prop:equivariance:qn}. Equivariance means that working with
-parameters $A \xb$ instead of parameters $\xb$ has no impact on the result given
+parameters $A \thetab$ instead of parameters $\thetab$ has no impact on the result given
 by the algorithm.
 \begin{prop}[Newton algorithms are equivariant]
   \label{prop:equivariance:qn}
-  Let us consider $\xb_k$ the current estimate of the minimum of $f$ obtained by
-  the Newton method starting from $\xb_0$.
+  Let us consider $\thetab_k$ the current estimate of the minimum of $f$ obtained by
+  the Newton method starting from $\thetab_0$.
   Consider $\yb_k$ the current estimate of the minimum of $g(\yb) = f(A\yb)$ for any
-  invertible matrix $A$ obtained by the Newton method starting from $\yb_0 = A^{-1}\xb_0$.
-  Then, $\yb_k = A^{-1} \xb_k$.
+  invertible matrix $A$ obtained by the Newton method starting from $\yb_0 = A^{-1}\thetab_0$.
+  Then, $\yb_k = A^{-1} \thetab_k$.
 \end{prop}
 \begin{proof}
-  The relation holds for $k=0$ and assuming $\yb_k = A^{-1} \xb_k$ we have:
+  The relation holds for $k=0$ and assuming $\yb_k = A^{-1} \thetab_k$ we have:
 \begin{align}
   \yb_{k+1} &= \yb_k -\alpha (\partialfrac{\yb^2}{^2 g(\yb_k)})^{-1} \partialfrac{\yb}{g(\yb_k)} \\
-  &= \yb_k -\alpha A^{-2}(\partialfrac{\xb^2}{^2 f(\xb_k)})^{-1} A \partialfrac{\xb}{f(\xb_k)} \\
-  &= A^{-1} (\xb_k -\alpha (\partialfrac{\xb^2}{^2 f(\xb_k)})^{-1} \partialfrac{\xb}{f( \xb_k)}) \\
-            &= A^{-1} \xb_{k+1} \\
+  &= \yb_k -\alpha A^{-2}(\partialfrac{\thetab^2}{^2 f(\thetab_k)})^{-1} A \partialfrac{\thetab}{f(\thetab_k)} \\
+  &= A^{-1} (\thetab_k -\alpha (\partialfrac{\thetab^2}{^2 f(\thetab_k)})^{-1} \partialfrac{\thetab}{f( \thetab_k)}) \\
+            &= A^{-1} \thetab_{k+1} \\
 \end{align}
 \end{proof}
 In contrast, gradient descent is not equivariant.
 
 However, despite its attractive properties, Newton algorithms are rarely used in
 practice because they are often intractable. Indeed inverting
-the Hessian $\partialfrac{\xb^2}{^2 f}$ is difficult as it is a tensor of dimension $\RR^{v \times v \times v \times
+the Hessian $\partialfrac{\thetab^2}{^2 f}$ is difficult as it is an operator in
+dimension $\RR^{v \times v \times v \times
   v}$.
 In some problems, it is possible to construct an approximation of the inverse of
 the Hessian in a reasonable time. This can be done iteratively by building a
@@ -661,38 +694,57 @@ called \emph{quasi-Newton} methods.
 
 \subsection{EM and generalized EM}
 In the maximum likelihood framework, our goal is to find the parameters
-$\theta_*$ that maximize the empirical expected likelihood $l_n(\theta)$ of
-observations $\xb = \xb_1, \dots, \xb_n$ following the model
-$\nu_{\theta}(\xb)$.
+$\theta_*$ that maximize the expected likelihood $l(\theta)$ of
+observations $\Xcal = \xb^{(1)}, \dots, \xb^{(n)}$ assuming a model
+$\nu_{\theta}(\Xcal)$ (in practice we use
+the empirical expected likelihood $l_n(\theta)$ instead of $l$) .
 
 In the previous section, we presented some iterative
 optimization methods that can be used directly to maximize the log-likelihood.
-In this section, we will assume that there exist another set of variables $\zb$
-such as the completed log-likelihood $\log(\nu_{\theta}(\xb, \zb))$ is much
-simpler to optimize than the likelihood.
+In this section, we will assume a \emph{latent variable model}. In this
+framework, we assume that the model includes unobserved random variables $\zb$
+called \emph{latent variables} and that the data $\xb$ depend on
+the latent variables. With an abuse of notation we denote $\nu_{\theta}(\zb)$
+the likelihood of $\zb$, $\nu_{\theta}(\xb | \zb)$ the density of $\xb | \zb$
+evaluated at $\xb, \zb$ and the joint likelihood of $\xb, \zb$ called the
+\emph{complete likelihood} is given by $\nu_{\theta}(\xb, \zb) =
+\nu_{\theta}(\zb) \nu_{\theta}(\xb | \zb)$.  
+
+We can relate the likelihood and the completed likelihood by:
+\begin{align}
+  \nu_{\theta}(\xb) = \int_{\zb} \nu_{\theta}(\xb, \zb) d\zb
+\end{align}
+
+We call $\log(\nu_{\theta}(\xb, \zb))$ the \emph{complete log-likelihood}.
+The EM algorithm minimizes an expression
+that depends on the complete log-likelihood rather than the log-likelihood so it
+is useful when the former is much simpler to minimize than the later.
 This section follows the work in~\cite{neal1998view}.
 
 In order to make this more concrete, let us focus on the Gaussian mixture model
 in example~\ref{ex:em:gaussmixt}.
 \begin{example}[Gaussian mixture models]
   \label{ex:em:gaussmixt}
-  Let us consider data $x = x_1, \dots, x_n$ generated according to the following model:
-  $z_n$ is sampled from a Bernoulli distribution with parameter $\phi$, 
-  $x^0_n \sim \mathcal{N}(\mu_0, 1)$ and 
-  $x^1_n \sim \mathcal{N}(\mu_1, 1)$.
-  We then have $x_n = x^1_nz_n + x_n^0(1 - z_n)$
+  Let us consider a latent variable $z$
+  sampled from a Bernoulli distribution with parameter $\phi$, 
+  and $x$ is given by
+  $x|z=0 \sim \mathcal{N}(\mu_0, 1)$ and 
+  and $x | z=1 \sim \mathcal{N}(\mu_1, 1)$.
 
-  The log-likelihood of sample $x_i$:
+  We call $x^{(1)}, \dots, x^{(n)}$ the observed samples and $z^{(1)}, \dots,
+  z^{(n)}$ the corresponding unobserved latent variables. 
+
+  The log-likelihood of $x^{(i)}$ is given by:
   \begin{align}
-    &l(x_i, (\mu_0, \mu_1, \phi)) \\ &= \log(\phi \mathcal{N}(x_i, \mu_1, 1) + (1 - \phi) \mathcal{N}(x_i, \mu_0, 1)) \\
-                                                   &= \log\Big( \phi\frac{\exp(-\frac{(x_i - \mu_1)^2}{2})}{\sqrt{2 \pi}} + (1 - \phi)\frac{\exp(-\frac{(x_i - \mu_0)^2}{2})}{\sqrt{2 \pi}} \Big)
+    &l(x^{(i)}, (\mu_0, \mu_1, \phi)) \\ &= \log(\phi \mathcal{N}(x^{(i)}, \mu_1, 1) + (1 - \phi) \mathcal{N}(x^{(i)}, \mu_0, 1)) \\
+                                                   &= \log\Big( \phi\frac{\exp(-\frac{(x^{(i)} - \mu_1)^2}{2})}{\sqrt{2 \pi}} + (1 - \phi)\frac{\exp(-\frac{(x^{(i)} - \mu_0)^2}{2})}{\sqrt{2 \pi}} \Big)
   \end{align}
 
-  Whereas the completed log-likelihood of $(x_i, z_i)$ is given by
+  Whereas the completed log-likelihood of $(x^{(i)}, z^{(i)})$ is given by
   \begin{align}
-    &l((x_i, z_i), (\mu_0, \mu_1, \phi)) \\
-    &= \log((\phi \mathcal{N}(x_i, \mu_1, 1))^{z_i} ((1 - \phi) \mathcal{N}(x_i, \mu_0, 1))^{1- z_i}) \\
-    &= z_i ( -\frac{(x_i - \mu_1)^2}{2} + \log(\phi)) \\ &\enspace \enspace + (1 - z_i) ( -\frac{(x_i - \mu_0)^2}{2} + \log(1 -\phi)) + c
+    &l((x^{(i)}, z^{(i)}), (\mu_0, \mu_1, \phi)) \\
+    &= \log((\phi \mathcal{N}(x^{(i)}, \mu_1, 1))^{z^{(i)}} ((1 - \phi) \mathcal{N}(x^{(i)}, \mu_0, 1))^{1- z^{(i)}}) \\
+    &= z^{(i)} ( -\frac{(x^{(i)} - \mu_1)^2}{2} + \log(\phi)) \\ &\enspace \enspace + (1 - z^{(i)}) ( -\frac{(x^{(i)} - \mu_0)^2}{2} + \log(1 -\phi)) + c
   \end{align}
   where $c$ is a constant that does not depend on $\mu_1$ or $\mu_2$.
 
@@ -702,7 +754,7 @@ in example~\ref{ex:em:gaussmixt}.
 This example shows that unsurprisingly, it would be easier to find the parameters of a
 Gaussian mixture model if we knew the component from which are generated each sample.
 
-Instead of optimizing the empirical expected log-likelihood $l_n(\theta)$ directly, the EM algorithm optimizes the following function:
+Instead of optimizing the expected log-likelihood $l(\theta)$ directly, the EM algorithm optimizes the following function:
 \begin{align}
   F(q, \theta) &= \EE_q[\log( \nu_{\theta}(\xb, \zb))] + H_q \label{eq:em:fdef}
 \end{align}
@@ -754,18 +806,18 @@ In example~\ref{ex:em::gaussmixt:2} we us use the EM algorithm to optimize the G
   \label{ex:em::gaussmixt:2}
   Let us take the same data as in example~\ref{ex:em:gaussmixt}.
   \begin{align}
-    \gamma_i^k = p(z_i = 1 | x_i) &= \frac{\phi^k \Ncal(x_i; \mu_0^k, 1)}{ \phi^k \Ncal(x_i; \mu_0^k, 1) + (1 - \phi^k) \Ncal(x_i; \mu_1^k, 1)} 
+    \gamma_i^k = p(z^{(i)} = 1 | x^{(i)}) &= \frac{\phi^k \Ncal(x^{(i)}; \mu_0^k, 1)}{ \phi^k \Ncal(x^{(i)}; \mu_0^k, 1) + (1 - \phi^k) \Ncal(x^{(i)}; \mu_1^k, 1)} 
   \end{align}
   The E-step is given by:
   \begin{align}
-    Q(\mu_0, \mu_1, \phi) &= \sum_{i=1}^n \Big( \gamma_i^k \log(\nu_{\mu_0, \mu_1, \phi}(x_i, 1)) \\ &\enspace \enspace + (1 - \gamma_i^k) \log(\nu_{\mu_0, \mu_1, \phi}(x_i, 0)) \Big) \\
-              &= \sum_{i=1}^n \Big( \gamma_i^k( -\frac{(x_i - \mu_1)^2}{2} + \log(\phi)) \\ &\enspace \enspace + (1 - \gamma_i^k) ( -\frac{(x_i - \mu_0)^2}{2} + \log(1 -\phi)) + c \Big)
+    Q(\mu_0, \mu_1, \phi) &= \sum_{i=1}^n \Big( \gamma_i^k \log(\nu_{\mu_0, \mu_1, \phi}(x^{(i)}, 1)) \\ &\enspace \enspace + (1 - \gamma_i^k) \log(\nu_{\mu_0, \mu_1, \phi}(x^{(i)}, 0)) \Big) \\
+              &= \sum_{i=1}^n \Big( \gamma_i^k( -\frac{(x^{(i)} - \mu_1)^2}{2} + \log(\phi)) \\ &\enspace \enspace + (1 - \gamma_i^k) ( -\frac{(x^{(i)} - \mu_0)^2}{2} + \log(1 -\phi)) + c \Big)
  \end{align}
  The M-step is given by:
  \begin{align}
    &\partialfrac{\phi}{Q}(\phi^{k + 1}) = 0 \iff \phi^{k + 1} = \frac{\sum_{i=1}^n \gamma_i^k}{n} \\
-   &\partialfrac{\phi}{Q}(\mu^{k+1}_0) = 0 \iff \mu^{k + 1}_0 = \frac{\sum_{i=1}^n (1 - \gamma_i^k) x_i}{n} \\
-   &\partialfrac{\phi}{Q}(\mu^{k+1}_1) = 0 \iff \mu^{k + 1}_1 = \frac{\sum_{i=1}^n \gamma_i^k x_i}{n} \\
+   &\partialfrac{\phi}{Q}(\mu^{k+1}_0) = 0 \iff \mu^{k + 1}_0 = \frac{\sum_{i=1}^n (1 - \gamma_i^k) x^{(i)}}{n} \\
+   &\partialfrac{\phi}{Q}(\mu^{k+1}_1) = 0 \iff \mu^{k + 1}_1 = \frac{\sum_{i=1}^n \gamma_i^k x^{(i)}}{n} \\
  \end{align}
 \end{example}
 

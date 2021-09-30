@@ -10,7 +10,7 @@ Let $\sbb \in \mathbb{R}^k$ and $\sbb'\in \mathbb{R}^k$ have independent compone
   
   Let us define permutations $\Pi_1$, $\Pi'_1$ such that the first $g$ components of $\Pi_1 \sbb$ and $\Pi'_1 \sbb'$ are Gaussian and $P_1  = \Pi_1 P (\Pi'_1)^{-1}$. We can see that $P_1$ is orthogonal.
   
-  We have $\Pi_1 \sbb = P_1 \Pi'_1 \sbb'$. So the last $p-g$ columns of $P_1$ contain at most one non-zero element. Using orthogonality of $P_1$ this non-zero element has value $1$ or $-1$ and is also the only one in its line. Let us focus on column $l > g$. Assume column $l$ has its non-zero element at index $k \leq g$. Then line $k$ in $P_1$ is only non-zero at index $l$ and therefore $(\Pi_1 \sbb)_k$ (which is Gaussian) is equal to $(\Pi'_1 \sbb')_l$ (which is not). Therefore column $l$ can only have its non-zero element at an index greater than $g$. This shows that $P_1$ is block diagonal $P_1 = \begin{bmatrix} O_g & 0 \\ 0 & P_2 \end{bmatrix}$ where $O_g$ is orthogonal  and $P_2$ is a sign and permutation matrix.
+[Omitted long matching line]
   \begin{align}
       &\begin{bmatrix} O_g & 0 \\ 0 & P_2 \end{bmatrix} = \Pi_1 P (\Pi'_1)^{-1} \\
       & \iff \begin{bmatrix} O_g & 0 \\ 0 & I \end{bmatrix} \begin{bmatrix} I & 0 \\ 0 & P_2 \end{bmatrix}  = \Pi_1 P (\Pi'_1)^{-1} \\
@@ -501,7 +501,7 @@ $\Var[\sbb|\xb]$ (E-step) and updates of parameters $\Sigma_i$ and $W_i$ for $i=
 
 
 % \begin{figure}
-%   \includegraphics[width=0.5\textwidth]{./figures/synthetic_gaussian_source_50_samples.pdf}
+%   \includegraphics[width=0.5\textwidth]{./figures/synthetic_Gaussian_source_50_samples.pdf}
 % \end{figure}
 
 \section{CamCAN spatial maps}

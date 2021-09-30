@@ -8,9 +8,14 @@ subject ICA to recover the shared response. In addition, such methods are typica
 
 In contrast, the framework of Independent vector analysis
 (IVA)~\cite{lee2008independent, anderson2011joint} allows subject specific
-variability in the unmixed data. However, the two most common implementations (IVA-L~\cite{lee2008independent} and IVA-G~\cite{anderson2011joint}) only estimate view-specific components, and do not model or extract a shared response. 
-They are thus not well-suited for modelling the dependencies between views in
-functional brain imaging, as we will argue in detail below.
+variability in the unmixed data. 
+However, current implementations such as IVA-L~\cite{lee2008independent},
+IVA-G~\cite{anderson2011joint}, IVA-L-SOS~\cite{bhinge2019extraction}, IVA-GGD~\cite{anderson2014independent} or
+IVA with Kotz distribution~\cite{anderson2013independent} only estimate
+view-specific components, and do not model or extract a shared response.
+
+% They are thus not well-suited for modelling the dependencies between views in
+% functional brain imaging, as we will argue in detail below.
 
 In this chapter, we introduce Shared ICA (ShICA), where each dataset is modeled as a linear transform of shared independent components contaminated by additive Gaussian noise. ShICA allows for principled extraction of the shared components (or responses) in addition to view-specific components. 
 %
@@ -365,16 +370,13 @@ generalizations can be obtained by imposing sparsity on the mixing matrices such
 Lastly, the work in~\cite{li2009joint} exhibits a set of sufficient (but not necessary) conditions under which a well defined model can be learnt by the formulation of Multiset CCA used in ShICA-J. The set of conditions we exhibit in this work are necessary and sufficient. We further emphasize that basic Multiset CCA provides a poor estimator, as explained in section~\ref{sec:samplingnoise}.
 
 Let us highlight that ShICA can be seen as a particular instance of IVA where
-subject specific components $s_{ij}$ are such that $s_{ij} = s_j + n_{ij}$. However,
-in IVA-L, the variance of $s_{ij}$ is assumed to be the same and components are
-uncorrelated over views. We argue that this is quite unrealistic for fMRI or any
-MEG/EEG evoked response, while our model is explicitly constructed to be
-realistic for brain imaging applications. In IVA-G, components are allowed to have different variances but
-need to follow a Gaussian law. ShICA can in addition make use of the
-non-Gaussianity of the components. Lastly, let us highlight that ShICA (like
-MultiView ICA) specifically enables extraction of shared components from the
-subject specific components, unlike previous versions of IVA. In fact, ShICA comes with minimum mean squared error estimates for the shared components
-that is often the quantity of interest.
+subject specific components $s_{ij}$ are such that $s_{ij} = s_j + n_{ij}$.
+However, current implementations such as IVA-L~\cite{lee2008independent},
+IVA-G~\cite{anderson2011joint}, IVA-L-SOS~\cite{bhinge2019extraction}, IVA-GGD~\cite{anderson2014independent} or
+IVA with Kotz distribution~\cite{anderson2013independent} only estimate
+view-specific components, and do not model or extract a shared response.
+In contrast, ShICA specifically enables extraction of shared components from the
+subject specific components via its minimum mean squared error estimate.
 
 The IVA theory provides global identifiability conditions in the Gaussian case (IVA-G)~\cite{via2011joint} and local identifiability conditions in the general case~\cite{anderson2014independent} from which local identifiability conditions of ShICA could be derived. However, in this work, we provide global identifiability conditions for ShICA.
 Lastly, IVA can be performed using joint diagonalization of cross covariances~\cite{li2011joint, congedo2012orthogonal} although multiple matrices have to be learnt and cross-covariances are not necessarily symmetric positive definite, which makes the algorithm slower and less principled.
@@ -385,9 +387,9 @@ orthogonality constrain but they are much more computationally demanding.
 ShICA leverages ICA theory to provide a much more powerful model of shared responses.
 
 \paragraph{Limitations}
-The main limitation of this work is that the model does not reduce the dimension inside each view. In line with other methods, such view-specific  dimension reduction has to be done by some external method, typically view-specific PCA. Using specialized methods for the estimation of covariances should also be of interest for ShICA-J, where it only relies on sample covariances. Finally, ShICA-ML uses a simple model of a super-Gaussian distribution, while modeling the non-gaussianities in more detail in ShICA-ML should improve the performance.
+[Omitted long matching line]
 
 \section{Conclusion}
-In this chapter, we introduced the ShICA model as a principled unifying solution to the problems of shared response modelling and GroupICA. ShICA is able to use both the diversity of Gaussian variances and non-Gaussianity for optimal estimation. We presented two algorithms to fit the model: ShICA-J, a fast algorithm that uses noise diversity, and ShICA-ML, a maximum likelihood approach that can separate Gaussian and non-Gaussian components. ShICA algorithms come with principled procedures for shared components estimation, as well as adaptation and estimation of noise levels in each view (subject) and component.
+[Omitted long matching line]
 In the next chapter, we evaluate ShICA using both real and synthetic data and
 compare with competitive approaches.

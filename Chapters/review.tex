@@ -29,10 +29,11 @@ data~\cite{beckmann2005investigations} or when subjects are
 exposed to natural~\cite{malinen2007towards}~\cite{bartels2005brain} or complex stimuli~\cite{calhoun2002different}. 
 In M/EEG processing, it is widely used to isolate acquisitions artifacts from neural signal~\cite{jung1998extended}, and to identify brain components of interest~\cite{vigario2000independent, delorme2012independent}.
 
-In neuroscience, the number $k$ of components is typically much lower than the number $v$
-of available observations. We are therefore in an overcomplete setting.
-However in ICA, it is assumed the number of observations is equal to the number
-of components. Therefore, a
+A standard assumption in neuroscience is to say that the number of components
+$k$ is much lower than the dimensionality of the data $v$.
+However in ICA, it is assumed the dimensionality of the data is equal to the
+number of components.
+Therefore, a
 typical pre-processing step is to reduce the dimension. We therefore first
 present principal component analysis which is the standard method to perform
 dimension reduction in this context.
@@ -86,7 +87,7 @@ does not include signal whitening.
 After the data are reduced such that the number of observations are identical to
 the number of components, we can perform independent component analysis (ICA).
 ICA can exploit a number of different properties of the signal. Most ICA
-algorithms use non-gaussianity of the data to extract relevant components so we
+algorithms use non-Gaussianity of the data to extract relevant components so we
 focus next on non-Gaussian ICA.
 
 \subsection{Non Gaussian ICA}
@@ -95,7 +96,7 @@ Data are therefore modeled as:
 \begin{align}
   \xb = A \sbb
 \end{align}
-where $A$ is the unmixing matrix and $\sbb$ have a non-Gausian distribution.
+where $A$ is the unmixing matrix and $\sbb$ is a vector with independent components, of which at most one is Gaussian and whose densities are not reduced to a point-like mass.
 Without loss of generality, the data $\xb$ are assumed centered ($\EE[\xb] = 0$).
 This section relies heavily on the ICA review~\cite{hyvarinen2000independent}
 and on~\cite{cardoso1997infomax}.
@@ -105,8 +106,9 @@ A matrix $P$ that can be written $P =
 \Xi \Pi$ where $\Xi$ is a diagonal matrix and $\Pi$ is a permutation matrix
 is called a \emph{scale and permutation matrix}.
 
-It is easily seen that if $\sbb$ is non-Gaussian, so is $P \sbb$ where  
-is a scale and permutation matrix.
+It is easily seen that if $\sbb$ is a vector with independent components, of
+which at most one is Gaussian and whose densities are not reduced to a
+point-like mass., so is $P \sbb$ where $P$ is a scale and permutation matrix.
 Therefore if $\xb = A \sbb$, take $A' = AP^{\top}$ and $\sbb'=P\sbb$ and we have
 $\xb = A' \sbb'$.
 In other words, there exists a permutation and scaling indeterminacy.
@@ -140,12 +142,11 @@ maximum likelihood where component $i$ is assumed to have $g_i$ as its
 cumulative distribution function.
 
 Assume for simplicity that the components have the same density $\delta$, denoting $f(x) =
--\log(\delta(x))$ and $f(\xb) = \sum_{i=1}^m f(x_i)$ for $\xb \in
-\RR^m$ the negative log-likelihood is given by:
+-\log(\delta(x))$ and $f(\xb) = \sum_{i=1}^m f(x_i)$ the expected negative log-likelihood is given by:
 \begin{align}
-  \loss &= -l(\xb, \theta) = - \log(p(\xb)) \\
-        &= -\log(|W|) - \log(\delta(W \xb)) \\
-  &= -\log(|W|) + f(W \xb)
+  \loss &= \EE[-l(\xb, \theta)] = \EE[- \log(p(\xb))] \\
+        &= -\log(|W|) - \EE[\log(\delta(W \xb))] \\
+  &= -\log(|W|) + \EE[f(W \xb)]
 \end{align}
 where we used the change of variable $\sbb = W \xb$.
 
@@ -307,8 +308,9 @@ which up to a constant can be rewritten:
 
 $\loss$ is a joint diagonalization criterion. The optimal $W$ can be found via a
 quasi-Newton method very similar to the one we used for non-Gaussian
-ICA~\cite{ablin2018beyond} however, performing ICA via joint diagonalization is
-in principle much faster than using non-Gaussian ICA.
+ICA~\cite{ablin2018beyond} however, the updates only depend on the covariance
+matrices $C_k$ and no longer on the number of samples making this approach very
+fast when the number of samples is large.
 
 \section{Analysis of MultiView data}
 In this section, we present multiview unsupervised techniques suited to
@@ -340,7 +342,7 @@ In this section, we present the formulation refered to
 in~\cite{nielsen2002multiset} as SUMCORR with constraint 4 which is one of the
 fastest to fit.
 
-Let us consider $\xb_1, \dots, \xb_m$, $m$ datasets and consider the following (SUMCORR)
+Let us consider $X_1, \dots, X_m$, $m$ datasets and consider the following (SUMCORR)
 objective:
 \begin{align}
   \max_{\ab_1 \in \RR^{v}, \dots, \ab_m \in \RR^{v}} \sum_{i=1}^m \sum_{j=1}^m \dotp{ \ab_i }{ X_i X_j^{\top} \ab_j }
@@ -413,7 +415,7 @@ advantages of such estimators such as asymptotic efficiency.
 The model of~\cite{guo2008unified} considers the very general model $\xb_i =
 A_i\sbb + \nb_i$, where the noise covariance can be learned from the data where
 $A_i$ represent mixing matrices, $\sbb$ the common sources and $\nb_i$ are view
-specific noise. Therefore this model is an instance of noisy ICA as defined in~\cite{hyvarinen1999gaussian}.
+specific noise. Therefore this model is an instance of noisy ICA as defined in~\cite{hyvarinen1999Gaussian}.
 
 In~\cite{guo2008unified}, each sources is assumed to be a mixture of Gaussians
 $p(s_j) = \sum_{z=1}^q \Ncal(\mu_{zj}, \sigma_{zj})$.
@@ -701,7 +703,7 @@ gradient is below a chosen tolerance.
 In Probabilistic SRM , $\Sigma_i=\sigma_i^2 I_v$ and the shared
 components are assumed to be Gaussian $\sbb \sim \Ncal(0, \Sigma_s)$.
 In~\cite{chen2015reduced}, $\Sigma_s$ is only assumed to be definite positive. However,
-as will be seen in the FastSRM chapter, enforcing a diagonal $\Sigma_s$ ensures
+as will be seen in the FastSRM chapter (chapter~\ref{ch:fastsrm1}), enforcing a diagonal $\Sigma_s$ ensures
 identifiability (provided the diagonal values are different). So we assume for
 now on, that $\Sigma_s$ is diagonal.
 
