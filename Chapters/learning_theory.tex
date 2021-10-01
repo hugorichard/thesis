@@ -9,13 +9,12 @@ and from~\cite{neal1998view}.
 
 \section{Probabilistic generative models}
 \label{sec:probgenmodel}
-In a probabilistic generative modeling framework, learning from experience means identifying the underlying process that generates the data we observe.
+In a probabilistic generative modeling framework, learning from experiments means identifying the underlying process that generates the data we observe.
 
 More formally, consider $\Xcal = \xb^{(1)}, \dots, \xb^{(n)} \in \RR^k$, $n$ random
 vectors with joint density $\nu^*_{\Xcal}$ and consider the available data $X \in \RR^{k,
   n}$ as an observation of $\Xcal$. We also say that data $X$ are \emph{generated from} $\nu^*_{\Xcal}$.
-The broad
-goal is to recover $\nu^*_{\Xcal}$ from $X$. When samples $\xb^{(1)},
+The broad goal of probabilistic generative modeling is to recover $\nu^*_{\Xcal}$ from $X$. When samples $\xb^{(1)},
 \dots, \xb^{(n)}$ are independent and identically distributed,
 $\nu^*_{\Xcal} = \otimes_{i=1}^n \nu^*_{\xb}$ so that
 $X$ can be seen as $n$ observations of the random variable $\xb$ with density
@@ -28,7 +27,7 @@ In practice, we assume a model for the true density $\nu^*$ meaning that we
 assume that $\nu^*$ belongs to a family of densities $\mathcal{F}$.
 When it is indeed true that $\nu^* \in \Fcal$, we say that \emph{the model holds}.
 
-Often, we assume $\Fcal$ to be a set of parameterized densities so
+Often, we assume $\Fcal$ to be a set of parametric densities so
 that any density in $\Fcal$ can be written as $\nu_{\thetab}$ where
 $\thetab \in \Theta$ is a set of parameters and $\Theta$ is the set of all
 possible $\thetab$. When the model holds, there exists an optimal
@@ -61,7 +60,7 @@ A common choice is the mean squared error criterion given by:
 \end{align}
 
 where the right hand side in equation~\ref{eq:mse:biasvariance} gives the
-\emph{bias-variance decomposition}: the left term is the trace of the \emph{covariance} $\VV(\hat{\thetab}_n) = \Cov(\hat{\thetab}_n -
+\emph{bias-variance decomposition}. The left term is the trace of the \emph{covariance} $\VV(\hat{\thetab}_n) = \Cov(\hat{\thetab}_n -
 \EE[\hat{\thetab}_n], \hat{\thetab}_n -
 \EE[\hat{\thetab}_n])$ where $\Cov(\ab, \bb) = \EE[(\ab - \EE[\ab]) (\bb -
 \EE[\bb])^{\top}]$ and the right term is the squared norm of the \emph{bias} given by $\EE[\hat{\thetab}_n] - \thetab_*$ .
@@ -106,10 +105,10 @@ proposition~\ref{prop:cramerrao} (Cramer-Rao bound) shows:
 \begin{prop}[Cramer-Rao bound]
   \label{prop:cramerrao}
   Let $\hat{\thetab}_n$ be an estimator of $\thetab_*$.
-  Then, $\VV(\hat{\thetab}_n) \geq
+  Then, $\VV(\hat{\thetab}_n) \succeq
   \partialfrac{\thetab}{\EE[\hat{\thetab}_n]}I_n(\thetab_*)^{-1} (\partialfrac{\thetab}{\EE[\hat{\thetab}_n]})^{\top}$
 \end{prop}
-where $A \geq B$ is understood as $A-B$ is positive semi-definite.
+where $A \succeq B$ is understood as $A-B$ is positive semi-definite.
 We introduced $I_n(\thetab)$, the Fisher information matrix given by
 \begin{align}
   I_n(\thetab) = \EE[\partialfrac{\thetab}{\log(\nu_{\thetab}(\Xcal))} \partialfrac{\thetab}{\log(\nu_{\thetab}(\Xcal))}^{\top}]
@@ -145,7 +144,7 @@ Lastly, the quantity $l(\xb, \thetab) = \log(\nu_{\thetab}(\xb))$ is called
 
   Then we apply the following Cauchy Schwartz inequality for random vectors:
   \begin{equation}
-  \forall \xb, \yb \enspace \Var(\yb) \geq  \Cov(\yb, \xb) \Var(\xb)^{-1} \Cov(\xb, \yb)
+  \forall \xb, \yb \enspace \Var(\yb) \succeq  \Cov(\yb, \xb) \Var(\xb)^{-1} \Cov(\xb, \yb)
   \end{equation}
 (see a proof in \cite{tripathi1999matrix})
 and therefore get the expected result:
@@ -171,7 +170,7 @@ where
 When samples are independent and identically distributed and $\hat{\thetab}_n$ is unbiased the Cramer-Rao
 bound is given by:
 \begin{equation}
-  \Var(\hat{\thetab}_n) \geq \frac1{n} I(\theta_*)^{-1}
+  \Var(\hat{\thetab}_n) \succeq \frac1{n} I(\theta_*)^{-1}
 \end{equation}
 
 The example~\ref{ex:efficient_mean} hows that the sample mean
@@ -245,7 +244,7 @@ the \emph{empirical expected log-likelihood}
                   &= \argmax_{\thetab \in \Theta} l_n(\thetab) \\ 
 \end{align}
 
-By the law of large numbers, as the number of samples increase, the empirical
+By the law of large numbers, as the number of samples increases, the empirical
 expected likelihood converges almost surely to the \emph{expected
   log-likelihood}: $l(\thetab) = \EE_{\xb}[l(\xb, \thetab)]$.
 
@@ -310,21 +309,37 @@ l(\thetab)\| \xrightarrow[n \rightarrow \infty]{P} 0$.
   Let us define $\delta = l(\thetab_*) - l(\thetab_0) > 0$ and consider the event
   \begin{align}
     A_n &= sup_{\thetab \in \Theta \cap V_{\eps}^C} \|l_n(\thetab) - l(\thetab)\| < \frac{\delta}{2}. \\
-    &\implies l_n(\thetab) - l(\thetab) < \frac{\delta}{2} \\
-    &\implies l_n(\thetab) < \frac{\delta}{2} + l(\thetab_0) \\
-    &\implies l_n(\thetab) < -\frac{\delta}{2} + l(\thetab_*)
+        &\implies \forall \thetab \in \Theta \cap V_{\eps}^C,  \enspace l_n(\thetab) - l(\thetab) < \frac{\delta}{2} \\
+        &\implies \forall \thetab \in \Theta \cap V_{\eps}^C,  \enspace l_n(\thetab) < \frac{\delta}{2} + l(\thetab_0) \\
+        &\implies \forall \thetab \in \Theta \cap V_{\eps}^C,  \enspace l_n(\thetab) < -\frac{\delta}{2} + l(\thetab_*)
   \end{align}
 
-  We then consider 
+  and 
   \begin{align}
     B_n &= sup_{\thetab \in V_{\eps}} \|l_n(\thetab) - l(\thetab)\| < \frac{\delta}{2} \\
-        &\implies l_n(\thetab) > -\frac{\delta}{2} + l(\thetab) \\
+        &\implies \forall \thetab \in V_{\eps}, \enspace l_n(\thetab) > -\frac{\delta}{2} + l(\thetab) \\
         &\implies l_n(\thetab_*) > -\frac{\delta}{2} + l(\thetab_*) \\
   \end{align}
 
-  Therefore $A_n \cap B_n \implies \|\hat{\thetab}_n - \thetab_* \| < \eps$.
+  Then consider $\hat{\thetab}_n = \argmax_{\theta \in
+    \Theta}(l_n(\theta))$ and assume $\hat{\thetab}_n \in V_{\esp}^C$.
+  We have
+  \begin{align}
+  A_n
+    \implies l_n(\hat{\thetab}_n) < -\frac{\delta}{2} + l(\thetab_*)
+  \end{align}
+  and 
+  \begin{align}
+    A_n \cap B_n \implies l_n(\hat{\thetab}_n) < -\frac{\delta}{2} + l(\thetab_*) < l_n(\thetab_*)
+  \end{align}
+  So $A_n \cap B_n$ contradicts the fact that $\hat{\thetab}_n = \argmax_{\theta \in
+    \Theta}(l_n(\theta))$ and $\hat{\thetab}_n \in V_{\esp}^C$.
+
+  Therefore $A_n \cap B_n \implies \hat{\thetab}_n \in V_{\eps} $.
   From the uniform convergence in probability of $l_n$ to $l$ we have
-  $p(A_n \cap B_n) \xrightarrow[n \rightarrow \infty]{} 1$ and therefore $\hat{\thetab}_n \xrightarrow[n \rightarrow \infty]{P} \thetab_*$.
+  $p(A_n \cap B_n) \xrightarrow[n \rightarrow \infty]{} 1$ and therefore
+  $p(\hat{\thetab}_n \in V_{\eps}) \xrightarrow[n \rightarrow \infty]{} 1$ which
+  means $\hat{\thetab}_n \xrightarrow[n \rightarrow \infty]{P} \thetab_*$.
 \end{proof}
 
 We now focus on the statistical fluctuation of the difference between the
