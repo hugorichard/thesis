@@ -13,14 +13,14 @@ However such data are scarce.
 
 To tackle this problem, data generation is an attractive approach, as
 it could potentially compensate for the shortage of data.
-Generative Adversarial Networks (GANs) are promising generative
+Conditional Generative Adversarial Networks (CGANs) are promising generative
 models~\cite{goodfellow2014generative} designed for computer vision.
 % 
 However, such improvements have not yet carried over to brain imaging. A likely
-reason is that GANs are ill-suited to the noisy, high-dimensional and
+reason is that CGANs are ill-suited to the noisy, high-dimensional and
 small-sample data available in functional neuroimaging. 
 % 
-Furthermore the training of GANs is notoriously unstable and there are many hyper-parameters to tune.
+Furthermore the training of CGANs is notoriously unstable and there are many hyper-parameters to tune.
 % 
 
   In this work, we introduce Conditional ICA: a novel data augmentation technique using ICA together with conditioning mechanisms to generate surrogate brain imaging data and improve image classification performance.
@@ -89,10 +89,10 @@ result, there are too few samples to learn high quality unmixing matrices. In
 contrast, resting state datasets have a large number of samples ($10^4 \sim 10^5$).
 Therefore we replace the unmixing matrix learned on task data $W^{task}$ by the
 unmixing matrix learned on resting state data $W^{rest}$.
-We therefore form $\zb^{task} = W^{rest} \xb^{task}$ and learn its quantile
-transform $q$.
 
-The encoding model is given by:
+We form $\zb^{task} = W^{rest} \xb^{task}$ and learn its quantile
+transform $q$.
+The encoding model is thus given by:
 \begin{align}
   \zb^{task} = q(W^{rest} \xb^{task})
 \end{align}
@@ -110,7 +110,7 @@ model, we assume that the quantile transform $q$ and the latent covariance
 $\Lambda$ do not depend on the class $c$. However, the mean $\mub_c$, that can be learned efficiently using just a few tens of samples, depends on class $c$.
 $\Lambda$ is learned using all task samples from a standard shrunk covariance
 estimator
-$\Lambda = = \Sigma (1 - \alpha) + \frac{\alpha}{k} \tr(\Sigma) I_k$ where
+$\Lambda = \Sigma (1 - \alpha) + \frac{\alpha}{k} \tr(\Sigma) I_k$ where
 $\alpha$ is given by the Ledoit-Wolf formula \cite{ledoit2004well} and
 $\Sigma$ is the sample covariance of $\zb^{task}$.
 
@@ -157,8 +157,8 @@ typically includes operations like cropping, rotation, translation.
 On fMRI data these methods do not make much sense as brain data are not invariant to such transformations.
 %
 More advanced techniques~\cite{zhuang2019fmri} %\cite{sandfort2019data}
-are based on generative models such as GANs or variatonal
-auto-encoders~\cite{kingma2013auto}. Although GAN-based method are powerful they are slow and difficult to train~\cite{arjovsky_wasserstein_2017}.
+are based on generative models such as CGANs or variatonal
+auto-encoders~\cite{kingma2013auto}. Although CGAN-based method are powerful they are slow and difficult to train~\cite{arjovsky_wasserstein_2017}.
 
 Our method is not an adversarial procedure, however it relates to other
 powerful generative models such as variatonal

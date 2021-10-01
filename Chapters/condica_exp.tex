@@ -5,7 +5,7 @@ In this chapter we benchmark Conditional ICA as a generative model of task data 
 various augmentation methods  on their
 ability to improve classification accuracy on a large task fMRI dataset.
 We find that Conditional ICA yields highest accuracy improvements.
-In particular Conditional ICA outperforms GANs and conditional GANs~\cite{mirza2014conditional} while being much easier to optimize and interpret. 
+In particular Conditional ICA outperforms conditional GANs~\cite{mirza2014conditional} while being much easier to optimize and interpret. 
 Lastly, we show on 8 different datasets that the use of Conditional ICA results in systematic improvements in classification accuracy ranging from 1\% to 5\%.
 
 \section{Dataset, data augmentation baselines and classifiers used}
@@ -59,7 +59,7 @@ pinel2007fast \cite{pinel2007fast} & 133, 10 & 70/63  &  1952
 
 
 We consider 5 alternative
-augmentation methods: \emph{ICA}, \emph{Covariance}, \emph{ICA + Covariance}, \emph{GANs} and \emph{CGANs}.
+augmentation methods: \emph{ICA}, \emph{Covariance}, \emph{ICA + Covariance} and \emph{CGANs}.
 %
 When no augmentation method is applied we use the label \emph{Original}.
 
