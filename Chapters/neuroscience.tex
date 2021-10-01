@@ -282,7 +282,7 @@ magnetic field is not affected by changes in conductivity in the head.
 
 \subsection{Solving the inverse problem}
 In order to locate activation from the brain measurements, we need to solve an inverse problem: what kind of sources can generate the magnetic field we
-observe ? This section gives an overview of the sLoreta
+observe ? This section gives an overview of the sLORETA
 method~\cite{pascual2002standardized} and is strongly inspired from the tutorial
 of the authors~\cite{pascual2007discrete}.
 
@@ -307,7 +307,7 @@ A common parametrization is to assume that:
 \jb(K_i) = (K_i^{\top} C K_i) \bb
 \end{align}
 for a symmetric matrix $C \in \RR^{p \times p}$ and $\jb(K_i)$ describes the current at voxel $i$.
-In sLoreta, we have $C = (K K^{\top} + \alpha I)^{\dagger}$ where $\dagger$
+In sLORETA, we have $C = (K K^{\top} + \alpha I)^{\dagger}$ where $\dagger$
 represents Moore's pseudo inverse, $I$ is the identity matrix and $\alpha$ is an hyperparameter. 
 
 Taking a point wise source $\ab \in \RR^{3}$ at voxel $j$
@@ -320,29 +320,27 @@ in~\cite{jas2018reproducible} and the book of Riitta Hari and Aina
 Puce~\cite{hari2017meg}. 
 
 \subsubsection{Temporal filtering}
-Temporal filtering is usually done by analogous filtering using a wide range of
+Temporal filtering is usually done by during analogous filtering using a wide range of
 frequency (typically from $0.01 Hz$ to $200Hz$.
 A digital filtering is usually applied afterwards. A low-pass filtering with
-cut-off frequency at $40 Hz$ is valuable as it is below the line frequency. It
-also removes some of the artifacts due to eye movements although subjects are
-often asked to fix a cross on a screen while scanning.
+cut-off frequency at $40 Hz$ is valuable as it is below the line frequency.
 
 \subsubsection{Independent component analysis}
 Independent component analysis (ICA) can be used to isolate artifacts due to
 heart beating or muscle contraction. As will be seen in section~\ref{sec:ica}.
 ICA extracts independent components from the data. The data can be cleaned by
-removing components corresponding to artifacts.
+removing components corresponding to artifacts~\cite{jung1998extended}.
 
 \subsubsection{Maxwell filtering}
 Maxwell filtering also called signal space separation
 (SSS)~\cite{taulu2006spatiotemporal} identifies the contributions of the
 magnetic field from brain sources outside the brain and removes it.
 This decreases the effect of outside noise and even allows to scan subjects with
-implemented stimulators.
+implanted stimulators.
 
 
 \subsection{Experimental designs}
-Two kinds of response are generally studied in MEG: \emph{evoked response} and
+Two kinds of responses are generally studied in MEG: \emph{evoked response} and
 \emph{event related} response.
 The evoked response is observed when the subject is exposed to a short stimuli.
 We typically repeat the experiment multiple times and average the subject

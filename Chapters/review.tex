@@ -49,7 +49,7 @@ norm.
 The corresponding optimization problem is given by:
 \begin{align}
   &\argmin_{R, R^{\top}R = I} \EE_{\xb}\|\xb - R R^{\top} \xb \|^2 \\
-  &=\argmin_{R, R^{\top}R = I} \EE_{\xb} \trace(  \xb^{\top}(I - R R^{\top}) (I - R R^{\top}) \xb\|^2 \\
+  &=\argmin_{R, R^{\top}R = I} \EE_{\xb} \trace(  \xb^{\top}(I - R R^{\top}) (I - R R^{\top}) \xb) \\
   &= \argmin_{R, R^{\top}R = I} \EE_{\xb}(\|\xb \|^2 - \|R^{\top} \xb \|^2) \\
   &= \argmax_{R, R^{\top}R = I} \EE_{\xb} \|R^{\top} \xb \|^2 \\
   &= \argmax_{R, R^{\top}R = I} \trace(R^{\top} \VV[\xb] R)
@@ -123,7 +123,7 @@ If we whiten the data by applying a matrix $H$ such that $\VV[H \xb] = I_p$ we h
 We now show that the previously described scale and permutation
 indeterminacies are the only one.
 Let us assume that there exists two mixing matrices $A_1$ and $A_2$ such that
-$\xb = A_1 \sbb_1$ and $\xb = A_2 \sbb_2$ with $A_1$ and $A_2$ orthogonal. Then $\sbb_1 = O \sbb_2$ where $O = A_1^{\top} A_2 \sbb_2$.
+$\xb = A_1 \sbb_1$ and $\xb = A_2 \sbb_2$ with $A_1$ and $A_2$ orthogonal. Then $\sbb_1 = O \sbb_2$ where $O = A_1^{\top} A_2$.
 The following theorem in~\cite{comon1994independent}
 shows that $O$ can only be a scale and permutation matrix.
 \begin{theorem}
@@ -161,7 +161,7 @@ At line~\eqref{infomax:varchang} we used the change of variable $\sbb = W \xb$.
 \label{sec:opt:likelihood:relativegradient}
 The matrix $W$ needs to be invertible. In practice, if the constraint is not
 enforced, we could see numerical instabilities appear.
-A simple rule that preserve the inversibility of $W$ is to use updates of the
+A simple rule that preserves the invertibility of $W$ is to use updates of the
 form:
 \begin{align}
   W \leftarrow (I + \alpha D)W \label{eq:mult:update}
@@ -304,7 +304,7 @@ which up to a constant can be rewritten:
 
 $\loss$ is a joint diagonalization criterion. The optimal $W$ can be found via a
 quasi-Newton method very similar to the one we used for non-Gaussian
-ICA~\cite{ablin2018beyond} however, the updates only depend on the covariance
+ICA~\cite{ablin2018beyond}. However, the updates only depend on the covariance
 matrices $C_k$ and no longer on the number of samples making this approach very
 fast when the number of samples is large.
 
@@ -335,10 +335,10 @@ The extension to more than two datasets is ambiguous, and many
 different generalized CCA methods have been proposed. \cite{kettenring1971canonical} introduces 6 objective functions that reduce to CCA when $m=2$ and \cite{nielsen2002multiset} considered 4 different possible constrains leading to 24 different formulations of Multiset CCA.
 
 In this section, we present the formulation refered to
-in~\cite{nielsen2002multiset} as SUMCORR with constraint 4 which is one of the
+in~\cite{nielsen2002multiset} as ``SUMCORR with constraint 4'' which is one of the
 fastest to fit.
 
-Let us consider $X_1, \dots, X_m$, $m$ datasets and consider the following (SUMCORR)
+Let us consider $X_1, \dots, X_m \in \RR^{p, n}$, $m$ datasets and consider the following (SUMCORR)
 objective:
 \begin{align}
   \max_{\ab_1 \in \RR^{v}, \dots, \ab_m \in \RR^{v}} \sum_{i=1}^m \sum_{j=1}^m \dotp{ \ab_i }{ X_i X_j^{\top} \ab_j }
