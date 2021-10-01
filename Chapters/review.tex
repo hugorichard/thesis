@@ -29,63 +29,67 @@ data~\cite{beckmann2005investigations} or when subjects are
 exposed to natural~\cite{malinen2007towards}~\cite{bartels2005brain} or complex stimuli~\cite{calhoun2002different}. 
 In M/EEG processing, it is widely used to isolate acquisitions artifacts from neural signal~\cite{jung1998extended}, and to identify brain components of interest~\cite{vigario2000independent, delorme2012independent}.
 
-A standard assumption in neuroscience is to say that the number of components
+Mainly for computational reasons, it is often assumed that the number of components
 $k$ is much lower than the dimensionality of the data $v$.
-However in ICA, it is assumed the dimensionality of the data is equal to the
+However in ICA, the dimensionality of the data is equal to the
 number of components.
-Therefore, a
-typical pre-processing step is to reduce the dimension. We therefore first
+This is why the dimensionality of the data needs to be reduced before ICA can be applied.
+
+We therefore first
 present principal component analysis which is the standard method to perform
 dimension reduction in this context.
 
 \subsection{Principal component analysis (PCA)}
-Let us assume our data are given by a random vector $\xb \in \RR^{v}$. The data
-are centered ($\EE[\xb] = 0$). Principal component analysis (PCA) gives an orthonormal familly of $p$ vectors $R \in \RR^{v \times p}$ such that projecting our data onto this family
-using $R R^{\top} \xb$ does not yield a large reconstruction error in Frobenius
+Let us assume our data are given by observations of a random vector $\xb \in \RR^{v}$. The data
+are centered ($\EE[\xb] = 0$). Principal component analysis (PCA) yields an
+orthonormal familly of $p$ vectors $R \in \RR^{v \times p}$ meaning $R^{\top} R
+= I_p$. This familly is such that projecting our data onto it
+using $R R^{\top} \xb$ does not yield a large mean reconstruction error in Frobenius
 norm.
 The corresponding optimization problem is given by:
 \begin{align}
-  &\argmin_{R} \|\xb - R R^{\top} \xb \|^2 \\
-  &=\argmin_{R} \trace(  \xb^{\top}(I - R R^{\top}) (I - R R^{\top}) \xb\|^2 \\
-  &= \argmin_{R} \|\xb \|^2 - \|R^{\top} \xb \|^2 \\
-  &= \argmax_{R} \|R^{\top} \xb \|^2 \\
-  &= \argmax_{R} \trace(R^{\top} \VV[\xb] R)
+  &\argmin_{R, R^{\top}R = I} \EE_{\xb}\|\xb - R R^{\top} \xb \|^2 \\
+  &=\argmin_{R, R^{\top}R = I} \EE_{\xb} \trace(  \xb^{\top}(I - R R^{\top}) (I - R R^{\top}) \xb\|^2 \\
+  &= \argmin_{R, R^{\top}R = I} \EE_{\xb}(\|\xb \|^2 - \|R^{\top} \xb \|^2) \\
+  &= \argmax_{R, R^{\top}R = I} \EE_{\xb} \|R^{\top} \xb \|^2 \\
+  &= \argmax_{R, R^{\top}R = I} \trace(R^{\top} \VV[\xb] R)
 \end{align}
 Therefore the matrix $R$ is just given by the first $p$ eigenvectors of
-$\VV[\xb]$. In practice the observed data can be represented as a matrix $X \in \RR^{v, n}$,
+$\VV[\xb]$. In practice the observed data can be represented as a matrix $X \in \RR^{v \times n}$,
 from which one can compute an empirical estimate of the covariance by $\frac1{n}X X^{\top}$.
 %
-However, such an estimate is not practical in high dimension: $v$ is very
-large and therefore $XX^{\top}$ is a prohibitively large matrix.
+However, such an estimate is not practical in high dimension: when $v$ is very
+large $XX^{\top}$ is a prohibitively large matrix.
 
-Therefore, we rely instead of the singular value decomposition of $X$:
+In such case, assuming $n$ is small, we rely instead of the singular value decomposition of $X$:
 \begin{align}
 X= U D V
 \end{align}
-  where $U \in \RR^{v \times t}$ is an orthogonal matrix ($U^{\top} U
+  where $U \in \RR^{v \times n}$ is an orthogonal matrix ($U^{\top} U
 = I_t$) of
-\emph{left-singular vectors}, $D \in \RR^{t}$ is a positive diagonal matrix of
-singular values and $V \in \RR^{t \times t}$ is an orthogonal matrix of
-\emph{right-singular vectors}.
+\emph{left-singular vectors}, $D \in \RR^{n}$ is a positive diagonal matrix of
+singular values and $V \in \RR^{n \times n}$ is an orthogonal matrix of
+\emph{right-singular vectors}. Such a decomposition can be computed in $\BigO(v
+n^2)$ operations which is not prohibitive when $n$ is small enough.
 %
 Every matrix has a singular value decomposition and this
 decomposition is unique up to reordering of the singular vectors (and
 corresponding permutations of the left/right singular vectors) and sign-flips of
-the left and right singular vectors.
+the left and right singular vectors provided that all singular values are unique.
 
 Let $X = UDV$ be a singular value decomposition of $X$, we have $XX^{\top}= U
 D^2 U^{\top}$ and therefore the left-singular vectors $U_p$ corresponding to the
 largest $p$ singular values of $X$ yield  the $p$ largest eigenvectors of
-$XX^{\top}$.
-Therefore $R = U_p$.
+$XX^{\top}$. Therefore $R=U_p$, the left-singular vectors corresponding
+to the largest $p$ eigenvectors.
 
 Sometimes the PCA includes whitening $R = U_p D_p^{-1}$ where $D_p$ contains the
- $p$ largest singular values of $X$ so that projected data are
-uncorrelated (but $R$ is no longer orthonormal). In this paper what we call PCA
+ $p$ largest singular values of $X$ so that the components of $R^{\top} \xb$ are
+uncorrelated (but $R$ is no longer orthonormal). In this thesis what we call PCA
 does not include signal whitening.
 
-After the data are reduced such that the number of observations are identical to
-the number of components, we can perform independent component analysis (ICA).
+After the data are reduced such that the dimensionality of the data $v$ is equal to
+the number of components $p$, we can perform independent component analysis (ICA).
 ICA can exploit a number of different properties of the signal. Most ICA
 algorithms use non-Gaussianity of the data to extract relevant components so we
 focus next on non-Gaussian ICA.
@@ -114,7 +118,7 @@ $\xb = A' \sbb'$.
 In other words, there exists a permutation and scaling indeterminacy.
 
 Therefore, we can assume without loss of generality that $\sbb$ has unit variance ($\VV[\sbb] = I$).
-If we whiten the data by applying a matrix $H$ such that $\VV[H \xb] = I_p$ we have $H \xb = \tilde{A} \sbb$ where $\tilde{A} = HA$. $\VV[H \xb] = 1$ implies $\tilde{A}^{\top} \tilde{A} = I$ so without loss of generality we can assume that $\xb$ has unit variance and that $A$ is orthogonal. 
+If we whiten the data by applying a matrix $H$ such that $\VV[H \xb] = I_p$ we have $H \xb = \tilde{A} \sbb$ where $\tilde{A} = HA$. $\VV[H \xb] = I_p$ implies $\tilde{A}^{\top} \tilde{A} = I$ so without loss of generality we can assume that $\xb$ has unit variance and that $A$ is orthogonal. 
 
 We now show that the previously described scale and permutation
 indeterminacies are the only one.
@@ -144,11 +148,14 @@ cumulative distribution function.
 Assume for simplicity that the components have the same density $\delta$, denoting $f(x) =
 -\log(\delta(x))$ and $f(\xb) = \sum_{i=1}^m f(x_i)$ the expected negative log-likelihood is given by:
 \begin{align}
-  \loss &= \EE[-l(\xb, \theta)] = \EE[- \log(p(\xb))] \\
-        &= -\log(|W|) - \EE[\log(\delta(W \xb))] \\
-  &= -\log(|W|) + \EE[f(W \xb)]
+  \loss(W) &= \EE[-l(\xb, \theta)] = \EE[- \log(p(\xb))] \\
+        &= -\log(|W|) - \EE[\log(\delta(W \xb))] \label{infomax:varchang} \\ 
+        &= -\log(|W|) - \EE[\log(\delta(\yb))] \\
+        &= -\log(|W|) + \EE[f(\yb)] \\
+        &= -\log(|W|) + \EE[\sum_{i=1}^m f(y_i)]
 \end{align}
-where we used the change of variable $\sbb = W \xb$.
+where $\yb = W \xb$ and $y_i$ is the $i$-th component of $\yb$.
+At line~\eqref{infomax:varchang} we used the change of variable $\sbb = W \xb$.
 
 \subsubsection{Optimizing the maximum likelihood: relative gradient, Hessian and approximations}
 \label{sec:opt:likelihood:relativegradient}
@@ -163,12 +170,13 @@ where $\alpha$ is a small step-size and $D$ is a direction to be found.
 Following the same reasonning as in section~\ref{sec:gd}, we assume a small step-size
 and write at first order:
 \begin{align}
-  \argmin_{D, \|D\|=1} \loss((I + \alpha D)W) &= \argmin_{D, \|D\|=1} \loss(W) + \dotp{ \partialfrac{W}{f(W)} }{ \alpha D W } \\
-                                              &= \argmin_{D, \|D\|=1} \loss(W) + \dotp{ \partialfrac{W}{f(W)} W^{\top} }{ \alpha D } \\
-                                              &= -\frac{\partialfrac{W}{f(W)} W^{\top}}{\|\partialfrac{W}{f(W)} W^{\top} \|}
+  \argmin_{D, \|D\|=1} \loss((I + \alpha D)W) &= \argmin_{D, \|D\|=1} \loss(W) + \dotp{ \partialfrac{W}{\loss(W)} }{ \alpha D W } \\
+                                              &= \argmin_{D, \|D\|=1} \loss(W) + \dotp{ \partialfrac{W}{\loss(W)} W^{\top} }{ \alpha D } \\
+                                              &= -\frac{\partialfrac{W}{\loss(W)} W^{\top}}{\|\partialfrac{W}{\loss(W)} W^{\top} \|}
 \end{align}
-The updates are therefore given by  $W \leftarrow (I - \alpha G)W$ where $G = \partialfrac{W}{f(W)}
-  W^{\top}$ is called the \emph{relative
+Therefore the steepest direction for that update rule is $D =
+\partialfrac{W}{\loss(W)} W^{\top}$ and therefore updates are given by:
+$W \leftarrow (I - \alpha G)W$ where $G = \partialfrac{W}{\loss(W)} W^{\top}$ is called the \emph{relative
   gradient}~\cite{cardoso1996equivariant}.
 Second order extensions of the method are obtained by following the steps in
 section~\ref{sec:qn}. The corresponding Hessian is called the \emph{relative
@@ -178,19 +186,19 @@ section~\ref{sec:qn}. The corresponding Hessian is called the \emph{relative
 Let us follow~\cite{ablin2018faster} and use a quasi-Newton algorithm to minimize the likelihood.
 The relative gradient and Hessian of $\loss$ are given by:
 \begin{align}
-  G = f'(\yb) \yb^{\top} - I_p,
+  G = \EE[f'(\yb) \yb^{\top}] - I_p,
 \end{align}
 where $\yb = W \xb$ and $f'(\yb) = \partialfrac{\yb}{f(\yb)}$ 
 and
 \begin{align}
-  H_{abcd} =  \delta_{ad}\delta_{bc} + \delta_{ac} f''(y_a)y_by_d
+  H_{abcd} =  \delta_{ad}\delta_{bc} + \delta_{ac} \EE[f''(y_a)y_by_d]
 \end{align}
 
 Following~\cite{ablin2018faster}, we can approximate the Hessian by
 \begin{align}
   \tilde{H}_{abcd} = \delta_{ad} \delta_{bc} + \delta_{ac} \delta_{bd} \Gamma_{ab}
 \end{align}
-where $\Gamma_{ab} = f''(y_a) y_b^2$.
+where $\Gamma_{ab} = \EE[f''(y_a) y_b^2]$.
 The approximation is exact when the true unmixing matrix is found since $\EE[s_b s_d] =  s_b^2\delta_{bd}$.
 
 The updates are then given by:
@@ -198,17 +206,17 @@ The updates are then given by:
   W \leftarrow (I - \alpha \tilde{H}^{-1} G) W
 \end{align}
 
-Note the abuse of notation here. In the update formula, we actually mean
-$\EE[\tilde{H}]$ and $\EE[G]$,
-instead of $\tilde{H}$ and $G$.
-In practice, these expectations are replaced by empirical expectations. We often do such abuse in the rest of the thesis when it is clear from the context whether we mean random variables or their (empirical) expectation. 
+In practice, expectations are replaced by empirical expectations.
 
-Note that the term $\tilde{H}^{-1} G$ is particularly easy to compute. Indeed we
-have:
+The approximated Hessian $\tilde{H}$ is block diagonal.
+Indeed we have for any matrix $M$:
 \begin{align}
-[\tilde{H}^{-1} G]_{ab} = \frac{\Gamma_{ba} G_{ab} - G_{ba}}{\Gamma_{ba}
-  \Gamma_{ab} - 1}
+  &\begin{bmatrix} (\tilde{H} M)_{ab} \\  (\tilde{H} M)_{ab} \end{bmatrix} = \begin{bmatrix} \Gamma_{ab} & 1 \\ 1 & \Gamma_{ba} \end{bmatrix} \begin{bmatrix} M_{ab} \\ M_{ba} \end{bmatrix} && \text{ if } a \neq b  \nonumber \\
+  &(\tilde{H} M)_{aa} =  (1 + \Gamma_{aa}) M_{aa}
+ \label{eq:apphess:blocks}
 \end{align}
+So that each block correspond to a pair $(a, b)$ and is of size $2$ if $a \neq b$ and of size $1$ when $a=b$.
+Therefore $\tilde{H}$ can be easily regularized and inverted.
 
 \subsubsection{Robustness to density mismatch}
 In practice, we observe that sometimes, the quasi-Newton algorithm described in
@@ -230,14 +238,15 @@ model:
 \begin{align}
   &-l(\theta) \\
   &=  D_{KL}(p(\xb^*), p(W^{-1} \sbb)) \\
-             &=  D_{KL}(p(W\xb^*), p(\sbb)) \\
+             &=  D_{KL}(p(W\xb^*), p(\sbb)) \label{eq:robustness:invariance}\\
              &=  D_{KL}(p(W \xb^*), \prod_i p_i(\wb_i\xb^*)) + D_{KL}(\prod_i p_i(\wb_i\xb^*), p(\sbb)) \\
              &=  D_{KL}(p(W \xb^*), \prod_i p_i(\wb_i\xb^*)) + D_{KL}(\prod_i p_i(\wb_i\xb^*), \prod_i p_i(s_i)) \\
+  &=  D_{KL}(p(W \xb^*), \prod_i p_i(\wb_i\xb^*)) + \sum_i D_{KL}(p_i(\wb_i\xb^*), p_i(s_i)) \label{eq:robustness:end}
 \end{align}
-where the first equality comes from the invariance of the KL divergence and we
+where equation~\eqref{eq:robustness:invariance} comes from the invariance of the KL divergence and we
 denote $\prod_i p_i(x_i)$ the product of the marginal densities of $\xb$.
 
-The first term in the last equality is the mutual information. It quantifies the
+The first term in equation~\eqref{eq:robustness:end} is the mutual information. It quantifies the
 independence of unmixed data $W \xb$. The second term quantifies the mismatch
 between the assumed distribution of the components and the marginals of unmixed data.
 Therefore if the assumed components are too far from the true components, the
@@ -251,32 +260,19 @@ However, in order for the quasi-Newton to reach this point, it must be a local
 minimum (the Hessian must be definite positive). 
 
 Let us therefore consider the Hessian $H$ at point $W = \Lambda A^{-1}$ where
-$\Lambda$ is chosen such that $G = 0$. The unmixed data $\yb = W \xb$ are independent and
+$\Lambda$ is chosen such that $G = 0$. The unmixed data $\yb = W \xb = \Lambda \sbb$ are independent and
 therefore, we have $\tilde{H} = H$.
-For any matrix $M$:
-\begin{align}(\tilde{H} M)_{ab} = M_{ba} + M_{ab} f''(y_a)y_b^2.
-\end{align}
-So $\tilde{H}$ is block diagonal with blocks of size either 1 or 2.
-The blocks of size 1 are given by :
+As already mentioned, $\tilde{H}$ is block diagonal with blocks described by equation~\eqref{eq:apphess:blocks}.
+The condition for stability is that the Hessian is positive definite. Therefore
+all the blocks need to be positive definite so we get the conditions:
 \begin{align}
-  1 + f''(y_a) y_a^2
-  s_a^2
-\end{align}
-and the blocks of size
-two are given by the matrix
-\begin{align}
-                              \begin{bmatrix} f''(y_a) y_b^2
-  & 1 \\ 1 &
-  f''(y_b)y_a^2 \end{bmatrix}
-\end{align}
-Therefore the conditions for stability are given by:
-\begin{align}
-  \forall a, b, a \neq b, \enspace \left(f''(y_a) y_a^2 \right) \left(f''(y_b)  y_b^2 \right) > 1
+  & \forall a, \enspace 1 + \Gamma_{aa} > 0 && \text{ for blocks of size } 1 \\
+  & \forall a \neq b, \enspace \Gamma_{ab}\Gamma_{ba} > 1 && \text{ for blocks of size } 2
 \end{align}
 
 When the conditions are satisfied, the quasi-Newton algorithms will recover the
-true unmixing matrices if initialized close to a solution. In practice, this
-method recovers the correct unmixing matrices in a wide variety of cases.
+true unmixing matrices if initialized close to a solution. However, we have no
+theoretical guarantees of convergence because of the non-convexity of the problem.
 
 \subsection{A variation : non-stationary ICA and joint diagonalization}
 Up to now we have assumed that samples were independent an identically distributed. In non-stationary ICA, samples are no longer identically distributed as the distribution can vary over time.
@@ -367,7 +363,7 @@ Taking the gradient with respect to $\ab_i$ we obtain
 This is a generalized eigenvalue problem of the form $C \ab = \lambda D \ab$
 where $C$ is a block matrix where block $i,j$ is given by $X_i X_j^{\top}$, 
 $D$ is the block diagonal matrix formed by the block $i, i$ of $C$ and $\ab \in
-\RR^{mv}$ yields the dataset specific projections vectors: $\ab = \begin{bmatrix} \ab_1 \\ \cdots \\
+\RR^{m \times v}$ yields the dataset specific projections vectors: $\ab = \begin{bmatrix} \ab_1 \\ \cdots \\
   \ab_m \end{bmatrix}$.
 
     The leading eigenvector correspond to the first canonical vectors. The
@@ -413,42 +409,40 @@ not rely on maximum likelihood estimators. Therefore they do not benefit of
 advantages of such estimators such as asymptotic efficiency.
 
 The model of~\cite{guo2008unified} considers the very general model $\xb_i =
-A_i\sbb + \nb_i$, where the noise covariance can be learned from the data where
+A_i\sbb + \nb_i$ where
 $A_i$ represent mixing matrices, $\sbb$ the common sources and $\nb_i$ are view
-specific noise. Therefore this model is an instance of noisy ICA as defined in~\cite{hyvarinen1999Gaussian}.
+specific noise. Therefore this model is an instance of noisy ICA as defined
+in~\cite{hyvarinen1999Gaussian}. The noise covariance is learned from the data
+and each source is assumed to be a mixture of Gaussians
+$p(s_j) = \sum_{z=1}^q \Ncal(\mu_{zj}, \sigma_{zj})$. The parameters of the
+Gaussian mixtures are learned which makes the E-step impossible to compute in closed form.
+In order to solve this issue, an approximate E-step is introduced.
+Unfortunately, it leads to an update rule involving a sum over $q^p$ terms making their algorithm intractable when the number of components $p$ is larger than $20$. 
 
-In~\cite{guo2008unified}, each sources is assumed to be a mixture of Gaussians
-$p(s_j) = \sum_{z=1}^q \Ncal(\mu_{zj}, \sigma_{zj})$.
-where parameters of the Gaussian mixtures are learned. The fact that these
-parameters are learned, making the E-step impossible to compute in closed form. In
-addition, the
-approximate E-step described in~\cite{guo2008unified} involves at each iteration
-a costly sum where the number of terms is $q^p$ making their algorithm
-intractable when the number of components $p$ is larger than $20$ even if the
-number of Gaussian mixtures is as small as $q=2$. 
-
-In this section, we assume that the parameters of the Gaussian mixture are
-known, take $q=2$ and assume the same noise variance $\sigma$ for all subjects and all
-components. In this
-simplified setting, we will show that the E-step is in closed form but involves
-a large sum with $q^p$ terms.
-
-Note that in this setting the problem can be treated as a single subject noisy
-ICA problem where $A = \begin{bmatrix} A_1 \\ \vdots  \\ A_m \end{bmatrix}$,
-$\xb = \begin{bmatrix} \xb_1 \\ \vdots  \\ \xb_m \end{bmatrix}$ and $\nb
-= \begin{bmatrix} \nb_1 \\ \vdots  \\ \nb_m \end{bmatrix}$. This showcases the
-strong link between~\cite{guo2008unified} and~\cite{moulines1997maximum}.
-
-We assume a Gaussian mixture for each component $s_j$.
+In this section, we show why a sum of an exponential number of terms appears.
+We start with the same model as in~\cite{guo2008unified} but to make the
+computations more tractable, we assume that the Gaussian mixture is given by:
 \begin{align}
-  &p(s_j) = \frac12 \sum_{\alpha_j \in \mathcal{A}} p(s_j | \alpha_j) \\
+  &p(s_j) = \frac1q \sum_{\alpha_j \in \mathcal{A}} p(s_j | \alpha_j) \\
   &p(s_j | \alpha_j) = \mathcal{N}( s_j; 0, \alpha_j),
 \end{align}
-where $\alpha_j$ can be seen as a random variable taking its value in a known
-discrete set $\mathcal{A}$ with equal probability. We call $\alphab$ the random vector with
+where $\alpha_j$ takes its value in a known
+discrete set $\mathcal{A}$ with equal probability $\frac1{q}$ where $q$ is the
+cardinal of $\mathcal{A}$.
+We call $\alphab$ the random vector with
 independent coordinates such that coordinate $j$ is given by $\alpha_j$.
+We further assume that the noise distribution is the same for all components and
+all subjects leading to the formulation:
+\begin{align}
+  \xb = A \sbb + \nb
+\end{align}
+where $A = \begin{bmatrix} A_1 \\ \vdots  \\ A_m \end{bmatrix}$,
+$\xb = \begin{bmatrix} \xb_1 \\ \vdots  \\ \xb_m \end{bmatrix}$ and $\nb
+= \begin{bmatrix} \nb_1 \\ \vdots  \\ \nb_m \end{bmatrix}$ with $\nb \sim \Ncal(0, \sigma^2 I)$.
+This formulation is a special case of~\cite{guo2008unified} and constitues a single subject
+noisy ICA problem almost identical to~\cite{moulines1997maximum}.
 
-Following a similar direction as~\cite{moulines1997maximum} we can write:
+We now follow~\cite{moulines1997maximum} and write:
 \begin{align}
   &p(\xb, \sbb, \alphab) \\
   &= p(\xb | \sbb) p(\sbb|\alphab)p(\alphab) \\
@@ -479,15 +473,21 @@ $\alphab$:
   p(\alphab | \xb) &= \frac{\frac{\exp\big(\frac12(\dotp{ \mu_{\alphab} }{V_{\alphab}^{-1} \mu_{\alphab} }) \big)}{(|\diag(\alphab)| |V_{\alphab}^{-1}|)^{\frac12}}}{\sum_{\alphab, \alpha_j \in \mathcal{A}} \frac{\exp\big(\frac12(\dotp{ \mu_{\alphab} }{V_{\alphab}^{-1} \mu_{\alphab} }) \big)}{(|\diag(\alphab)| |V_{\alphab}^{-1}|)^{\frac12}}}
 \end{align}
 
-Then, we can obtain a closed form formula for $p(\sbb | \xb)$ using
+Then, we can obtain a formula in closed form for $p(\sbb | \xb)$ using
 \begin{align}
   p(\sbb | \xb) = \sum_{\alphab, \alpha_j \in \mathcal{A}} p(\sbb | \xb, \alphab) p(\alphab | \xb)
 \end{align}
 
 The problem here is that the size of the set $\{\alphab, \alpha_j \in
-\mathcal{A} \}$ is $|\mathcal{A}|^p$ where $|\mathcal{A}|$ is the cardinal of
+\mathcal{A} \}$ is $q^p$ where $q=|\mathcal{A}|$ is the cardinal of
 $\mathcal{A}$. This quantity quickly gets large when $p$ increases making
-$p(\sbb | \xb)$ intractable to compute using the closed form formula.
+$p(\sbb | \xb)$ intractable to compute using the formula in closed form.
+
+Following~\cite{moulines1997maximum}, we have shown that a simplification of the
+model of~\cite{guo2008unified} already exhibits an intractable large sum. This
+shows that despite their advantages, maximum likelihood methods are often intractable.
+
+
 
 \subsection{Independent vector analysis}
 \label{sec:IVA}
@@ -496,9 +496,9 @@ linear mixture of independent components $\xb_i = A_i \sbb_i$, where each
 component $s_{ij}$ of a given view $i$ can depend on the corresponding component
 in other views: $\sbb_{[j]} = (s_{ij})_{i=1}^m$ are not independent.
 
-Introducing $\xb \in \RR^{mp}$ such that $\xb  = [\xb_1, \dots, \xb_m]^{\top}$,
-$\sbb \in \RR^{mp}$ such that $\sbb = [\sbb_1, \dots, \sbb_m]^{\top}$ and $\yb
-\in \RR^{mp}$ such that $\yb = [\yb_1, \dots, \yb_m]^{\top}$ where $\yb_i = W_i
+Introducing $\xb \in \RR^{m \times p}$ such that $\xb  = [\xb_1, \dots, \xb_m]^{\top}$,
+$\sbb \in \RR^{m \times p}$ such that $\sbb = [\sbb_1, \dots, \sbb_m]^{\top}$ and $\yb
+\in \RR^{m \times p}$ such that $\yb = [\yb_1, \dots, \yb_m]^{\top}$ where $\yb_i = W_i
 \xb_i$ with $W_i = A_i^{-1}$, the
 log-likelihood is given by:
 \begin{align*}
@@ -561,19 +561,18 @@ inter-subject variability~\cite{haxby2011common}.
 Let us assume we have access to the data of two subjects: $\xb_1, \xb_2$.
 Assuming these subjects are exposed to a time-locked stimuli (such as a movie), a possible alignment is given by the Procrustes transform:
 \begin{align}
-min_{P \in \RR^{p, p}, PP^{\top} = I_p} \|P \xb_1 - \xb_2 \|_2
+min_{P \in \RR^{p \times p}, PP^{\top} = I_p} \|P \xb_1 - \xb_2 \|_2
 \end{align}
 This can be solved efficiently by
 \begin{align}
   P_{12} = \Pcal(\xb_2 \xb_1^{\top})
 \end{align}
-where $\Pcal$ is the projection on the Stiefel manifold: $\Pcal(M) = M
+where $\Pcal$ is the projection on the orthogonal manifold: $\Pcal(M) = M
 (M^{\top}M)^{-\frac12}$. In practice $\Pcal(M)$ is computed by performing an SVD
 of $M$, $M = U_M D_M V_M^{\top} $ so that $\Pcal(M) = U_M V_M^{\top}$.
 
 Hyperalignment is the combination of the Procrustes transform and an iterative
 procedure to produce a template from multiple alignments.
-
 In an initialization step, a random subject $i$ is chosen and the alignment
 between all subjects $s \neq i$ and the target are computed. The initial
 template $\tb$ is given by the averaged aligned data. Then, all subjects are
@@ -581,14 +580,18 @@ aligned to the current template $\tb$ and the template is recomputed using the
 averaged aligned data. This procedure is repeated for a given number of
 iterations until convergence.
 
+The intuition behind the iterative procedure is that averaging the aligned data
+will tend to move the template away from the initial target. However, they are
+no theoretical guarantees associated with this procedure and even no associated loss.
+
 We describe formally
-the method in algorithm~\ref{algo:shicaj}.
+the method in algorithm~\ref{algo:hyperalignment}.
 
 \begin{algorithm}[H]
   \SetAlgoLined
   \caption{Hyperalignment}
-  \label{algo:shicaj}
-  \KwIn{Data $\Xb_1, \dots, \Xb_m \in \RR^{p, n}$,  number of iterations
+  \label{algo:hyperalignment}
+  \KwIn{Data $\Xb_1, \dots, \Xb_m \in \RR^{p \times n}$,  number of iterations
     $n_{iter}$}
   $\blacktriangleright$ Select a random subject \\
   $i \sim \Ucal(1, m)$ \\
@@ -628,7 +631,7 @@ model. The data $\xb_1 \dots \xb_m$ are modeled as random vectors following the 
   &A_i^{\top}A_i = I_p
   \label{eq:model:srm}
 \end{align}
-where $\xb_i \in \RR^v$ is the data of view $i$, $A_i \in \RR^{p, v}$ is the
+where $\xb_i \in \RR^v$ is the data of view $i$, $A_i \in \RR^{p \times v}$ is the
 mixing matrix of view $i$, $\nb_i$ is the noise of view $i$ and $\sbb$ are the
 shared components referred to as the \emph{shared response} in fMRI applications.
 The mixing matrices

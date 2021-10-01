@@ -37,9 +37,9 @@ without any guarantees that the performance are the same as SRM.
 We use a number of iterations between 1 and 100 and report the performance,
 fitting time and a measure of convergence. In FastSRM, we do not compute the
 unmixing matrices but only the shared response.
-We measure the performance of an algorithm by computing the error between the true component $S \in \RR^{p, n}$ and
-the predicted component $\hat{S} \in \RR^{p, n}$ using the quantity:
-$\mathrm{mse}(\hat{S}, S) = min_{A \in \RR^{p, p}} \|A \hat{S} - S \|^2_F =  \|S
+We measure the performance of an algorithm by computing the error between the true component $S \in \RR^{p \times n}$ and
+the predicted component $\hat{S} \in \RR^{p \times n}$ using the quantity:
+$\mathrm{mse}(\hat{S}, S) = min_{A \in \RR^{p \times p}} \|A \hat{S} - S \|^2_F =  \|S
 \hat{S}^{\dagger}\hat{S} - S \|^2_F$. This way of measuring errors is
 insensitive to the indeterminacies in DetSRM.
 We measure the fitting time in seconds.

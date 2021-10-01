@@ -42,7 +42,7 @@ averaging the signal within each region of the atlas. A probabilistic atlases su
 as~\cite{dadi_fine-grain_2020} describes each region as a set of weights across
 the full brain. Therefore, the image reduction can be done with a matrix product.
 
-In FastSRM we consider a set of view specific atlases $U_i \in \RR^{v, r}$ such that
+In FastSRM we consider a set of view specific atlases $U_i \in \RR^{v \times r}$ such that
 $U_i^{\top}U_i = I_r$ where $r$ is the number of regions in the atlas.
 Data are reduced using $\zb_i = U_i^{\top} \xb_i$ and an SRM algorithm is applied
 on data $\zb_i$ yielding parameters $\theta'$.
@@ -94,7 +94,7 @@ therefore there is little hope to recover the parameters that would have been ob
 However, in this section, we show that there exists an optimal atlas in the sense that SRM and FastSRM yield the same results.
 
 Let us consider $\xb_i = U_{\xb_i} \zb_i$ a PCA of $\xb_i$. As the number of
-samples $n$ is lower than the number of features $U_{\xb_i} \in \RR^{v, n}$ and $\zb_i \in \RR^{n}$.  We also have $U_{\xb_i}^{\top}U_{\xb_i} = I$.
+samples $n$ is lower than the number of features $U_{\xb_i} \in \RR^{v \times n}$ and $\zb_i \in \RR^{n}$.  We also have $U_{\xb_i}^{\top}U_{\xb_i} = I$.
 Therefore $U_{\xb_i}$ constitutes a possible choice of subject specific atlas.
 
 As the next property shows, $U_{\xb_i}$ constitutes an optimal atlas for deterministic FastSRM.
@@ -196,8 +196,8 @@ not the model for deterministic (respectively probabilistic) SRM holds.
 A complexity analysis shows that finding the optimal atlas becomes the limiting
 step of the pipeline. Even with fast implementations, the subject specific PCA
 is costly. However FastSRM only works on $\zb_i$ so we do not need to know the value of $U_{\xb_i}$ straight away.
-In practice, we observe data $X_i \in \RR^{v, n}$ and we want to get $Z_i
-\in \RR^{n, n}$ such that $X_i = U_{\xb_i} Z_i$. This can be done by performing an
+In practice, we observe data $X_i \in \RR^{v \times n}$ and we want to get $Z_i
+\in \RR^{n \times n}$ such that $X_i = U_{\xb_i} Z_i$. This can be done by performing an
 SVD of $X_i^{\top} X_i$ yielding $X_i^{\top}X_i= V_i D_i V_i^{\top}$ and setting $Z_i = D_i^{\frac12} V_i^{\top}$.
 Although the product $X_i^{\top} X_i$ has complexity $\bigO(vt^2)$ there is
 exactly $vt^2$ multiplications and additions so it costs a lot less than the PCA
@@ -263,7 +263,7 @@ Let us consider data $\xb_i$ generated from deterministic SRM (meaning
 deterministic SRM holds exactly for these data) with
 mixing matrices $A_i$, shared response $\sbb$ and noise covariance $\sigma$.
 Then deterministic SRM, with parameters $A'_i = A_i R$ and $\sbb' = R^{\top} \sbb$ where
-$R \in \RR^{k, k}$ is an orthogonal matrix, also
+$R \in \RR^{k \times k}$ is an orthogonal matrix, also
 generates $\xb_i$.
 This shows that deterministic SRM is not identifiable.
 
@@ -272,7 +272,7 @@ probabilistic SRM model with
 parameters $A_i$, $\Sigma_s$, $\sigma_i^2$ (where $\Sigma_s$ can be any
 symmetric positive definite
 matrix) then the probabilistic SRM model with parameters $A_iR$, $R^{\top} \Sigma_s R$, $\sigma_i^2$  where
-$R \in \RR^{k, k}$ is an orthogonal matrix also generate $\xb_i$.
+$R \in \RR^{k \times k}$ is an orthogonal matrix also generate $\xb_i$.
 This shows that if no constrains are imposed on $\Sigma_s$,
 then probabilistic SRM is not identifiable.
 

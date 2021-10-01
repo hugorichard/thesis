@@ -211,21 +211,21 @@ as parameters describing the rotation of the head, heartbeats, respiration
 rhythm and really any other parameter that might introduce artifacts. We also
 usually convolve the regressors describing the experiment with the hemodynamic
 function so that they are closer to the actual brain response and sometimes also its derivative to account for small temporal deviations from our model of hemodynamic response.
-We call $S \in \RR^{k, n}$ the \emph{design matrix} (in standard textbooks it is
+We call $S \in \RR^k, n}$ the \emph{design matrix} (in standard textbooks it is
 usually called $X$ but in this thesis we use $X$ for the data) such that column
 $t$ of $S$ is given by $\sbb(t)$.
-Then, the general linear model sees the data of one subject $X \in \RR^{v, n}$ as a linear combination of the
+Then, the general linear model sees the data of one subject $X \in \RR^{v \times n}$ as a linear combination of the
 design matrix $S$ with additive noise $N$.
 \begin{align}
 X = A S + N
 \end{align}
-where $A \in \RR^{v, k}$ contains $k$ spatial maps in the sense that column $j$
+where $A \in \RR^{v \times k}$ contains $k$ spatial maps in the sense that column $j$
 of $A$ can be plotted as a brain image representing the localization of activity
 described by the row $j$ of $S$.
 The noise is often assumed to be Gaussian with unit variance so that $A$ can be obtained as the
 result of a linear regression. Another common hypothesis is to assume temporal
 correlation of the noise in the form of an AR-1 process. In this case, we 
-consider instead the data $XB$ where $B \in \RR^{n, n}$ is chosen so that the
+consider instead the data $XB$ where $B \in \RR^{n \times n}$ is chosen so that the
 noise $BN$ has no temporal correlation allowing us to perform linear regression.
 
 The result of the GLM procedure is often given by \emph{contrasts maps} where
@@ -286,7 +286,7 @@ observe ? This section gives an overview of the sLoreta
 method~\cite{pascual2002standardized} and is strongly inspired from the tutorial
 of the authors~\cite{pascual2007discrete}.
 
-From a vector describing the 3D current density inside the brain $\jb \in \RR^{3v}$
+From a vector describing the 3D current density inside the brain $\jb \in \RR^{3 \times v}$
 ($v$ is the number of voxels) we
 can predict the magnetic field recorded by the sensors $\bb \in \RR^p$ ($p$ is the number of sensors) provided
 we know how the magnetic field propagates through the brain by using Maxwell's
@@ -297,8 +297,8 @@ We have therefore
   \bb = K \jb
   \label{eq:maxwell}
 \end{align}
-where $K \in \RR^{p, 3v}$ is given by the head model.
-$K$ can be seen as $K  = [K_1 \dots K_{v}]$ where $K_i \in \RR^{p, 3}$ describes how voxel $i$ contributes to the measured magnetic field $\bb$.
+where $K \in \RR^{p \times 3v}$ is given by the head model.
+$K$ can be seen as $K  = [K_1 \dots K_{v}]$ where $K_i \in \RR^{p \times 3}$ describes how voxel $i$ contributes to the measured magnetic field $\bb$.
 
 Note that if $\bb$ and $K$ are given there is an infinite number of possible
 $\jb$ so the inverse problem must be regularized in order to select a solution among all possible ones.
@@ -306,7 +306,7 @@ A common parametrization is to assume that:
 \begin{align}
 \jb(K_i) = (K_i^{\top} C K_i) \bb
 \end{align}
-for a symmetric matrix $C \in \RR^{p, p}$ and $\jb(K_i)$ describes the current at voxel $i$.
+for a symmetric matrix $C \in \RR^{p \times p}$ and $\jb(K_i)$ describes the current at voxel $i$.
 In sLoreta, we have $C = (K K^{\top} + \alpha I)^{\dagger}$ where $\dagger$
 represents Moore's pseudo inverse, $I$ is the identity matrix and $\alpha$ is an hyperparameter. 
 
