@@ -1,8 +1,7 @@
 In the previous chapter, we have introduced Conditional ICA, an efficient generative
-model for task and rest fMRI data.
-In this chapter, we first show that the generative model of resting state data shipped in Conditional ICA produces samples that neither linear nor non-linear classifiers are able to distinguish.
+model for task fMRI data.
 % 
-Then we benchmark Conditional ICA as a generative model of task data against
+In this chapter we benchmark Conditional ICA as a generative model of task data against
 various augmentation methods  on their
 ability to improve classification accuracy on a large task fMRI dataset.
 We find that Conditional ICA yields highest accuracy improvements.
@@ -95,9 +94,7 @@ Gaussian noise $\tilde{\nb} \sim \mathcal{N}(0,\Sigma_R)$.
 %
 Samples are thus generated as $\tilde{\xb}_c + \tilde{\nb}$.
 
-\emph{GANs} are used in the unsupervised setting (resting state fMRI generation)
-while \emph{CGANs} can generate fake data from a given class (task fMRI
-generation). In the GANs or CGANs method, the generator and discriminator have a mirrored architecture with 2 fully connected hidden layer of size (256 and 512).  The number of epochs, batch size, momentum and learning rate are set to 20k, 16, 0.9, 0.01 and we use the Leaky RELU activation function.
+\emph{CGANs} can generate fake data from a given class. In the CGAN method, the generator and discriminator have a mirrored architecture with 2 fully connected hidden layer of size (256 and 512).  The number of epochs, batch size, momentum and learning rate are set to 20k, 16, 0.9, 0.01 and we use the Leaky RELU activation function.
 
 We evaluate the performance of augmentation methods through the use of classifiers: logistic regression (LogReg), linear
 discriminant analysis with Ledoit-Wold estimate of covariance (LDA) perceptron
@@ -130,52 +127,6 @@ batch size: $32$, \newline learning
 
 
  
-\section{Distinguish fake from real HCP resting state data}
-This experiment is meant to assess the effectiveness of the data
-augmentation scheme in producing good samples.
-Data augmentation methods are trained on 200 subjects taken from HCP rest fMRI
-dataset which amounts to $960k$ samples (4800
-per individual). Then synthetic
-data corresponding to $200$ synthetic subjects are produced, yielding
-$960k$ fake samples and various classifiers are trained to distinguish fake from
-real data using 5-Fold cross validation. The cross-validated accuracy is shown
-in table~\ref{tab2}.
-Interestingly, we observe a dissociation between linear models (LogReg
-and LDA) that fail to discriminate between generated and actual data,
-and non-linear models (MLP and RF) that can discriminate samples from
-the alternative augmentation methods.
-%
-By contrast, all classifiers are at chance when Conditional ICA is used.
-
-\begin{table}
-\begin{center}
-\begin{tabular}{c|cccc}
-\hline
-Models & LDA  & LogReg & Random Forest &  MLP 
-\\ \hline
-ICA   & 0.493 & 0.500 & 0.672 &  0.697
-\\
-Covariance   & 0.473 & 0.461 & 0.610 &  0.626
-\\
-ICA + Covariance   & 0.509 & 0.495 & 0.685 &  0.706
-\\
-GANs   & 0.501 & 0.498 & 0.592 &  0.607
-% \\
-% CGANs   & 0.498 &  0.493 & 0.579 & 0.604
-\\\hline
-\textbf{Conditional ICA}  & 0.503 & 0.489 & 0.512 &  0.523
-\\\hline\hline
-\end{tabular}
-\end{center}
-  \caption{\textbf{Distinguish fake from real HCP resting state data}
-    We use HCP resting state data from $n=200$ subjects ($960k$ samples) and produce an equally
-    large amount of fake data ($960k$ samples) using data augmentation methods.
-    The table shows the 5-fold cross validated accuracy obtained with various
-    classifiers. When Conditional ICA is used, all classifiers are at chance.
-    %
-    }\label{tab2}
-\end{table}
-%
 \section{Comparing augmentation methods based on classification accuracy on task
   HCP dataset}
 In order to compare the different augmentation methods, we measure their 
@@ -298,8 +249,6 @@ components. In all experiments we used $k=900$ components.
 
 
 \section{Conclusion}
-Conditional ICA produces samples that cannot be distinguished from actual rest fMRI data by linear as well as non-linear classifiers, showing that it captures higher-order statistics than naive ICA-based generators.
-%
 When Conditional ICA is used as a data augmentation method, it yields consistent
 improvement in classification accuracy: on 8 tasks fMRI datasets, we observe
 increase in accuracy between 1\% and 5\% depending on the dataset and the

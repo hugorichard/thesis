@@ -25,10 +25,8 @@ Furthermore the training of GANs is notoriously unstable and there are many hype
 
   In this work, we introduce Conditional ICA: a novel data augmentation technique using ICA together with conditioning mechanisms to generate surrogate brain imaging data and improve image classification performance.
   % 
-  Conditional ICA starts from a generative model of resting state data (unconditional model), that is fine-tuned into a conditional model that can generate task data. 
-  % 
-  This way, the generative model for task data benefits from the abundant
-  resting state data and can be trained with few labeled samples.
+  Conditional ICA benefits from the abundant
+  resting state data and can be trained with only few labeled samples.
 
 
 %
@@ -60,8 +58,11 @@ atlas \cite{dadi_fine-grain_2020}, i.e. with $p=1024$ components.
 The choice of dimension reduction technique generally has an impact on the
 results. However we consider this question to be out of the scope of the current study and leave this to future work.
 
-\subsection{Unconditional generative model (resting state data generation)}
-Given a large-scale resting-state dataset $X^{rest}$ in $\mathbb{R}^{p,n}$ where $n$ is the number of data (samples) and $p=1024$ the number of components in the atlas, let us consider how to learn its distribution.
+\subsection{A generative model for task data}
+Consider a task dataset $X^{task}$ in $\mathbb{R}^{p,n}$ where $n$ is the number of
+data (samples) and $p=1024$ the number of components in the atlas. $X^{task}$ can be seen as $n$
+observations of a random vector $\xb^{task} \in \RR^p$. Let us
+consider how to learn the distribution of $\xb^{task}$. 
 %
 Assuming a Gaussian distribution is standard in this setting, yet, as
 shown later, it misses key distributional features.
@@ -70,56 +71,55 @@ Moreover, we consider a model that subsumes the distribution of any type of
 fMRI data (task or rest): a linear mixture of $k \leq p$ independent temporal signals.
 %
 We therefore use temporal ICA to learn a dimension reduction and unmixing matrix
-$W^{rest} \in \mathbb{R}^{k, p}$ such that the $k$ components i.e the $k$ components of
-$S^{rest} = W^{rest} X^{rest}$ are as
+$W^{task} \in \mathbb{R}^{k, p}$ such that the $k$ components i.e the $k$ components of
+$W^{task} \xb^{task}$ are as
 independent as possible.
-%
- 
-%
 
-A straightforward method to generate new rest data would be to
+A straightforward method to generate new task data would be to
 independently sample them from the distribution of the components.
 %
 This is easy because such distribution has supposedly independent marginals.
-We apply an invertible quantile transform $q^{rest}$ to the components $S^{rest}$ so that
-the distribution of $\zb^{rest} =
-q^{rest}(\sbb^{rest})$ has standardized Gaussian marginals. Since the distribution of
-$\zb^{rest}$ has independent marginals, it is given by $\mathcal{N}(\zero_k, I_k)$
+We apply an invertible quantile transform $q^{task}$ to the components of $W^{task} \xb^{task}$ so that
+the distribution of $q^{task}(W^{task} \xb^{task})$ has standardized Gaussian
+marginals. Since it also has independent marginals it is given by $\mathcal{N}(\zero_k, I_k)$
 from which we can easily sample.
-As shown later, this approach fails: such samples are still separable
-from actual rest data.
-%
 
-We hypothesize that this is because independence does not hold, and
-thus a latent structure among the marginals of the component distribution has to be taken into account. Therefore we assume that the distribution of $\zb^{rest}$ is given
-by $\mathcal{N}(\zero_k, \Lambda^{rest})$ where $\Lambda^{rest}$ is a positive definite matrix.
+However task datasets   have a small number of samples ($10 \sim 10^2$). As a
+result, there are too few samples to learn high quality unmixing matrices. In
+contrast, resting state datasets have a large number of samples ($10^4 \sim 10^5$).
+Therefore we replace the unmixing matrix learned on task data $W^{task}$ by the
+unmixing matrix learned on resting state data $W^{rest}$.
+We therefore form $\zb^{task} = W^{rest} \xb^{task}$ and learn its quantile
+transform $q$.
 
-$\Lambda^{rest}$ can easily be learned from a standard shrunk covariance
-estimator: $\Lambda^{rest} = \Sigma^{rest} (1 - \alpha) + \alpha \tr(\Sigma^{rest}) I_k$ where
-$\alpha$ is given by the Ledoit-Wolf formula \cite{ledoit2004well} and
-$\Sigma^{rest}$ is the empirical covariance of $Z^{rest}$.
+The encoding model is given by:
+\begin{align}
+  \zb^{task} = q(W^{rest} \xb^{task})
+\end{align}
 
-Our encoding model for rest data is therefore given by \\ 
-$Z^{rest} =
-q^{rest}(W^{rest} X^{rest})$ and we assume that the the
-distribution of $Z^{rest}$ is $\mathcal{N}(\zero_k, \Lambda_k)$.
-The generative model is given by the pseudo inverse of the encoding model:
-$\tilde{\xb}^{rest} = (W^{rest})^{\dagger} (q^{rest})^{-1}(\epsilonb)$ where $\epsilonb \sim
-\mathcal{N}(\zero_k, \Lambda^{rest})$. 
-
-
-\subsection{Conditional generative model (generative model for task data)}
-While resting state datasets have a large number of samples ($10^4 \sim 10^5$), task datasets   have a small number of samples ($10 \sim 10^2$). As a result, there are too few samples to learn high quality unmixing matrices. 
-%
-Therefore, using  the unmixing matrix $W^{rest}$ learned from the resting state data, we rely on the following nonlinear generative model for brain maps in a certain class $c$:
-\begin{equation}
-  \xb_c = (W^{rest})^{\dagger} q^{-1}(\epsilonb)
-\end{equation}
-with $\epsilonb \sim \mathcal{N}(\mub_c, \Lambda)$.
+However, the independence assumption no longer holds and thus a latent structure among the marginals of
+$\zb^{task}$ has to be taken into account. In addition the generative model needs
+to be conditioned to each class. We therefore assume that the samples in class
+$c$, $\xb_c^{task}$ are such that:
+\begin{align}
+q(W^{rest}\xb^{task}_c) \sim \Ncal( \mu_c, \Lambda)
+\end{align}
 
 In order to maximize the number of samples used to learn the parameters of the
 model, we assume that the quantile transform $q$ and the latent covariance
 $\Lambda$ do not depend on the class $c$. However, the mean $\mub_c$, that can be learned efficiently using just a few tens of samples, depends on class $c$.
+$\Lambda$ is learned using all task samples from a standard shrunk covariance
+estimator
+$\Lambda = = \Sigma (1 - \alpha) + \frac{\alpha}{k} \tr(\Sigma) I_k$ where
+$\alpha$ is given by the Ledoit-Wolf formula \cite{ledoit2004well} and
+$\Sigma$ is the sample covariance of $\zb^{task}$.
+
+The generative model of data for brain maps in a certain class $c$ is given by the pseudo inverse of the encoding model:
+\begin{equation}
+  \xb_c = (W^{rest})^{\dagger} q^{-1}(\epsilonb)
+\end{equation}
+with $\epsilonb \sim \mathcal{N}(\mub_c, \Lambda)$ and $(W^{rest})^{\dagger}$ is
+the Moore Penrose inverse of $W^{rest}$
 
 An overview of our generative method is shown in Fig.~\ref{Fig11}.
 %
@@ -176,8 +176,9 @@ model an instance of normalizing flows~\cite{rezende2015variational}.
 A great property is thus the simplicity and reduced cost of data generation.
 
 \section{Conclusion}
-In this chapter, we introduced Conditional ICA, a fast generative model for rest
-and task data. Conditional ICA is essentially a linear generative model with
+In this chapter, we introduced Conditional ICA, a fast generative model for task
+data.
+Conditional ICA is essentially a linear generative model with
 pointwise non-linearity, which makes it cheap, easy to instantiate on new data,
 and to introspect.
 In the next chapter, we look at the performance of Conditional ICA on fMRI data.
