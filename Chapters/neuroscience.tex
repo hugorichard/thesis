@@ -211,7 +211,7 @@ as parameters describing the rotation of the head, heartbeats, respiration
 rhythm and really any other parameter that might introduce artifacts. We also
 usually convolve the regressors describing the experiment with the hemodynamic
 function so that they are closer to the actual brain response and sometimes also its derivative to account for small temporal deviations from our model of hemodynamic response.
-We call $S \in \RR^k, n}$ the \emph{design matrix} (in standard textbooks it is
+We call $S \in \RR^{k, n}$ the \emph{design matrix} (in standard textbooks it is
 usually called $X$ but in this thesis we use $X$ for the data) such that column
 $t$ of $S$ is given by $\sbb(t)$.
 Then, the general linear model sees the data of one subject $X \in \RR^{v \times n}$ as a linear combination of the

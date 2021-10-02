@@ -189,34 +189,6 @@ eight large datasets. This will be discussed in part~\ref{part:condica}.
 \paragraph{Published work}
 \fullcite{tajini2021functional} (Oral, co-first authorship with equal contribution)
 
-\subsection{Softwares}
-The implementation of the methods developed in this thesis is freely available on Github \url{https://github.com/hugorichard}. Some of the code we wrote has made its way to bigger packages. 
-
-\subsubsection{Mvlearn}
-Mvlearn~\cite{perry2020mvlearn} is a Python package for multiview learning tools. It offers reference
-implementations for algorithms and methods related to multiview learning.
-Its API is close to the scikit-learn~\cite{abraham2014machine} one, making it
-easy to learn.
-We have implemented the GroupICA, GroupPCA and MultiViewICA modules of mvlearn.
-
-\paragraph{Published work}
-\fullcite{perry2020mvlearn}
-
-
-
-\subsubsection{Brainiak}
-Brainiak~\cite{kumar2020brainiak}, is a Python package that applies machine
-learning methods to neuroimaging data. Its API is the same as in scikit-learn
-and it includes modules such as Representational Similarity Analysis or Shared
-response modeling.
-We have implemented the FastSRM module of Brainiak.
-
-
-\paragraph{Published work}
-\fullcite{kumar2020brainiak}
-
-
-
 \section{Chapter ordering}
 The appendices can be skipped at first read.
 Chapters~\ref{ch:statistical_learning},~\ref{ch:neuroscience} and~\ref{ch:review} present the necessary background.
@@ -317,9 +289,36 @@ subjects. Optimal Transport Ridge regression seems to be the best method.
 \fullcite{bazeille2019local}
 
 
+\subsection{Softwares}
+The implementation of the methods developed in this thesis is freely available on Github \url{https://github.com/hugorichard}. Some of the code we wrote has made its way to bigger packages. 
+
+\subsubsection{Mvlearn}
+Mvlearn~\cite{perry2020mvlearn} is a Python package for multiview learning tools. It offers reference
+implementations for algorithms and methods related to multiview learning.
+Its API is close to the scikit-learn~\cite{abraham2014machine} one, making it
+easy to learn.
+We have implemented the GroupICA, GroupPCA and MultiViewICA modules of mvlearn.
+
+\paragraph{Published work}
+\fullcite{perry2020mvlearn}
+
+
+
+\subsubsection{Brainiak}
+Brainiak~\cite{kumar2020brainiak}, is a Python package that applies machine
+learning methods to neuroimaging data. Its API is the same as in scikit-learn
+and it includes modules such as Representational Similarity Analysis or Shared
+response modeling.
+We have implemented the FastSRM module of Brainiak.
+
+
+\paragraph{Published work}
+\fullcite{kumar2020brainiak}
+
 \chapter{Conclusion}
-In this thesis, we have presented three contributions that allow to tackle
-inter-subject variability in neuroimaging, and a data augmentation method for fMRI data.
+In this thesis, we have presented three methods to perform component
+analysis of multi-subject neuroimaging data and a data augmentation method for
+fMRI data.
 
 First, in chapter~\ref{ch:fastsrm1} and chapter~\ref{ch:fastsrm2}, we develop an
 atlas based procedure that is shown to accelerate significantly the existing
