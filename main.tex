@@ -115,19 +115,50 @@
 
 
 \chapter{Overview}
-Group studies involving large cohorts of subjects are important to draw general
-conclusions about brain functional organization. However, the aggregation of
-data coming from multiple subjects is challenging, since it requires accounting
-for large variability in anatomy, functional topography and stimulus response
-across individuals. Data modeling is especially hard for ecologically relevant
-conditions such as movie watching, where the experimental setup does not imply
-well-defined cognitive operations. Consequently, the statistical analysis of the
-data using supervised regression-based approaches is difficult. This has
-motivated the use of unsupervised learning methods that leverage the
-availability of data from multiple subjects performing the same experiment;
-analysis on such large groups boost statistical power.
-In this thesis, we develop well principled unsupervised methods for the analysis
-of neuroimaging data.
+
+\section{Introduction}
+
+\subsection{Controlled experiments}
+When a subject is reading a sentence or when she is listening to a sentence, the
+brain activity is expected to differ. In order to measure where it differs and
+by which amount, one can perform a controlled experiment. The controlled
+experiment comes with a design matrix that describes the features driving the
+brain activation across time. 
+For instance, the design matrix can record when
+the subject is listening to a sentence or when the subject is reading a sentence. 
+Then, a model is introduced to explain how
+the design matrix relates to the brain activity of the subject.
+A simple model can consider that the brain activity only differs when
+the task differs and therefore have one stereotypical representation of the
+brain activity when the subject is reading a sentence and another one when the
+subject is listening to a sentence. While this model may simplify the reality
+(two repetitions of the same task would never yield the same brain activity), it
+is easy to interpret: the two stereotypical representations of each task can be
+easily compared and analyzed. 
+
+This procedure naturally extends to multiple subjects. Indeed, a model can be
+fit independently for each subject using the same design matrix.
+
+\subsection{Naturalistic stimuli}
+While controlled experiments give some insights about brain functionality,
+the subjects' experience is far from their every-day life.
+Naturalistic stimuli are meant to overcome this issue. Example of naturalistic stimuli include movie watching, music listening or resting (subjects are just asked to lie still in the scanner without further instruction).
+While there is a broad interest in understanding
+how the brain reacts in such ecological conditions, the recorded brain activity
+is difficult to analyze. In particular, design matrices are notoriously difficult
+to construct for naturalistic stimuli.
+
+\subsection{Component analysis}
+A possible solution is to learn the design matrix as part of the model.
+The widely used independent component analysis applied on the data of one
+subject extracts a set of components that are
+maximally independent. Such components give a plausible design matrix as each
+component may be seen as a different set of features driving brain activity.
+However, many questions remain. How do we efficiently generalize such methods to
+multi-subject data ? How to measure their performance ? Why is it useful to
+construct a generative model for neuroimaging data ?
+In this thesis, we develop well principled unsupervised methods for component
+analysis of neuroimaging data.
 
 \section{Organization of the manuscript}
 In part~\ref{part:background}, we give some background on statistical learning
@@ -336,12 +367,12 @@ methods used in fMRI and MEG in the context of shared response modeling. However
 it assumes the same level of noise for all
 subjects, which does not model properly between-subjects variability.
 
-In chapter~\ref{ch:shica1} and chapter~\ref{ch:shica2}, we extend MultiViewICA so
+In chapter~\ref{ch:shica} and chapter~\ref{ch:shica2}, we extend MultiViewICA so
 [Omitted long matching line]
 In practice ShICA outperforms MVICA and other unsupervised methods used in the
 context of shared response modeling.
 
-Lastly, we introduce in chapter~\ref{ch:condica1} and chapter~\ref{ch:condica2} a data
+Lastly, we introduce in chapter~\ref{ch:condica} and chapter~\ref{ch:condica2} a data
 augmentation method based on ICA that outperforms deep learning algorithms in
 terms of decoding accuracy while being much faster.
 
@@ -367,7 +398,7 @@ consecutive samples.
 
 In terms of methods, we have treated separately dimension reduction
 (chapter~\ref{ch:fastsrm1}) and source identification (chapter~\ref{ch:mvica1}
-and chapter~\ref{ch:shica1}). Future work might focus on understanding how these
+and chapter~\ref{ch:shica}). Future work might focus on understanding how these
 two steps can be performed jointly. Lastly, in the case of naturalistic stimuli,
 the mixing matrices represent spatial topographies and therefore they can be
 assumed to be close to each other. This aspect is not addressed in our work
