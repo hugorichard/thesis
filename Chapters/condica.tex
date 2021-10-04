@@ -59,8 +59,8 @@ The choice of dimension reduction technique generally has an impact on the
 results. However we consider this question to be out of the scope of the current study and leave this to future work.
 
 \subsection{A generative model for task data}
-Consider a task dataset $X^{task}$ in $\mathbb{R}^{p,n}$ where $n$ is the number of
-data (samples) and $p=1024$ the number of components in the atlas. $X^{task}$ can be seen as $n$
+Consider a task dataset $X^{task}$ in $\mathbb{R}^{p,n}$ where $n$ is the number of observations
+(samples) and $p=1024$ the number of components in the atlas. $X^{task}$ can be seen as $n$
 observations of a random vector $\xb^{task} \in \RR^p$. Let us
 consider how to learn the distribution of $\xb^{task}$. 
 %
@@ -166,7 +166,7 @@ auto-encoders~\cite{kingma2013auto} with which it shares strong similarities.
 Indeed the analog of the encoding function in the variational auto-encoder is
 given by $e(\xb) = \Lambda^{-\frac12}q(W^{rest} \xb)$ in our model and the analog to the decoding
 function in the variational auto-encoder is given by $d(\zb) =
-(W^{rest})^{\dagger}q^{-1}(\Lambda^{\frac12}\zb)$ in our model. As in the variational auto-encoder, $e$ approximately maps the distribution of the data to a standardized Gaussian distribution,
+(W^{rest})^{\dagger}q^{-1}(\Lambda^{\frac12}\zb)$ in our model. As in the variational auto-encoder, $e$ approximately maps the empirical data distribution to a standardized Gaussian distribution,
 while the reconstruction error defined by the difference in l2 norm
 $\|d(e(\xb)) - \xb\|^2_2$ must remain small.
 Lastly, another classical generative model related to ours is normalizing

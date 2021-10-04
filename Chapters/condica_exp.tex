@@ -1,8 +1,8 @@
 In the previous chapter, we have introduced Conditional ICA, an efficient generative
 model for task fMRI data.
 % 
-In this chapter we benchmark Conditional ICA as a generative model of task data against
-various augmentation methods  on their
+In this chapter, we benchmark Conditional ICA as a generative model of task data against
+various augmentation methods by assessing their
 ability to improve classification accuracy on a large task fMRI dataset.
 We find that Conditional ICA yields highest accuracy improvements.
 In particular Conditional ICA outperforms conditional GANs~\cite{mirza2014conditional} while being much easier to optimize and interpret. 
@@ -61,7 +61,7 @@ pinel2007fast \cite{pinel2007fast} & 133, 10 & 70/63  &  1952
 We consider 5 alternative
 augmentation methods: \emph{ICA}, \emph{Covariance}, \emph{ICA + Covariance} and \emph{CGANs}.
 %
-When no augmentation method is applied we use the label \emph{Original}.
+When no augmentation method is applied we use the \emph{Original} label.
 
 The \emph{ICA} method applies ICA to $X^{task}$ to generate unmixing matrices $W^{task}$ and
 components $S^{task}=  W^{task} X^{task}$.
@@ -83,7 +83,7 @@ The \emph{ICA + Covariance} method combines the augmentation
 methods \emph{ICA} and \emph{Covariance}: samples are drawn following
 the ICA approach, but with some additive non-isotropic Gaussian noise.
 %
-As in \emph{ICA} we estimate $W^{task}$ and $S^{task}$ from
+As in \emph{ICA}, we estimate $W^{task}$ and $S^{task}$ from
 $X^{task}$ via ICA.
 %
 Then we consider $R_{task} = X_{task} - W_{task} S_{task}$ and estimate the
@@ -127,18 +127,25 @@ batch size: $32$, \newline learning
 
 
  
-\section{Comparing augmentation methods based on classification accuracy on task
-  HCP dataset}
+\section{Comparing classification accuracy gains on task HCP dataset}
 In order to compare the different augmentation methods, we measure their 
 relative benefit in the context of multi-class classification.
+%
 We use 787 subjects from the HCP task dataset that contains 23 classes and
 randomly split the dataset into a train set that contains 100 subjects and a test set
-that contains 687 subjects. In each split we train augmentation methods on the
+that contains 687 subjects.
+%
+In each split, we run augmentation methods on the
 train set to generate fake samples corresponding to $200$ subjects.  
+%
 These samples are then appended to the train set, resulting in an
-augmented train set on which the classifiers are trained. Results, displayed in
-table~\ref{condica:tab3}, show that Conditional ICA always yields a higher accuracy
-than when no augmentation method is applied. The gains are over 1\% on all
+augmented train set on which the classifiers are trained.
+%
+The results displayed in
+table~\ref{condica:tab3} show that Conditional ICA always yields a higher accuracy
+than when no augmentation method is applied.
+%
+The gains are over 1\% on all
 classifiers tested excepts with the random forest classifier which yields much
 lower accuracy than other methods.
 %
@@ -175,7 +182,7 @@ gains.
 \end{table}
 
 In table~\ref{app:runningtime:tab}, we give the running-time of the CGAN
-method and Conditional ICA. This shows that in contrasts to deep learning based
+method and Conditional ICA. This shows that in contrast to deep learning based
 methods, the computational over-head induced by CondICA is very low.
 \begin{table}
   \begin{center}
@@ -262,6 +269,6 @@ contexts. Future work may focus on its applicability to other decoding tasks
 such as the diagnosis of Autism Spectrum Disorder
 (ASD)~\cite{eslami2019asd,eslami2019auto,dvornek2017identifying} or
 Attention-Deficit/Hyperactivity Disorder detection (ADHD)~\cite{mao2019spatio}. Other extensions of the present work concern the adaptation to
-individual feature (e.g. age) prediction where
+individual characteristics (e.g. age) prediction where
 fMRI has shown some potential.
 %
