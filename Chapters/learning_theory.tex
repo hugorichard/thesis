@@ -102,12 +102,12 @@ correct the estimator of the variance so that it becomes unbiased.
 
 However the variance of an estimator cannot be arbitrarily low as the
 proposition~\ref{prop:cramerrao} (Cramer-Rao bound) shows:
-\begin{prop}[Cramer-Rao bound]
+\begin{proposition}[Cramer-Rao bound]
   \label{prop:cramerrao}
   Let $\hat{\thetab}_n$ be an estimator of $\thetab_*$.
   Then, $\VV(\hat{\thetab}_n) \succeq
   \partialfrac{\thetab}{\EE[\hat{\thetab}_n]}I_n(\thetab_*)^{-1} (\partialfrac{\thetab}{\EE[\hat{\thetab}_n]})^{\top}$
-\end{prop}
+\end{proposition}
 where $A \succeq B$ is understood as $A-B$ is positive semi-definite.
 We introduced $I_n(\thetab)$, the Fisher information matrix given by
 \begin{align}
@@ -149,7 +149,7 @@ Lastly, the quantity $l(\xb, \thetab) = \log(\nu_{\thetab}(\xb))$ is called
 (see a proof in \cite{tripathi1999matrix})
 and therefore get the expected result:
   \begin{align}
-    \Var(\hat{\thetab}_n) \geq  \partialfrac{\thetab}{\EE[\hat{\thetab}_n]} I_n(\thetab_*)^{-1} (\partialfrac{\thetab}{\EE[\hat{\thetab}_n]})^{\top} 
+    \Var(\hat{\thetab}_n) \succeq  \partialfrac{\thetab}{\EE[\hat{\thetab}_n]} I_n(\thetab_*)^{-1} (\partialfrac{\thetab}{\EE[\hat{\thetab}_n]})^{\top} 
   \end{align}
 \end{proof}
 
@@ -159,12 +159,12 @@ If we assume that samples are independent and identically distributed we
 have: $\psi(\Xcal, \theta) = \sum_{i=1}^n \psi(\xb^{(i)}, \theta)$ and therefore
 \begin{align}
   I_n(\thetab_*) &= \EE[\psi(\Xcal, \theta_*) \psi(\Xcal, \theta_*)^{\top}] \\
-               &= \sum_{i=1}^n \EE[\psi(\xb, \theta_*) \psi(\xb, \theta_*)^{\top}] \\
+               &= \sum_{i=1}^n \EE[\psi(\xb^{(i}, \theta_*) \psi(\xb, \theta_*)^{\top}] \\
                &= n I(\thetab_*)
 \end{align}
 where
 \begin{align}
-  I(\thetab_*) = \EE[\psi(\xb, \theta_*) \psi(\xb, \theta_*)^{\top}]
+  I(\thetab_*) = \EE_{\xb \sim \nu_{\theta_*}} [\psi(\xb, \theta_*) \psi(\xb, \theta_*)^{\top}]
 \end{align}
 
 When samples are independent and identically distributed and $\hat{\thetab}_n$ is unbiased the Cramer-Rao
@@ -220,7 +220,7 @@ It is often assumed that samples are independent and identically distributed so 
 the joint density can be written:
 $\nu_{\thetab}(\xb^{(1)}, \dots, \xb^{(n)}) = \prod_{i=1}^n \nu_{\thetab}(\xb^i)$
 
-Let us define the empirical expected log-likelihood:
+Let us define the \emph{empirical expected log-likelihood}:
 \begin{align}
   l_n(\thetab) &= \frac1n
   \sum_{i=1}^n l(\xb^{(i)}, \thetab) \\
@@ -233,7 +233,7 @@ where $\EE_n$ is the empirical expectation operator defined by
 
 
 The next lines show that finding the maximum likelihood is done by optimizing
-the \emph{empirical expected log-likelihood}
+the empirical expected log-likelihood.
 
 
 \begin{align}
@@ -272,9 +272,11 @@ As we have ween in example~\ref{ex:biased:var}, the sample variance is biased.
 However, in the large sample limit the bias disappears. This is general as
 Proposition~\ref{prop:mse_consistent} shows that the maximum likelihood
 estimator is \emph{consistent} meaning that the maximum likelihood estimator
-asymptotically converges to the optimal set of parameters. Note that under bounded variance consistency implies asymptotic un-biasedness.
+asymptotically converges to the optimal set of parameters. As will be
+shown in Proposition~\ref{prop:consistency_unbiasedness}, under
+bounded variance, consistency implies asymptotic unbiasedness.
 
-\begin{prop}[Consistency of the maximum likelihood estimator]
+\begin{proposition}[Consistency of the maximum likelihood estimator]
   \label{prop:mse_consistent}
   Assume $\Theta$ is compact, 
   Assume $l_n$ converge uniformly in probability to $l$
@@ -282,7 +284,7 @@ asymptotically converges to the optimal set of parameters. Note that under bound
   Lastly, assume that the model is identifiable.
   Then, the maximum likelihood estimator  $\hat{\thetab}_n$ is consistent
   meaning that $\hat{\thetab}_n \xrightarrow[n \rightarrow \infty]{P}  \thetab_*$.
-\end{prop}
+\end{proposition}
 where $\hat{\thetab}_n \xrightarrow[n \rightarrow \infty]{P}  \thetab_*$ means
 that $\hat{\thetab}_n$ converges in probability to $\theta_*$:  $\forall \epsilon > 0, \enspace p(\| \hat{\thetab}_n - \thetab_* \| < \epsilon) \rightarrow 1$
 and uniform convergence in probability means $sup_{\thetab} \|l_n(\thetab) -
@@ -303,8 +305,9 @@ l(\thetab)\| \xrightarrow[n \rightarrow \infty]{P} 0$.
 
   Let $\eps > 0$ and define $V_{\eps} = \{\thetab, \|\thetab - \thetab_*\| <
   \eps\}$ an open neighborhood of $\thetab_*$.
-  Because $\Theta$ is compact and $l$ continuous we have $max_{\thetab \in \Theta
-    \cap V_{\eps}^C} l(\thetab)$ is reached for a value $\thetab_0$.
+  Because $\Theta$ is compact and $V_{\eps}$ open, $\Theta \cap
+  V_{\eps}^C$ is compact and since $l$ is continuous, $max_{\thetab \in \Theta
+    \cap V_{\eps}^C} l(\thetab)$ is reached for a value $\thetab_0 \in \Theta \cap V_{\eps}^C$.
   
   Let us define $\delta = l(\thetab_*) - l(\thetab_0) > 0$ and consider the event
   \begin{align}
@@ -322,7 +325,7 @@ l(\thetab)\| \xrightarrow[n \rightarrow \infty]{P} 0$.
   \end{align}
 
   Then consider $\hat{\thetab}_n = \argmax_{\theta \in
-    \Theta}(l_n(\theta))$ and assume $\hat{\thetab}_n \in V_{\eps}^C$.
+    \Theta}(l_n(\theta))$ and assume $\hat{\thetab}_n \in V_{\eps}^C \cap \Theta$.
   We have
   \begin{align}
   A_n
@@ -332,8 +335,8 @@ l(\thetab)\| \xrightarrow[n \rightarrow \infty]{P} 0$.
   \begin{align}
     A_n \cap B_n \implies l_n(\hat{\thetab}_n) < -\frac{\delta}{2} + l(\thetab_*) < l_n(\thetab_*)
   \end{align}
-  So $A_n \cap B_n$ contradicts the fact that $\hat{\thetab}_n = \argmax_{\theta \in
-    \Theta}(l_n(\theta))$ and $\hat{\thetab}_n \in V_{\eps}^C$.
+  So if $\hat{\thetab}_n \in V_{\eps}^C \cap \Theta$, $A_n \cap B_n$ contradicts the fact that $\hat{\thetab}_n = \argmax_{\theta \in
+    \Theta}(l_n(\theta))$.
 
   Therefore $A_n \cap B_n \implies \hat{\thetab}_n \in V_{\eps} $.
   From the uniform convergence in probability of $l_n$ to $l$ we have
@@ -342,15 +345,44 @@ l(\thetab)\| \xrightarrow[n \rightarrow \infty]{P} 0$.
   means $\hat{\thetab}_n \xrightarrow[n \rightarrow \infty]{P} \thetab_*$.
 \end{proof}
 
+Intuitively, consistency  seems to be a stronger condition than asymptotic
+unbiasedness since consistency implies convergence of the random variable whereas
+asymptotic unbiasedness only implies convergence of the mean.
+This is intuition is correct as long as the variance is bounded.
+
+\begin{proposition}[Consistency implies asymptotic unbiasedness]
+  \label{prop:consistency_unbiasedness}
+  Assume $\thetab_n\xrightarrow[n \rightarrow \infty]{P} \thetab$ and assume
+  $\exists M \in \RR, \enspace \EE[\|\thetab_n - \thetab\|^2] < M$. \\
+  Then $\EE[\|\thetab_n - \thetab\|] \xrightarrow[n \rightarrow \infty]{} 0$
+\end{proposition}
+\begin{proof}
+  Set $\eps > 0$, we have
+  \begin{align}
+    \thetab_n\xrightarrow[n \rightarrow \infty]{P} \thetab &\implies p(\|\thetab_n - \thetab\| > \frac{\eps}{2}) \xrightarrow[n \rightarrow
+                                                             \infty]{}0\\
+                                                           &\implies \exists N \in \NN, \forall n > N, \enspace
+                                                             p(\|\thetab_n - \thetab\| > \frac{\eps}{2}) < \frac{\eps}{M}
+  \end{align}
+
+  So $\forall n > N$ we get:
+  \begin{align}
+    \EE[\|\thetab_n - \thetab\|] &= \EE[\|\thetab_n - \thetab\| \oneb_{\|\thetab_n - \thetab\| \leq \frac{\eps}{2}}] + \EE[\|\thetab_n - \thetab\| \oneb_{\|\thetab_n - \thetab\|  > \frac{\eps}{2}}] \\
+                                 &\leq  \frac{\eps}{2} + \EE[\|\thetab_n - \thetab\|^2]p(\|\thetab_n - \thetab\|  > \frac{\eps}{2}) \label{consistencyunbiasedcs} \\
+                                   &< \eps
+  \end{align}
+  Where equation~\eqref{consistencyunbiasedcs} follows from Cauchy-Schwarz, for the scalar product $A, B \rightarrow \EE[AB]$.
+\end{proof}
+
 We now focus on the statistical fluctuation of the difference between the
 maximum likelihood estimate and the actual value: $\|\hat{\thetab}_n -
 \thetab_*\|$. Proposition~\ref{prop:asymp:norm} states that
 $\sqrt{n}\|\hat{\thetab}_n - \thetab_*\|$ approaches the normal density
 $\Ncal(0, I(\thetab_*)^{-1})$ as $n$ gets large. This property is called \emph{asymptotic normality}.
 
-\begin{prop}[Asymptotic normality of maximum likelihood estimators]
+\begin{proposition}[Asymptotic normality of maximum likelihood estimators]
   \label{prop:asymp:norm}
-  We assume the same hypothesis as in Proposition~\ref{prop:mse_consistent}
+  We assume the same hypothesis as in Proposition~\ref{prop:mse_consistent}.
   We further assume that $\thetab_*$ is in the interior of $\Theta$.
   Lastly, denoting $J_n(\thetab_n) =
   \partialfrac{\thetab^2}{^2l_n(\theta_b)}(\thetab_n)$ and $J(\thetab_*) =
@@ -362,7 +394,7 @@ $\Ncal(0, I(\thetab_*)^{-1})$ as $n$ gets large. This property is called \emph{a
   $\sqrt{n} \| \hat{\thetab}_n - \thetab_* \| \xrightarrow[n \rightarrow
   \infty]{D}  \Ncal(0,
   I(\thetab_*)^{-1})$
-\end{prop}
+\end{proposition}
 where the convergence in distribution $ x^{(n)} \xrightarrow[n \rightarrow \infty]{D} x$ means  $\forall t, \enspace F_{x^{(n)}}(t)
 \xrightarrow[n \rightarrow \infty]{} F_x(t)$ where $F_x$ is the distribution
 function of $x$.
@@ -372,7 +404,7 @@ function of $x$.
 
   From the mean value theorem there exists $\thetab_0$ such that
   \begin{align}
-    &\partialfrac{\thetab}{l_n(\hat{\thetab}_n)} - \partialfrac{\thetab}{l_n(\thetab_*)} = J(\thetab_0)(\hat{\thetab}_n - \thetab_*) \\
+    &\partialfrac{\thetab}{l_n(\hat{\thetab}_n)} - \partialfrac{\thetab}{l_n(\thetab_*)} = J_n(\thetab_0)(\hat{\thetab}_n - \thetab_*) \\
     &\iff -\frac1{\sqrt{n}} \sum_{i=1}^n  \psi_{\thetab_*}(\xb^{(i)}) = J_n(\thetab_0)\sqrt{n}(\hat{\thetab}_n - \thetab_*)
   \end{align}
 
@@ -405,8 +437,9 @@ function of $x$.
   \end{align}
 \end{proof}
 
-Note that because the maximum likelihood estimator $\hat{\thetab}_n$ is consistent it is unbiased
-as the number of samples get large. From asymptotic normality, we see that the
+Note that because the maximum likelihood estimator $\hat{\thetab}_n$ is
+consistent it is asymptotically unbiased (provided the variance is bounded).
+From asymptotic normality, we see that the
 variance of $\hat{\thetab}_n$ behaves like $\frac1{n}I(\theta_*)^{-1}$ which is
 the quantity in the Cramer-Rao bound (see proposition~\ref{prop:cramerrao}).
 Because of this, the maximum likelihood estimator is called \emph{asymptotically
@@ -506,7 +539,7 @@ where $\alpha$ is a small quantity.
 Under certain conditions that we specify in proposition~\ref{prop:conv:gd},
 gradient descent can be shown to converge to the minimum.
 
-\begin{prop}[Convergence of gradient descent]
+\begin{proposition}[Convergence of gradient descent]
   \label{prop:conv:gd}
   Assume that $f$ is two times differentiable and $\mu$-strongly convex:
   \begin{equation}
@@ -523,7 +556,7 @@ gradient descent can be shown to converge to the minimum.
   \begin{equation}
     \| \thetab^{k+1} - \thetab_* \|^2 \leq (1 - \alpha \mu)^{k + 1} \| \thetab_0 - \thetab_* \|^2
   \end{equation}
-\end{prop}
+\end{proposition}
 \begin{proof}
   We have 
   \begin{align}
@@ -593,7 +626,7 @@ The \emph{exact line search} sets $\alpha = \argmin_{t \in [0, 1]} f(\thetab_k -
 As shown by proposition~\ref{eq:conv:newton}, Newton's method is guaranteed to converge when an
 exact line search is used.
 
-\begin{prop}[Convergence of Newton's method]
+\begin{proposition}[Convergence of Newton's method]
   \label{eq:conv:newton}
   Assume that $f$ is two times differentiable, $\mu$-strongly convex and $\ell$-smooth:
   \begin{equation}
@@ -622,7 +655,7 @@ exact line search is used.
       (\frac12)^{2^{k -i +1}}$
  \end{itemize}
  Once the Newton phase is entered, it is never left.
-\end{prop}
+\end{proposition}
  \begin{proof}
    In the damped phase we have  $\| \partialfrac{\thetab}{f(\thetab)} \| \geq
    \frac{\mu^2}{h}$.
@@ -677,14 +710,14 @@ A second advantage of Newton method is its \emph{equivariance} as demonstrated
 in proposition~\ref{prop:equivariance:qn}. Equivariance means that working with
 parameters $A \thetab$ instead of parameters $\thetab$ has no impact on the result given
 by the algorithm.
-\begin{prop}[Newton algorithms are equivariant]
+\begin{proposition}[Newton algorithms are equivariant]
   \label{prop:equivariance:qn}
   Let us consider $\thetab_k$ the current estimate of the minimum of $f$ obtained by
   the Newton method starting from $\thetab_0$.
   Consider $\yb_k$ the current estimate of the minimum of $g(\yb) = f(A\yb)$ for any
   invertible matrix $A$ obtained by the Newton method starting from $\yb_0 = A^{-1}\thetab_0$.
   Then, $\yb_k = A^{-1} \thetab_k$.
-\end{prop}
+\end{proposition}
 \begin{proof}
   The relation holds for $k=0$ and assuming $\yb_k = A^{-1} \thetab_k$ we have:
 \begin{align}
