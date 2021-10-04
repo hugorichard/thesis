@@ -291,8 +291,7 @@ processing~\cite{gramfort2013meg}, Nilearn for fMRI processing and for its CanIC
 
 
 \section{Contributions outside of the scope of the thesis}
-Some of the contributions we have made during the thesis were outside of its
-scope. We now present these contributions succinctly.
+Some of the contributions we have made during the thesis extended beyond the scope of multivariate decompositions. We now present these contributions succinctly.
 
 \subsection{A deep approach to model complex stimuli}
 In this work, we learn a model to predict fMRI data of subjects watching a movie
@@ -316,7 +315,7 @@ In this work, we predict task contrasts from rest fMRI data using a piecewise
 \subsection{An optimal transport approach to hyperalignment}
 In this work, we benchmark optimal transport, ridge regression and scaled
 Procrustes to align the data of two
-subjects. Optimal Transport Ridge regression seems to be the best method.
+subjects. Optimal Transport and Ridge regression outperformed alternatives in that task.
 
 \paragraph{Published work}
 \fullcite{bazeille2019local}
@@ -353,14 +352,14 @@ In this thesis, we have presented three methods to perform component
 analysis of multi-subject neuroimaging data and a data augmentation method for
 fMRI data.
 
-First, in chapter~\ref{ch:fastsrm1} and chapter~\ref{ch:fastsrm2}, we develop an
+First, in chapter~\ref{ch:fastsrm1} and chapter~\ref{ch:fastsrm2}, we have developed an
 atlas based procedure that is shown to accelerate significantly the existing
 procedure for performing dimension reduction of fMRI data in a multi-subject
 context with provably no loss of performance. It is now possible to apply these
 algorithms in big datasets where the number of subjects is of the order of
 several hundreds, with several thousand samples and several hundred thousand features.
 
-Then, we propose in chapter~\ref{ch:mvica1} and chapter~\ref{ch:mvica2}
+Then, we have proposed in chapter~\ref{ch:mvica1} and chapter~\ref{ch:mvica2}
 a novel unsupervised algorithm, MultiViewICA, that reveals latent sources observed through different views. Using an independence assumption, we have demonstrated that the model is identifiable, provided that the latent
 sources are not Gaussian. In contrast to previous approaches, the proposed model leads to a closed-form likelihood, which we then optimize efficiently using a dedicated alternate quasi-Newton approach.
 Therefore, our approach enjoys the statistical guarantees of maximum-likelihood
