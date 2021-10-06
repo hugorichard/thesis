@@ -368,21 +368,20 @@ methods used in fMRI and MEG in the context of shared response modeling. However
 it assumes the same level of noise for all
 subjects, which does not model properly between-subjects variability.
 
-In chapter~\ref{ch:shica} and chapter~\ref{ch:shica2}, we extend MultiViewICA so
-[Omitted long matching line]
+In chapter~\ref{ch:shica} and chapter~\ref{ch:shica2}, we have extended MultiViewICA in orter to deal with source noise heteroscedasticity.
 In practice ShICA outperforms MVICA and other unsupervised methods used in the
 context of shared response modeling.
 
-Lastly, we introduce in chapter~\ref{ch:condica} and chapter~\ref{ch:condica2} a data
+Lastly, we have introduced in chapter~\ref{ch:condica} and chapter~\ref{ch:condica2} a data
 augmentation method based on ICA that outperforms deep learning algorithms in
 terms of decoding accuracy while being much faster.
 
 Combined with the FastSRM algorithm, MultiViewICA and ShICA yield a novel way to
 make use of multi-view data. They yield a set of operators per view that map
-the data of each view to a shared response reducing the variability between views.
+the data of each view to a shared response, reducing the variability between views.
 In principle, reducing the variability between views should facilitate the
 understanding of the data. In particular, it should be easier to perform
-decoding from multiple subjects when the inter-subject variability is lower.
+decoding from multiple subjects when inter-subject variability is reduced.
 This direction could be explored in future work.
 
 More generally, applications in this thesis were geared towards naturalistic imaging where the temporal response is assumed to be shared
