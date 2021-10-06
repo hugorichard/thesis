@@ -67,7 +67,7 @@ where the right hand side in equation~\ref{eq:mse:biasvariance} gives the
 
 The norm of the bias can be minimized exactly and such estimators that achieve $\EE[\hat{\thetab}_n] - \thetab_* = \bzero$ are called \emph{unbiased}.
 
-In example~\ref{ex:biased:var}, we study the bias of the sample mean and sample variance. The sample mean is shown to be unbiased. In
+In Example~\ref{ex:biased:var}, we study the bias of the sample mean and sample variance. The sample mean is shown to be unbiased. In
 contrast, the sample variance is biased: we show how to
 correct the estimator of the variance so that it becomes unbiased.
 
@@ -100,8 +100,8 @@ correct the estimator of the variance so that it becomes unbiased.
   we can see that it is unbiased.
 \end{example}
 
-However the variance of an estimator cannot be arbitrarily low as the
-proposition~\ref{prop:cramerrao} (Cramer-Rao bound) shows:
+However the variance of an estimator cannot be arbitrarily low as shown by
+Proposition~\ref{prop:cramerrao} (Cramer-Rao bound).
 \begin{proposition}[Cramer-Rao bound]
   \label{prop:cramerrao}
   Let $\hat{\thetab}_n$ be an estimator of $\thetab_*$.
@@ -159,7 +159,7 @@ If we assume that samples are independent and identically distributed we
 have: $\psi(\Xcal, \theta) = \sum_{i=1}^n \psi(\xb^{(i)}, \theta)$ and therefore
 \begin{align}
   I_n(\thetab_*) &= \EE[\psi(\Xcal, \theta_*) \psi(\Xcal, \theta_*)^{\top}] \\
-               &= \sum_{i=1}^n \EE[\psi(\xb^{(i}, \theta_*) \psi(\xb, \theta_*)^{\top}] \\
+                 &= \sum_{i=1}^n \EE[\psi(\xb^{(i)}, \theta_*) \psi(\xb^{(i)}, \theta_*)^{\top}] \\
                &= n I(\thetab_*)
 \end{align}
 where
@@ -173,7 +173,7 @@ bound is given by:
   \Var(\hat{\thetab}_n) \succeq \frac1{n} I(\theta_*)^{-1}
 \end{equation}
 
-The example~\ref{ex:efficient_mean} hows that the sample mean
+The Example~\ref{ex:efficient_mean} hows that the sample mean
 is efficient.
 \begin{example}[Sample mean is efficient]
   \label{ex:efficient_mean}
@@ -218,7 +218,7 @@ The quantity $\nu_{\thetab}(\xb^{(1)}, \dots, \xb^{(n)})$ is called the
 
 It is often assumed that samples are independent and identically distributed so that
 the joint density can be written:
-$\nu_{\thetab}(\xb^{(1)}, \dots, \xb^{(n)}) = \prod_{i=1}^n \nu_{\thetab}(\xb^i)$
+$\nu_{\thetab}(\xb^{(1)}, \dots, \xb^{(n)}) = \prod_{i=1}^n \nu_{\thetab}(\xb^{(i)})$
 
 Let us define the \emph{empirical expected log-likelihood}:
 \begin{align}
@@ -248,7 +248,7 @@ By the law of large numbers, as the number of samples increases, the empirical
 expected likelihood converges almost surely to the \emph{expected
   log-likelihood}: $l(\thetab) = \EE_{\xb}[l(\xb, \thetab)]$.
 
-Example~\ref{ex:mse:variance} shows that the maximum likelihood estimator of the
+Example~\ref{ex:mse:variance} shows that, under a Gaussian model, the maximum likelihood estimator of the
 mean and the variance is the sample mean and sample variance respectively.
 \begin{example}
   \label{ex:mse:variance}
@@ -267,14 +267,16 @@ mean and the variance is the sample mean and sample variance respectively.
   So the maximum likelihood estimators of the mean and the variance are the
   sample mean and sample variance respectively.
 \end{example}
-As we have ween in example~\ref{ex:biased:var}, the sample variance is biased.
 
-However, in the large sample limit the bias disappears. This is general as
-Proposition~\ref{prop:mse_consistent} shows that the maximum likelihood
-estimator is \emph{consistent} meaning that the maximum likelihood estimator
-asymptotically converges to the optimal set of parameters. As will be
-shown in Proposition~\ref{prop:consistency_unbiasedness}, under
-bounded variance, consistency implies asymptotic unbiasedness.
+The maximum likelihood estimator $\hat{\thetab}_n$ is a random variable as it depends on
+$\Xcal = \xb^{(1)}, \dots, \xb^{(n)}$. As the number of samples $n$ increases,
+we expect $\hat{\thetab}_n$ to get closer to the optimal set of parameters
+$\thetab_*$.
+In Proposition~\ref{prop:mse_consistent}, it is shown that the
+maximum likelihood estimator is \emph{consistent} meaning $\hat{\thetab}_n
+\xrightarrow[n \rightarrow \infty]{P}  \thetab_*$ where $\hat{\thetab}_n
+\xrightarrow[n \rightarrow \infty]{P}  \thetab_*$ denotes the convergence in
+probability defined by $\forall \epsilon > 0, \enspace p(\| \hat{\thetab}_n - \thetab_* \| < \epsilon) \xrightarrow[n \rightarrow \infty]{} 1$. 
 
 \begin{proposition}[Consistency of the maximum likelihood estimator]
   \label{prop:mse_consistent}
@@ -285,9 +287,7 @@ bounded variance, consistency implies asymptotic unbiasedness.
   Then, the maximum likelihood estimator  $\hat{\thetab}_n$ is consistent
   meaning that $\hat{\thetab}_n \xrightarrow[n \rightarrow \infty]{P}  \thetab_*$.
 \end{proposition}
-where $\hat{\thetab}_n \xrightarrow[n \rightarrow \infty]{P}  \thetab_*$ means
-that $\hat{\thetab}_n$ converges in probability to $\theta_*$:  $\forall \epsilon > 0, \enspace p(\| \hat{\thetab}_n - \thetab_* \| < \epsilon) \rightarrow 1$
-and uniform convergence in probability means $sup_{\thetab} \|l_n(\thetab) -
+where uniform convergence in probability means $sup_{\thetab} \|l_n(\thetab) -
 l(\thetab)\| \xrightarrow[n \rightarrow \infty]{P} 0$.
 \begin{proof}
   We first show that $l$ is maximum at $\thetab_*$:
@@ -309,29 +309,27 @@ l(\thetab)\| \xrightarrow[n \rightarrow \infty]{P} 0$.
   V_{\eps}^C$ is compact and since $l$ is continuous, $max_{\thetab \in \Theta
     \cap V_{\eps}^C} l(\thetab)$ is reached for a value $\thetab_0 \in \Theta \cap V_{\eps}^C$.
   
-  Let us define $\delta = l(\thetab_*) - l(\thetab_0) > 0$ and consider the event
+  Let us define $\delta = l(\thetab_*) - l(\thetab_0) > 0$ and consider the events
   \begin{align}
-    A_n &= sup_{\thetab \in \Theta \cap V_{\eps}^C} \|l_n(\thetab) - l(\thetab)\| < \frac{\delta}{2}. \\
-        &\implies \forall \thetab \in \Theta \cap V_{\eps}^C,  \enspace l_n(\thetab) - l(\thetab) < \frac{\delta}{2} \\
+    A_n &= sup_{\thetab \in \Theta \cap V_{\eps}^C} \|l_n(\thetab) - l(\thetab)\| < \frac{\delta}{2} \\
+    B_n &= sup_{\thetab \in V_{\eps}} \|l_n(\thetab) - l(\thetab)\| < \frac{\delta}{2}
+  \end{align}
+
+  We have
+  \begin{align}
+        A_n &\implies \forall \thetab \in \Theta \cap V_{\eps}^C,  \enspace l_n(\thetab) - l(\thetab) < \frac{\delta}{2} \\
         &\implies \forall \thetab \in \Theta \cap V_{\eps}^C,  \enspace l_n(\thetab) < \frac{\delta}{2} + l(\thetab_0) \\
         &\implies \forall \thetab \in \Theta \cap V_{\eps}^C,  \enspace l_n(\thetab) < -\frac{\delta}{2} + l(\thetab_*)
   \end{align}
-
   and 
   \begin{align}
-    B_n &= sup_{\thetab \in V_{\eps}} \|l_n(\thetab) - l(\thetab)\| < \frac{\delta}{2} \\
-        &\implies \forall \thetab \in V_{\eps}, \enspace l_n(\thetab) > -\frac{\delta}{2} + l(\thetab) \\
+    B_n &\implies \forall \thetab \in V_{\eps}, \enspace l_n(\thetab) > -\frac{\delta}{2} + l(\thetab) \\
         &\implies l_n(\thetab_*) > -\frac{\delta}{2} + l(\thetab_*) \\
   \end{align}
 
   Then consider $\hat{\thetab}_n = \argmax_{\theta \in
     \Theta}(l_n(\theta))$ and assume $\hat{\thetab}_n \in V_{\eps}^C \cap \Theta$.
   We have
-  \begin{align}
-  A_n
-    \implies l_n(\hat{\thetab}_n) < -\frac{\delta}{2} + l(\thetab_*)
-  \end{align}
-  and 
   \begin{align}
     A_n \cap B_n \implies l_n(\hat{\thetab}_n) < -\frac{\delta}{2} + l(\thetab_*) < l_n(\thetab_*)
   \end{align}
@@ -345,48 +343,52 @@ l(\thetab)\| \xrightarrow[n \rightarrow \infty]{P} 0$.
   means $\hat{\thetab}_n \xrightarrow[n \rightarrow \infty]{P} \thetab_*$.
 \end{proof}
 
-Intuitively, consistency  seems to be a stronger condition than asymptotic
-unbiasedness since consistency implies convergence of the random variable whereas
-asymptotic unbiasedness only implies convergence of the mean.
-This is intuition is correct as long as the variance is bounded.
+As we have ween in Example~\ref{ex:biased:var}, the sample variance is biased.
+However, in the large sample limit the bias disappears. Is this a consequence of
+consistency ? Intuitively, consistency  seems to be a stronger condition than asymptotic
+unbiasedness since consistency implies convergence of the random variable
+$\hat{\thetab}_n$ whereas asymptotic unbiasedness only implies convergence of the mean $\EE[\hat{\thetab}_n]$.
+Proposition~\ref{prop:consistency_unbiasedness} shows that this intuition is correct as long as the variance is bounded.
 
 \begin{proposition}[Consistency implies asymptotic unbiasedness]
   \label{prop:consistency_unbiasedness}
-  Assume $\thetab_n\xrightarrow[n \rightarrow \infty]{P} \thetab$ and assume
-  $\exists M \in \RR, \enspace \EE[\|\thetab_n - \thetab\|^2] < M$. \\
-  Then $\EE[\|\thetab_n - \thetab\|] \xrightarrow[n \rightarrow \infty]{} 0$
+  Assume $\thetab_n\xrightarrow[n \rightarrow \infty]{P} \thetab_*$ and assume
+  $\exists M \in \RR, \enspace \EE[\|\thetab_n - \thetab_*\|^2] < M$. \\
+  Then $\EE[\|\thetab_n - \thetab_*\|] \xrightarrow[n \rightarrow \infty]{} 0$
 \end{proposition}
 \begin{proof}
   Set $\eps > 0$, we have
   \begin{align}
-    \thetab_n\xrightarrow[n \rightarrow \infty]{P} \thetab &\implies p(\|\thetab_n - \thetab\| > \frac{\eps}{2}) \xrightarrow[n \rightarrow
+    \thetab_n\xrightarrow[n \rightarrow \infty]{P} \thetab_* &\implies p(\|\thetab_n - \thetab_*\| > \frac{\eps}{2}) \xrightarrow[n \rightarrow
                                                              \infty]{}0\\
                                                            &\implies \exists N \in \NN, \forall n > N, \enspace
-                                                             p(\|\thetab_n - \thetab\| > \frac{\eps}{2}) < \frac{\eps}{M}
+                                                             p(\|\thetab_n - \thetab_*\| > \frac{\eps}{2}) < \frac{\eps}{M}
   \end{align}
 
   So $\forall n > N$ we get:
   \begin{align}
-    \EE[\|\thetab_n - \thetab\|] &= \EE[\|\thetab_n - \thetab\| \oneb_{\|\thetab_n - \thetab\| \leq \frac{\eps}{2}}] + \EE[\|\thetab_n - \thetab\| \oneb_{\|\thetab_n - \thetab\|  > \frac{\eps}{2}}] \\
-                                 &\leq  \frac{\eps}{2} + \EE[\|\thetab_n - \thetab\|^2]p(\|\thetab_n - \thetab\|  > \frac{\eps}{2}) \label{consistencyunbiasedcs} \\
+    \EE[\|\thetab_n - \thetab_*\|] &= \EE[\|\thetab_n - \thetab_*\| \oneb_{\|\thetab_n - \thetab_*\| \leq \frac{\eps}{2}}] + \EE[\|\thetab_n - \thetab_*\| \oneb_{\|\thetab_n - \thetab_*\|  > \frac{\eps}{2}}] \\
+                                 &\leq  \frac{\eps}{2} + \EE[\|\thetab_n - \thetab_*\|^2]p(\|\thetab_n - \thetab_*\|  > \frac{\eps}{2}) \label{consistencyunbiasedcs} \\
                                    &< \eps
   \end{align}
-  Where equation~\eqref{consistencyunbiasedcs} follows from Cauchy-Schwarz, for the scalar product $A, B \rightarrow \EE[AB]$.
+  Where equation~\eqref{consistencyunbiasedcs} follows from Cauchy-Schwarz, for
+  the scalar product $\ab, \bb \rightarrow \EE[\ab \bb^{\top}]$.
 \end{proof}
 
-We now focus on the statistical fluctuation of the difference between the
-maximum likelihood estimate and the actual value: $\|\hat{\thetab}_n -
-\thetab_*\|$. Proposition~\ref{prop:asymp:norm} states that
-$\sqrt{n}\|\hat{\thetab}_n - \thetab_*\|$ approaches the normal density
-$\Ncal(0, I(\thetab_*)^{-1})$ as $n$ gets large. This property is called \emph{asymptotic normality}.
+While Proposition~\ref{prop:mse_consistent} states that $\hat{\thetab}_n
+\xrightarrow[n \rightarrow \infty]{P} \thetab_*$, 
+Proposition~\ref{prop:asymp:norm} goes further in the analysis. It states that
+$\sqrt{n}\|\hat{\thetab}_n - \thetab_*\|$ approaches a Gaussian density as $n$
+gets large.
+This property is called \emph{asymptotic normality}.
 
 \begin{proposition}[Asymptotic normality of maximum likelihood estimators]
   \label{prop:asymp:norm}
   We assume the same hypothesis as in Proposition~\ref{prop:mse_consistent}.
   We further assume that $\thetab_*$ is in the interior of $\Theta$.
   Lastly, denoting $J_n(\thetab_n) =
-  \partialfrac{\thetab^2}{^2l_n(\theta_b)}(\thetab_n)$ and $J(\thetab_*) =
-  \partialfrac{\thetab^2}{^2l(\theta_b)}(\thetab_*)$ we assume that \\
+  \partialfrac{\thetab^2}{^2l_n}(\thetab_n)$ and $J(\thetab_*) =
+  \partialfrac{\thetab^2}{^2l}(\thetab_*)$ we assume that \\
   $\thetab_n \xrightarrow[n \rightarrow
   \infty]{P} \thetab_* \implies J_n(\thetab_n) \xrightarrow[n \rightarrow
   \infty]{P} J(\thetab_*)$\\
@@ -409,7 +411,7 @@ function of $x$.
   \end{align}
 
   We know from the proof of the Cramer-Rao bound
-  (proposition~\ref{prop:cramerrao}) that $\EE_{\xb} [\psi_{\thetab_*}(\xb)]=
+  (Proposition~\ref{prop:cramerrao}) that $\EE_{\xb} [\psi_{\thetab_*}(\xb)]=
   0$.  We can use the central limit theorem and write:
   \begin{align}
   \frac1{\sqrt{n}} \sum_{i=1}^n  \psi_{\thetab_*}(\xb^{(i)}) \xrightarrow[]{D}
@@ -437,11 +439,8 @@ function of $x$.
   \end{align}
 \end{proof}
 
-Note that because the maximum likelihood estimator $\hat{\thetab}_n$ is
-consistent it is asymptotically unbiased (provided the variance is bounded).
-From asymptotic normality, we see that the
-variance of $\hat{\thetab}_n$ behaves like $\frac1{n}I(\theta_*)^{-1}$ which is
-the quantity in the Cramer-Rao bound (see proposition~\ref{prop:cramerrao}).
+Looking at the variance of $\hat{\thetab}_n - \thetab_*$, we see that it behaves like $\frac1{n}I(\theta_*)^{-1}$ which is
+the quantity in the Cramer-Rao bound for unbiased estimators (see Proposition~\ref{prop:cramerrao}).
 Because of this, the maximum likelihood estimator is called \emph{asymptotically
   efficient}.
 
@@ -449,21 +448,21 @@ Because of this, the maximum likelihood estimator is called \emph{asymptotically
 It may look like an efficient and unbiased estimator should always yield the
 best possible mean squared error.
 However, this is not the case. A striking example is given by the Stein paradox~\cite{stein1956inadmissibility}.
-As can be seen in example~\ref{ex:stein}, there exists an estimator of the mean
-that achieve a strictly better mean squared error than the sample mean.
+As can be seen in Example~\ref{ex:stein}, there exists an estimator of the mean
+that achieves a strictly better mean squared error than the sample mean.
 However, we have shown that the sample mean (which is also the maximum
 likelihood estimator) is unbiased and efficient. 
 \begin{example}[Stein's estimate of the mean]
   \label{ex:stein}
   Let us consider a single observation $\xb$ generated from a multivariate Gaussian
-  of dimension $v \geq 3$: $\Ncal(\mub_*, I)$ where $I$ is the identity matrix and
+  of dimension $v \geq 3$: $\Ncal(\mub, I)$ where $I$ is the identity matrix and
   $\mub \in \RR^v$ is the unknown mean that we want to estimate.
   As in the one-dimensional case, the sample mean $e(\xb) =\xb$ is unbiased and efficient.
   The mean squared error is given by:
   \begin{align}
-    \EE[(e(\xb) - \mub)^2] = \tr(V(e(\xb))) = v
+    \EE[(e(\xb) -  \mub )^2] = \tr(V(e(\xb))) = v
   \end{align}
-  Now consider the estimator $s(\xb) = \xb - (v-2) \frac{\xb}{\|\xb\|^2}$
+  Now consider the estimator $s(\xb) = \xb - (v-2) \frac{\xb}{\|\xb\|^2}$.
   The mean squared error is given by:
   \begin{align}
     &\EE[(s(\xb) - \mub)^2] \\ &= \EE[(\xb - (v-2) \frac{\xb}{\|\xb\|^2} - \mub)^2] \\
@@ -507,14 +506,14 @@ to resort to iterative methods.
 
 \subsection{Some iterative optimization algorithms}
 Let us consider a function $f: \RR^v \rightarrow \RR$ that we
-want to minimize. We use the canonical scalar product of $\RR^v$ and the
-associated norm to measure distances between parameters $\thetab \in \RR^v$.
+want to minimize. $f(\thetab)$, where $\thetab \in \RR^v$, can be seen as the
+negative expected likelihood.
 
 
 Optimization algorithms that only use first order derivatives to make a step are
 called \emph{first order methods}. We will begin by presenting the famous
 \emph{gradient descent}. Then, we move on to second order methods with \emph{Newton} and
-\emph{quasi-Newton methods}. This section closely follow the chapter~9 of~\cite{boyd2004convex}.
+\emph{quasi-Newton methods}. This section closely follows the chapter~9 of~\cite{boyd2004convex}.
 
 \subsubsection{Gradient descent}
 \label{sec:gd}
@@ -536,18 +535,18 @@ Therefore, gradient descent updates are given by:
 \end{align}
 where $\alpha$ is a small quantity.
 
-Under certain conditions that we specify in proposition~\ref{prop:conv:gd},
-gradient descent can be shown to converge to the minimum.
+Under certain conditions that we specify in Proposition~\ref{prop:conv:gd},
+gradient descent converges to the minimum.
 
 \begin{proposition}[Convergence of gradient descent]
   \label{prop:conv:gd}
   Assume that $f$ is two times differentiable and $\mu$-strongly convex:
   \begin{equation}
-    \partialfrac{\thetab^2}{^2f(\thetab)} \geq \mu I
+    \partialfrac{\thetab^2}{^2f(\thetab)} \succeq \mu I
   \end{equation}
   In addition, assume that $f$ is $\ell$-smooth:
   \begin{equation}
-    \partialfrac{\thetab^2}{^2f(\thetab)} \leq \ell I
+    \partialfrac{\thetab^2}{^2f(\thetab)} \preceq \ell I
   \end{equation}
   where $I$ is the identity matrix.
   From $\thetab_0 \in \RR^v$ and given $\alpha \in \RR$ such that $\frac1{\ell} \geq \alpha > 0$, the iterates
@@ -592,15 +591,17 @@ gradient descent can be shown to converge to the minimum.
    \end{align}
    which by induction yields the desired result.
 \end{proof}
-The type of convergence we get in proposition~\ref{prop:conv:gd} is called a
+The type of convergence we get in Proposition~\ref{prop:conv:gd} is called a
 \emph{linear convergence} (because $\| \thetab^{k+1} - \thetab_*
-\|^2$ is bounded by a linear function of  $\|\thetab^{k} - \thetab_* \|^2$) .
+\|$ is bounded by a linear function of  $\|\thetab^{k} - \thetab_* \|$) .
 
 \subsubsection{Newton method and quasi-Newton methods}
 \label{sec:qn}
 We assume that $f$ is twice differentiable everywhere.
-As in gradient descent, we depart from a point $\thetab_0$, assume a small \emph{step size} $\alpha$ and a direction
-$\db$ such that $\|\db\| = 1$, a Taylor decomposition at the second first order gives:
+As in gradient descent, we depart from a point $\thetab_0$, assume a small
+\emph{step size} $\alpha$ and consider a direction
+$\db$ such that $\|\db\| = 1$.
+A Taylor decomposition at the second order gives:
 \begin{align}
   f(\thetab_0 + \alpha \db) = f(\thetab_0) + \dotp{ \partialfrac{\thetab}{f(\thetab_0)} }{ \alpha \db } + \dotp{ \alpha \db }{ \partialfrac{\thetab^2}{^2 f(\thetab_0)} \alpha \db } + o(\alpha^2) 
 \end{align}
@@ -618,19 +619,22 @@ Therefore, Newton updates are given by:
 where $\alpha$ is a small quantity.
 
 Unfortunately, Newton's method is not guaranteed to converge. This contrasts with the gradient descent method that is guaranteed to converge when the step-size is small enough.
-In order to converge, Newton's method need to ensure that each step yields a sufficient decrease of the loss. This is done by a line search.
+In order to converge, Newton's method needs that each step yields a sufficient decrease of the loss. This is done by a line search.
 
 The \emph{exact line search} sets $\alpha = \argmin_{t \in [0, 1]} f(\thetab_k - t
-(\partialfrac{\thetab^2}{^2 f(\thetab_0)})^{-1} \partialfrac{\thetab}{f(\thetab_k)})$ while the \emph{backtracking line search} is an iterative procedure where one starts with $\alpha=1$ and halve its value until it yields to a decrease of the loss.
+(\partialfrac{\thetab^2}{^2 f(\thetab_0)})^{-1}
+\partialfrac{\thetab}{f(\thetab_k)})$ while
+the \emph{backtracking line search} is an iterative procedure where one starts
+with $\alpha=1$ and repeatedly halves $\alpha$ until $f(\thetab_{k+1}) < f(\thetab_k)$.
 
-As shown by proposition~\ref{eq:conv:newton}, Newton's method is guaranteed to converge when an
+As shown by Proposition~\ref{eq:conv:newton}, Newton's method is guaranteed to converge when an
 exact line search is used.
 
 \begin{proposition}[Convergence of Newton's method]
   \label{eq:conv:newton}
   Assume that $f$ is two times differentiable, $\mu$-strongly convex and $\ell$-smooth:
   \begin{equation}
-    \mu I \leq \partialfrac{\thetab^2}{^2 f(\thetab)} \leq \ell I
+    \mu I \preceq \partialfrac{\thetab^2}{^2 f(\thetab)} \preceq \ell I
   \end{equation}
   where $I$ is the identity matrix.
   Assume that the Hessian is Lipschitz with constant $h$:
@@ -707,15 +711,17 @@ exact line search is used.
 In the pure Newton phase, the convergence is quadratic. This is a very strong
 advantage of Newton methods.
 A second advantage of Newton method is its \emph{equivariance} as demonstrated
-in proposition~\ref{prop:equivariance:qn}. Equivariance means that working with
+in Proposition~\ref{prop:equivariance:qn}. Equivariance means that for any
+matrix $A$, working with
 parameters $A \thetab$ instead of parameters $\thetab$ has no impact on the result given
 by the algorithm.
 \begin{proposition}[Newton algorithms are equivariant]
   \label{prop:equivariance:qn}
   Let us consider $\thetab_k$ the current estimate of the minimum of $f$ obtained by
-  the Newton method starting from $\thetab_0$.
-  Consider $\yb_k$ the current estimate of the minimum of $g(\yb) = f(A\yb)$ for any
-  invertible matrix $A$ obtained by the Newton method starting from $\yb_0 = A^{-1}\thetab_0$.
+  the Newton method after $k$ iterations starting from $\thetab_0$.
+  For any invertible matrix $A$, consider $\yb_k$ the current estimate of the
+  minimum of $g(\yb) = f(A\yb)$
+  obtained by the Newton method after $k$ iterations starting from $\yb_0 = A^{-1}\thetab_0$.
   Then, $\yb_k = A^{-1} \thetab_k$.
 \end{proposition}
 \begin{proof}
@@ -728,15 +734,14 @@ by the algorithm.
 \end{align}
 \end{proof}
 In contrast, gradient descent is not equivariant.
-
-However, despite its attractive properties, Newton algorithms are rarely used in
-practice because they are often intractable. Indeed inverting
+However, despite its attractive properties, Newton's method is rarely used in
+practice because it is often intractable. Indeed inverting
 the Hessian $\partialfrac{\thetab^2}{^2 f}$ is difficult as it is an operator in
 dimension $\RR^{v \times v \times v \times
   v}$.
-In some problems, it is possible to construct an approximation of the inverse of
+In some cases, it is possible to construct an approximation of the inverse of
 the Hessian in a reasonable time. This can be done iteratively by building a
-sequence of matrices $B_k$ that approach the inverse of the Hessian as $k$ grows.
+sequence of matrices $B_k$ that approaches the inverse of the Hessian as $k$ grows.
 Methods that use an approximation of the inverse instead of the true inverse are
 called \emph{quasi-Newton} methods. 
 
@@ -744,19 +749,18 @@ called \emph{quasi-Newton} methods.
 In the maximum likelihood framework, our goal is to find the parameters
 $\theta_*$ that maximize the expected likelihood $l(\theta)$ of
 observations $\Xcal = \xb^{(1)}, \dots, \xb^{(n)}$ assuming a model
-$\nu_{\theta}(\Xcal)$ (in practice we use
-the empirical expected likelihood $l_n(\theta)$ instead of $l$) .
-
-In the previous section, we presented some iterative
-optimization methods that can be used directly to maximize the log-likelihood.
-In this section, we will assume a \emph{latent variable model}. In this
-framework, we assume that the model includes unobserved random variables $\zb$
-called \emph{latent variables} and that the data $\xb$ depend on
-the latent variables. With an abuse of notation we denote $\nu_{\theta}(\zb)$
+$\nu_{\theta}(\Xcal)$.
+In the previous section, we have presented some iterative
+optimization methods that can be used to directly maximize the log-likelihood.
+In this section, we present an alternative technique suited to
+\emph{latent variable models}.
+Latent variable models include, in addition to observed data $\xb$, unobserved data $\zb$ called \emph{latent variables}. The observed data $\xb$ is assumed to depend on the
+unobserved data $\zb$.
+With some abuse of notation we denote $\nu_{\theta}(\zb)$
 the likelihood of $\zb$, $\nu_{\theta}(\xb | \zb)$ the density of $\xb | \zb$
-evaluated at $\xb, \zb$ and the joint likelihood of $\xb, \zb$ called the
-\emph{complete likelihood} is given by $\nu_{\theta}(\xb, \zb) =
-\nu_{\theta}(\zb) \nu_{\theta}(\xb | \zb)$.  
+evaluated at $\xb, \zb$ and $\nu_{\theta}(\xb, \zb) =
+\nu_{\theta}(\zb) \nu_{\theta}(\xb | \zb)$ the joint likelihood of $\xb, \zb$ called the
+\emph{complete likelihood}.  
 
 We can relate the likelihood and the completed likelihood by:
 \begin{align}
@@ -764,40 +768,40 @@ We can relate the likelihood and the completed likelihood by:
 \end{align}
 
 We call $\log(\nu_{\theta}(\xb, \zb))$ the \emph{complete log-likelihood}.
-The EM algorithm minimizes an expression
+The EM algorithm maximizes an expression
 that depends on the complete log-likelihood rather than the log-likelihood so it
-is useful when the former is much simpler to minimize than the later.
+is useful when the former is much simpler to maximize than the later.
 This section follows the work in~\cite{neal1998view}.
 
 In order to make this more concrete, let us focus on the Gaussian mixture model
-in example~\ref{ex:em:gaussmixt}.
+in Example~\ref{ex:em:gaussmixt}.
 \begin{example}[Gaussian mixture models]
   \label{ex:em:gaussmixt}
   Let us consider a latent variable $z$
   sampled from a Bernoulli distribution with parameter $\phi$, 
   and $x$ is given by
-  $x|z=0 \sim \mathcal{N}(\mu_0, 1)$ and 
-  and $x | z=1 \sim \mathcal{N}(\mu_1, 1)$.
+  $x|z=0 \sim \mathcal{N}(\mu^0, 1)$ and 
+  and $x | z=1 \sim \mathcal{N}(\mu^1, 1)$.
 
   We call $x^{(1)}, \dots, x^{(n)}$ the observed samples and $z^{(1)}, \dots,
   z^{(n)}$ the corresponding unobserved latent variables. 
 
   The log-likelihood of $x^{(i)}$ is given by:
   \begin{align}
-    &l(x^{(i)}, (\mu_0, \mu_1, \phi)) \\ &= \log(\phi \mathcal{N}(x^{(i)}, \mu_1, 1) + (1 - \phi) \mathcal{N}(x^{(i)}, \mu_0, 1)) \\
-                                                   &= \log\Big( \phi\frac{\exp(-\frac{(x^{(i)} - \mu_1)^2}{2})}{\sqrt{2 \pi}} + (1 - \phi)\frac{\exp(-\frac{(x^{(i)} - \mu_0)^2}{2})}{\sqrt{2 \pi}} \Big)
+    &l(x^{(i)}, (\mu^0, \mu^1, \phi)) \\ &= \log(\phi \mathcal{N}(x^{(i)}, \mu^1, 1) + (1 - \phi) \mathcal{N}(x^{(i)}, \mu^0, 1)) \\
+                                                   &= \log\Big( \phi\frac{\exp(-\frac{(x^{(i)} - \mu^1)^2}{2})}{\sqrt{2 \pi}} + (1 - \phi)\frac{\exp(-\frac{(x^{(i)} - \mu^0)^2}{2})}{\sqrt{2 \pi}} \Big)
   \end{align}
 
   Whereas the completed log-likelihood of $(x^{(i)}, z^{(i)})$ is given by
   \begin{align}
-    &l((x^{(i)}, z^{(i)}), (\mu_0, \mu_1, \phi)) \\
-    &= \log((\phi \mathcal{N}(x^{(i)}, \mu_1, 1))^{z^{(i)}} ((1 - \phi) \mathcal{N}(x^{(i)}, \mu_0, 1))^{1- z^{(i)}}) \\
-    &= z^{(i)} ( -\frac{(x^{(i)} - \mu_1)^2}{2} + \log(\phi)) \\ &\enspace \enspace + (1 - z^{(i)}) ( -\frac{(x^{(i)} - \mu_0)^2}{2} + \log(1 -\phi)) + c
+    &l((x^{(i)}, z^{(i)}), (\mu^0, \mu^1, \phi)) \\
+    &= \log((\phi \mathcal{N}(x^{(i)}, \mu^1, 1))^{z^{(i)}} ((1 - \phi) \mathcal{N}(x^{(i)}, \mu^0, 1))^{1- z^{(i)}}) \\
+    &= z^{(i)} ( -\frac{(x^{(i)} - \mu^1)^2}{2} + \log(\phi)) \\ &\enspace \enspace + (1 - z^{(i)}) ( -\frac{(x^{(i)} - \mu^0)^2}{2} + \log(1 -\phi)) + c
   \end{align}
-  where $c$ is a constant that does not depend on $\mu_1$ or $\mu_2$.
+  where $c$ is a constant that does not depend on $\mu^1$ or $\mu_2$.
 
   It is easy to see that the expected completed log-likelihood will be
-  much easier to minimize than the expected log-likelihood.
+  much easier to maximize than the expected log-likelihood.
 \end{example}
 This example shows that unsurprisingly, it would be easier to find the parameters of a
 Gaussian mixture model if we knew the component from which are generated each sample.
@@ -828,56 +832,59 @@ have that
 \end{align}
 and therefore
 \begin{align}
-  max_{q, \theta} F(q, \theta) = max_{\theta} (max_q F(q, \theta)) = max_{\theta} l(\xb, \theta)
+  \max_{q, \theta} F(q, \theta) = \max_{\theta} (\max_q F(q, \theta)) = \max_{\theta} l(\xb, \theta)
 \end{align}
 
 Any EM algorithm maximizes $l$ by maximizing $F$.
 The most common practice is to maximize alternatively $F$ with respect to
 $q$ and $\theta$.
-At iteration $k$, let us call $\theta^k$ the current estimate of $\theta$
+At iteration $k$, let us call $\theta_k$ the current estimate of $\theta$.
 According to equation~\eqref{eq:maxem:q}, the maximum with
-respect to $q$ is given by $q=\nu_{\theta^k}(\zb| \xb)$. Then, we have to
+respect to $q$ is given by $q=\nu_{\theta_k}(\zb| \xb)$. Then, we have to
 maximize equation~\eqref{eq:em:fdef} with respect to $\theta$.
 As the entropy $H$ does not depend on $\theta$ the function to maximize is given
 by:
 \begin{align}
-  Q(\theta ) =  \EE_{\zb \sim \nu_{\theta^k }(\zb | \xb)}[\log( \nu_{\theta }(\xb, \zb))]
+  Q(\theta ) =  \EE_{\zb \sim \nu_{\theta_k }(\zb | \xb)}[\log( \nu_{\theta }(\xb, \zb))]
 \end{align}
 Computing $Q$ is called the \emph{E-step}. Then we maximize $Q$ and set
 \begin{align}
-  \theta^{k+1} = \argmax_{\theta} Q(\theta) \label{eq:exact:mstep}
+  \theta_{k+1} = \argmax_{\theta} Q(\theta) \label{eq:exact:mstep}
 \end{align}
 This step is called the \emph{M-step}.
 
-In example~\ref{ex:em::gaussmixt:2} we us use the EM algorithm to optimize the Gaussian mixtures model introduced in example~\eqref{ex:em:gaussmixt}.
+In Example~\ref{ex:em::gaussmixt:2} we us use the EM algorithm to optimize the Gaussian mixture model introduced in Example~\ref{ex:em:gaussmixt}.
 \begin{example}[Optimizing the Gaussian mixture via EM]
   \label{ex:em::gaussmixt:2}
-  Let us take the same data as in example~\ref{ex:em:gaussmixt}.
+  Let us take the same data as in Example~\ref{ex:em:gaussmixt}. We call
+  $\mu^0_k, \mu^1_k, \phi_k$ the estimates of $\mu^0, \mu^1, \phi$ at
+  iteration $k$ and define:
   \begin{align}
-    \gamma_i^k = p(z^{(i)} = 1 | x^{(i)}) &= \frac{\phi^k \Ncal(x^{(i)}; \mu_0^k, 1)}{ \phi^k \Ncal(x^{(i)}; \mu_0^k, 1) + (1 - \phi^k) \Ncal(x^{(i)}; \mu_1^k, 1)} 
+    \gamma^{(i)}_k = p(z^{(i)} = 1 | x^{(i)}) &= \frac{\phi_k \Ncal(x^{(i)}; \mu^0_k, 1)}{ \phi_k \Ncal(x^{(i)}; \mu^0_k, 1) + (1 - \phi_k) \Ncal(x^{(i)}; \mu^1_k, 1)} 
   \end{align}
   The E-step is given by:
   \begin{align}
-    Q(\mu_0, \mu_1, \phi) &= \sum_{i=1}^n \Big( \gamma_i^k \log(\nu_{\mu_0, \mu_1, \phi}(x^{(i)}, 1)) \\ &\enspace \enspace + (1 - \gamma_i^k) \log(\nu_{\mu_0, \mu_1, \phi}(x^{(i)}, 0)) \Big) \\
-              &= \sum_{i=1}^n \Big( \gamma_i^k( -\frac{(x^{(i)} - \mu_1)^2}{2} + \log(\phi)) \\ &\enspace \enspace + (1 - \gamma_i^k) ( -\frac{(x^{(i)} - \mu_0)^2}{2} + \log(1 -\phi)) + c \Big)
+    Q(\mu^0, \mu^1, \phi) &= \sum_{i=1}^n \Big( \gamma^{(i)}_k \log(\nu_{\mu^0, \mu^1, \phi}(x^{(i)}, 1)) \\ &\enspace \enspace + (1 - \gamma^{(i)}_k) \log(\nu_{\mu^0, \mu^1, \phi}(x^{(i)}, 0)) \Big) \\
+              &= \sum_{i=1}^n \Big( \gamma^{(i)}_k( -\frac{(x^{(i)} - \mu^1)^2}{2} + \log(\phi)) \\ &\enspace \enspace + (1 - \gamma^{(i)}_k) ( -\frac{(x^{(i)} - \mu^0)^2}{2} + \log(1 -\phi)) + c \Big)
  \end{align}
  The M-step is given by:
  \begin{align}
-   &\partialfrac{\phi}{Q}(\phi^{k + 1}) = 0 \iff \phi^{k + 1} = \frac{\sum_{i=1}^n \gamma_i^k}{n} \\
-   &\partialfrac{\phi}{Q}(\mu^{k+1}_0) = 0 \iff \mu^{k + 1}_0 = \frac{\sum_{i=1}^n (1 - \gamma_i^k) x^{(i)}}{n} \\
-   &\partialfrac{\phi}{Q}(\mu^{k+1}_1) = 0 \iff \mu^{k + 1}_1 = \frac{\sum_{i=1}^n \gamma_i^k x^{(i)}}{n} \\
+   &\partialfrac{\phi}{Q}(\phi^{k + 1}) = 0 \iff \phi^{k + 1} = \frac{\sum_{i=1}^n \gamma^{(i)}_k}{n} \\
+   &\partialfrac{\phi}{Q}(\mu^{k+1}_0) = 0 \iff \mu^{k + 1}_0 = \frac{\sum_{i=1}^n (1 - \gamma^{(i)}_k) x^{(i)}}{n} \\
+   &\partialfrac{\phi}{Q}(\mu^{k+1}_1) = 0 \iff \mu^{k + 1}_1 = \frac{\sum_{i=1}^n \gamma^{(i)}_k x^{(i)}}{n}
  \end{align}
 \end{example}
 
 
-The maximization of $F$ as in example~\ref{ex:em::gaussmixt:2}, via the \emph{E-step} and \emph{M-step} is the
+The maximization of $F$  via the \emph{E-step} and \emph{M-step}, like in
+Example~\ref{ex:em::gaussmixt:2}, is the
 historical version of the EM algorithm. However, other optimization techniques
 referred to as \emph{EM variants}
 are possible. For instance, one could replace the maximization in
 equation~\eqref{eq:exact:mstep} by just one step of an iterative optimization
-algorithm giving a set of parameters $\theta^{k+1}$ that verify:
+algorithm giving a set of parameters $\theta_{k+1}$ that verifies:
 \begin{align}
-  Q(\theta^{k+1}) < Q(\theta^k) 
+  Q(\theta_{k+1}) > Q(\theta_k) 
 \end{align}
 When the M-step is performed in such an approximated way, the EM algorithm
 is renamed \emph{generalized EM}.
@@ -886,8 +893,11 @@ current density estimate with respect to the value function $q \rightarrow F(q,
 \theta)$.
 
 \section{Conclusion}
-In this chapter, we have introduced maximum-likelihood estimators and showed
-that they are consistent and asymptotically efficient. These estimators are
-solution of an optimization problem that can be solved using some of the
-iterative methods we have presented.
+In this chapter, we have introduced the maximum-likelihood estimator and have shown
+that it is consistent and asymptotically efficient. This estimator is the
+solution of an optimization problem. We have presented gradient descent and
+Newton's method, two popular iterative optimization methods that can be used to
+maximize the likelihood directly. Lastly, we explored the special case of latent variable models,
+where the maximum likelihood estimator can be estimated via the EM algorithm.
+
 In the next chapter, we introduce the necessary background on neuro-imaging.

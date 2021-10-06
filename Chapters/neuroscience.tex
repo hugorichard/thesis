@@ -2,12 +2,12 @@ In the previous chapter, we have introduced some background on statistics and
 optimization.
 In this chapter, we present the necessary background on the data used in this
 thesis.
-In our experiments we use functional magnetic resonance imaging (fMRI) or
+In our experiments, we use functional magnetic resonance imaging (fMRI) or
 magnetoencephalograpy (MEG) data. As will be seen in this chapter, these two modalities have very different
 characteristics.
 
 \section{Functional magnetic resonance imaging (fMRI)}
-This section summarizes information borrowed from the handbook of fMRI data analysis~\cite{poldrack2011handbook}.
+This section relies on the handbook of fMRI data analysis~\cite{poldrack2011handbook}.
 
 \subsection{The BOLD signal and hemodynamic response}
 The story of fMRI begins with the discovery of the blood-oxygen-level-dependent
@@ -17,9 +17,10 @@ Since oxygenated and deoxygenated blood (oxyhemoglobin
 and deoxyhemoglobin) do not have the same magnetic susceptibility, changes in
 the oxygen level in blood can be tracked by a magnetic resonance imaging (MRI) scanner.
 
-When a short stimuli occurs, the change in the relative change in the MRI signal (BOLD
+When a short stimuli occurs, the relative change in the MRI signal (BOLD
 signal) is not instantaneous. The typical response to a stimuli follows the
-curve displayed in figure~\ref{fig:hrf}. This response is rather slow (it may last \emph{20s}) compared to the temporal scale of neurons which is on the order of \emph{ms}.
+curve displayed in figure~\ref{fig:hrf}.
+Therefore, the BOLD signal is often seen as the result of the convolution of neural activation with the hemodynamic response.
 
 \begin{figure}
   \center
@@ -28,15 +29,14 @@ curve displayed in figure~\ref{fig:hrf}. This response is rather slow (it may la
   \label{fig:hrf}
 \end{figure}
 
-Luckily, the shape of the hemodynamic response does not vary much across time
-and therefore the BOLD signal is often seen as the result of the convolution of neural activation with the hemodynamic response.
-
 \subsection{Spatial and temporal resolution of fMRI data}
 The success of fMRI is due to its advantages compared to positron
 emission topography (PET) that uses radioactive tracers to follow glucose or water levels.
 While PET has a spatial resolution of a few
-centimeters, fMRI has a spatial resolution of a few millimeters. As a result, a voxel in an fMRI image typically encompasses several hundreds thousands of neurons.
-In addition, while taking an image with PET takes about a minute, it takes on the order of 2s to produce a full-brain fMRI image.
+centimeters, fMRI has a spatial resolution of a few millimeters (which still
+encompasses several hundred thousands of neurons).
+In addition, while taking an image with PET takes about a minute, it takes on
+the order of 2s to produce with fMRI.
 Lastly, fMRI is non-invasive and does involve being exposed to radioactive tracers as in PET.
 
 \subsection{Experimental designs}
