@@ -337,7 +337,7 @@ We have implemented the GroupICA, GroupPCA and MultiViewICA modules of mvlearn.
 
 
 \subsubsection{Brainiak}
-Brainiak~\cite{kumar2020brainiak}, is a Python package that applies machine
+Brainiak~\cite{kumar2020brainiak, kumar2020brainiak2}, is a Python package that applies machine
 learning methods to neuroimaging data. Its API is the same as in scikit-learn
 and it includes modules such as Representational Similarity Analysis or Shared
 response modeling.
@@ -345,7 +345,7 @@ We have implemented the FastSRM module of Brainiak.
 
 
 \paragraph{Published work}
-\fullcite{kumar2020brainiak}
+\fullcite{kumar2020brainiak2}
 
 \section{Conclusion}
 In this thesis, we have presented three methods to perform component
@@ -362,50 +362,52 @@ several hundreds, with several thousand samples and several hundred thousand fea
 Then, we have proposed in chapter~\ref{ch:mvica1} and chapter~\ref{ch:mvica2}
 a novel unsupervised algorithm, MultiViewICA, that reveals latent sources observed through different views. Using an independence assumption, we have demonstrated that the model is identifiable, provided that the latent
 sources are not Gaussian. In contrast to previous approaches, the proposed model leads to a closed-form likelihood, which we then optimize efficiently using a dedicated alternate quasi-Newton approach.
-Therefore, our approach enjoys the statistical guarantees of maximum-likelihood
+Therefore, MultiViewICA enjoys the statistical guarantees of maximum-likelihood
 theory, while still being tractable. MultiViewICA outperforms other unsupervised
 methods used in fMRI and MEG in the context of shared response modeling. However,
 it assumes the same level of noise for all
 subjects, which does not model properly between-subjects variability.
 
 In chapter~\ref{ch:shica} and chapter~\ref{ch:shica2}, we have extended MultiViewICA in orter to deal with source noise heteroscedasticity.
-In practice ShICA outperforms MVICA and other unsupervised methods used in the
+In practice ShICA outperforms MultiViewICA and other unsupervised methods used in the
 context of shared response modeling.
 
 Lastly, we have introduced in chapter~\ref{ch:condica} and chapter~\ref{ch:condica2} a data
 augmentation method based on ICA that outperforms deep learning algorithms in
 terms of decoding accuracy while being much faster.
 
+\section{Future work and perspectives}
+
 Combined with the FastSRM algorithm, MultiViewICA and ShICA yield a novel way to
 make use of multi-view data. They yield a set of operators per view that map
 the data of each view to a shared response, reducing the variability between views.
 In principle, reducing the variability between views should facilitate the
-understanding of the data. In particular, it should be easier to perform
-decoding from multiple subjects when inter-subject variability is reduced.
-This direction could be explored in future work.
+understanding of the data and therefore increase the performance of
+classification based tasks such as contrast maps labeling, automatic diagnosis
+or age prediction. Investigating to which extend these benefits are observed
+could be the topic of future research.
 
-More generally, applications in this thesis were geared towards naturalistic imaging where the temporal response is assumed to be shared
-across subjects. This is not a requirement of our methods and we see at least two other
-settings in which our methods would be useful. The first
+A second practical direction would be to apply our
+methods to different neuroimaging settings in which assumptions differ
+from ours. This thesis is geared towards naturalistic imaging, where the temporal response is assumed to be shared
+across subjects. We see at least two other neuroimaging settings in which our
+methods can be useful. The first
 one is the analysis of resting state data assuming that spatial topographies are
 shared across subjects. In this setting, the spatial topographies become the
-common components while the mixing operators denote a set of time-courses. In
-practice, the experimenter can perform such task by applying our method on
-transposed data.
-The second setting in which our methods could be useful is the analysis of MEG / EEG data assuming both a spatial and
+common components while the mixing operators denote a set of time-courses.
+In practice, transposing the data is enough to enforce such assumptions.
+A second one is the analysis of MEG / EEG data assuming both a spatial and
 temporal mixing. This can be done in practice by stacking the features of
 consecutive samples.
 
 In terms of methods, we have treated separately dimension reduction
 (chapter~\ref{ch:fastsrm1}) and source identification (chapter~\ref{ch:mvica1}
 and chapter~\ref{ch:shica}). Future work might focus on understanding how these
-two steps can be performed jointly. Lastly, in the case of naturalistic stimuli,
-the mixing matrices represent spatial topographies and therefore they can be
-assumed to be close to each other. This aspect is not addressed in our work
-where no link is assumed between mixing matrices and could be the topic of
-future research.
-
-
+two steps can be performed jointly. Another possible extension in the case of
+naturalistic stimuli, is to assume that mixing matrices are close to each other.
+Indeed, as such matrices represent spatial topographies, such prior makes sense.
+Lastly, our data augmentation method does not make use of our understanding of
+multiview datasets. This constitutes an exciting direction of research.
 
 
 % 

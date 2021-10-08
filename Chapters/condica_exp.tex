@@ -5,7 +5,7 @@ In this chapter, we benchmark Conditional ICA as a generative model of task data
 various augmentation methods by assessing their
 ability to improve classification accuracy on a large task fMRI dataset.
 We find that Conditional ICA yields highest accuracy improvements.
-In particular Conditional ICA outperforms conditional GANs~\cite{mirza2014conditional} while being much easier to optimize and interpret. 
+In particular, Conditional ICA outperforms conditional GANs~\cite{mirza2014conditional} while being much easier to optimize and interpret. 
 Lastly, we show on 8 different datasets that the use of Conditional ICA results in systematic improvements in classification accuracy ranging from 1\% to 5\%.
 
 \section{Dataset, data augmentation baselines and classifiers used}
@@ -58,10 +58,10 @@ pinel2007fast \cite{pinel2007fast} & 133, 10 & 70/63  &  1952
 \end{table}
 
 
-We consider 5 alternative
+We consider 4 alternative
 augmentation methods: \emph{ICA}, \emph{Covariance}, \emph{ICA + Covariance} and \emph{CGANs}.
 %
-When no augmentation method is applied we use the \emph{Original} label.
+When no augmentation method is applied, we use the \emph{Original} label.
 
 The \emph{ICA} method applies ICA to $X^{task}$ to generate unmixing matrices $W^{task}$ and
 components $S^{task}=  W^{task} X^{task}$.
@@ -97,7 +97,7 @@ Samples are thus generated as $\tilde{\xb}_c + \tilde{\nb}$.
 \emph{CGANs} can generate fake data from a given class. In the CGAN method, the generator and discriminator have a mirrored architecture with 2 fully connected hidden layer of size (256 and 512).  The number of epochs, batch size, momentum and learning rate are set to 20k, 16, 0.9, 0.01 and we use the Leaky RELU activation function.
 
 We evaluate the performance of augmentation methods through the use of classifiers: logistic regression (LogReg), linear
-discriminant analysis with Ledoit-Wold estimate of covariance (LDA) perceptron
+discriminant analysis with Ledoit-Wold estimate of covariance (LDA), perceptron
 with two hidden layers (MLP) and random forrests (RF).
 The hyper-parameters in each classifier are optimized through an internal 5-Fold
 cross validation. We set the number of iterations in each classifier so that
@@ -201,8 +201,8 @@ methods, the computational over-head induced by CondICA is very low.
   \end{center}
   \caption{\textbf{Running time.} We display the running time of conditional ICA
     and conditional GAN (CGANs) methods used
-    to generate synthetic task fMRI data . Conditional ICA is several orders of magnitude faster than
-    CGANs. In practice the computational over-head induced by Conditional ICA is negligible.}\label{app:runningtime:tab}
+    to generate synthetic task fMRI data. Conditional ICA is several orders of magnitude faster than
+    CGANs. In practice, the computational over-head induced by Conditional ICA is negligible.}\label{app:runningtime:tab}
 \end{table}
 
 
@@ -210,7 +210,7 @@ methods, the computational over-head induced by CondICA is very low.
 
 
 \section{Gains in accuracy brought by conditional ICA on eight datasets.}
-In this experiment we assess the gains brought by Conditional ICA data
+In this experiment, we assess the gains brought by Conditional ICA data
 augmentation on the eight different task fMRI datasets refered to in section~\ref{sec:condica:datasets}. The experimental pipeline is exactly the same as with the HCP task dataset.
 We report in Fig.~\ref{Fig4} the cross-validated accuracy of
 classifiers with and without augmentation.
@@ -257,13 +257,13 @@ components. In all experiments we used $k=900$ components.
 
 \section{Conclusion}
 When Conditional ICA is used as a data augmentation method, it yields consistent
-improvement in classification accuracy: on 8 tasks fMRI datasets, we observe
+improvement in classification accuracy: on 8 tasks fMRI datasets, we observe an
 increase in accuracy between 1\% and 5\% depending on the dataset and the
 classifier used.
 Importantly, this performance was obtained without any fine-tuning of
 the method, showing its reliability. One can also notice that our experiments cover datasets with different cardinalities, from tens to thousand, and different baseline prediction accuracy.
 
-The systematic performance improvement CanICA yields
+The systematic performance improvement CondICA yields
 makes it a promising candidate for data augmentation in a wide range of
 contexts. Future work may focus on its applicability to other decoding tasks
 such as the diagnosis of Autism Spectrum Disorder

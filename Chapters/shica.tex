@@ -1,6 +1,6 @@
 In chapter~\ref{ch:mvica1} and chapter~\ref{ch:mvica2}, we have introduced MultiView ICA, a well principled method to perform shared response modeling. 
 While MultiView ICA yields good practical results, it does not model subject specific deviations from the shared
-response. Yet, the magnitude of the response may differ across subjects \cite{penny2007random}, as does any noise due to heart beats, respiratory artefacts or head movement~\cite{liu2016noise}.
+response. Yet, the magnitude of the response may differ across subjects \cite{penny2007random}, as does any noise due to heart beats, respiratory artefacts or head movements~\cite{liu2016noise}.
 %
 
 This drawback is shared by most GroupICA methods that often rely on single
@@ -19,7 +19,8 @@ view-specific components, and do not model or extract a shared response.
 
 In this chapter, we introduce Shared ICA (ShICA), where each dataset is modeled as a linear transform of shared independent components contaminated by additive Gaussian noise. ShICA allows for principled extraction of the shared components (or responses) in addition to view-specific components. 
 %
-Since it incorporates a statistically sound noise model, it enables optimal inference (minimum mean squared error, MMSE) of the shared responses.
+Since it incorporates a statistically sound noise model, it enables optimal
+inference of the shared responses (minimizing the mean squared error).
 
 We first analyse the theoretical properties of the ShICA model, before providing powerful inference algorithms.
 First, we exhibit necessary and sufficient conditions for ShICA to be identifiable (previous work only shows local identifiability~\cite{anderson2014independent}), in the presence of Gaussian or non-Gaussian components. 
@@ -177,7 +178,7 @@ Indeed, if the $\lambda_j$'s are distinct, then the sequences $(\Sigma_{ij})_i$ 
 This is expected as from Theorem~\ref{th:eig}, Assumption~\ref{ass:uniqueeig} implies identifiability, which in turn implies Assumption~\ref{ass:diversity}.
 % \pierre{I wrote this but this is really pompous}
 
-Prop.~\ref{prop:eigvals_from_noise} also allows us to derive cases where Assumption~\ref{ass:diversity} holds but not Assumption~\ref{ass:uniqueeig}. The following Proposition shows that we can chose parameters of the model so that the model is identifiable but it cannot be solved using Multiset CCA:
+Proposition~\ref{prop:eigvals_from_noise} also allows us to derive cases where Assumption~\ref{ass:diversity} holds but not Assumption~\ref{ass:uniqueeig}. The following proposition shows that we can chose parameters of the model so that the model is identifiable but it cannot be solved using Multiset CCA:
 \begin{proposition}
 \label{counter}
 Assume that for two integers $j, j'$, the sequence $(\Sigma_{ij})_i$ is a permutation of $(\Sigma_{ij'})_i$, i.e. that there exists a permutation of $\{1,\dots, p\}$, $\pi$, such that for all $i$, $\Sigma_{ij} = \Sigma_{\pi(i)j'}$.  Then, $\lambda_j = \lambda_{j'}$.
@@ -300,7 +301,7 @@ Using the ShICA model with Gaussian components, we derive noise covariances esti
 \end{align}
 Incorporating the M-step we get the following updates that only depend on the covariance matrices:
 \begin{align*}
-  \Sigma_i \leftarrow &\diag(\hat{C_{ii}} - 2 \VV[\sbb | \xb]  \sum_{j=1}^m \Sigma_j^{-1} \hat{C}_{ji} \\&  + \VV[\sbb | \xb]  \sum_{j = 1}^m \sum_{l = 1}^m \left(\Sigma_j^{-1} \hat{C}_{jl} \Sigma_l^{-1} \right) \VV[\sbb | \xb] + \VV[\sbb | \xb])
+  \Sigma_i \leftarrow &\diag(\hat{C}_{ii} - 2 \VV[\sbb | \xb]  \sum_{j=1}^m \Sigma_j^{-1} \hat{C}_{ji} \\&  + \VV[\sbb | \xb]  \sum_{j = 1}^m \sum_{l = 1}^m \left(\Sigma_j^{-1} \hat{C}_{jl} \Sigma_l^{-1} \right) \VV[\sbb | \xb] + \VV[\sbb | \xb])
   \numberthis
 \end{align*}
 %We observe very fast convergence ($10$ iterations are usually enough to reach gradients $\ell_2$ norm below $10^{-4}$).
@@ -315,20 +316,20 @@ components $\sbb$ have the super-Gaussian density
   p(s_j) = \frac12\left(\mathcal{N}( s_j; 0, \frac12) + \mathcal{N}( s_j; 0, \frac{3}{2})\right)
 \end{equation}
 
-We propose to maximize the log-likelihood using a generalized
+We propose to maximize the expected log-likelihood using a generalized
 EM~\cite{neal1998view, dempster1977maximum}. Derivations are available in Appendix~\ref{app:emestep}. Like in the previous section, the E-step is in closed-form yielding the following sufficient statistics:
   \begin{align}
     \label{mmse2}
-    &\EE[s_j | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32\}} \theta_{\alpha} \frac{\alpha \bar{y}_{j}}{\alpha + \bar{\Sigma_{j}}}}{\sum_{\alpha \in \{0.5, 1.5\}} \theta_{\alpha}} \\
-    & \VV[s_j | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32\}} \theta_{\alpha} \frac{\bar{\Sigma_{j}}\alpha}{\alpha + \bar{\Sigma_{j}}}}{\sum_{\alpha \in \{0.5, 1.5\}} \theta_{\alpha}}  
+    &\EE[s_j | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32\}} \theta_{\alpha} \frac{\alpha \bar{y}_{j}}{\alpha + \bar{\Sigma}_{j}}}{\sum_{\alpha \in \{0.5, 1.5\}} \theta_{\alpha}} \\
+    & \VV[s_j | \xb] = \frac{\sum_{\alpha \in \{\frac12, \frac32\}} \theta_{\alpha} \frac{\bar{\Sigma}_{j}\alpha}{\alpha + \bar{\Sigma}_{j}}}{\sum_{\alpha \in \{0.5, 1.5\}} \theta_{\alpha}}  
 \end{align}
 where $\theta_{\alpha} = \Ncal(\bar{y}_{j}; 0 , \bar{\Sigma}_{j} + \alpha)$, 
 $\bar{y}_j = \frac{\sum_i \Sigma_{ij}^{-1} y_{ij}}{ \sum_i
-  \Sigma_{ij}^{-1}}$ and $\bar{\Sigma_{j}} = (\sum_i
+  \Sigma_{ij}^{-1}}$ and $\bar{\Sigma}_{j} = (\sum_i
 \Sigma_{ij}^{-1})^{-1}$ with $\yb_i = W_i \xb_i$.
 Noise updates are in closed-form and given by:
 \begin{align}
-\Sigma_i \leftarrow  \diag((\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb])
+  \Sigma_i \leftarrow  \diag(\EE[(\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}])+ \VV[\sbb | \xb])
 \end{align}
 However, no closed-form is available for the updates of unmixing matrices. We therefore perform quasi-Newton updates given by
 \begin{align}
@@ -337,11 +338,11 @@ However, no closed-form is available for the updates of unmixing matrices. We th
 where $\rho \in \mathbb{R}$ is chosen by backtracking line-search
 
 \begin{align}
-	\widehat{\mathcal{H}^{W_i}_{a, b, c, d}} =  \delta_{ad} \delta_{bc} + \delta_{ac} \delta_{bd}\frac{(y_{ib})^2}{\Sigma_{ia}}
+	\widehat{\mathcal{H}^{W_i}_{a, b, c, d}} =  \delta_{ad} \delta_{bc} + \delta_{ac} \delta_{bd}\frac{\EE[(y_{ib})^2]}{\Sigma_{ia}}
 \end{align}
-is an approximation of the Hessian of the negative complete log-likelihood and
+is an approximation of the Hessian of the expected negative complete log-likelihood and
 \begin{align}
-	\mathcal{G}^{W_i} = -I + (\Sigma_i)^{-1}(\yb_i - \mathbb{E}[\sbb|\xb])(\yb_i)^{\top}
+	\mathcal{G}^{W_i} = -I + (\Sigma_i)^{-1}\EE[(\yb_i - \mathbb{E}[\sbb|\xb])(\yb_i)^{\top}]
 \end{align}
  is the gradient.
 
@@ -385,10 +386,11 @@ the goal of SRM. Some deep variants~\cite{chen2016convolutional} release the
 orthogonality constrain but they are much more computationally demanding.
 ShICA leverages ICA theory to provide a much more powerful model of shared responses.
 
+
 \paragraph{Limitations}
-[Omitted long matching line]
+The main limitation of this work is that the model does not reduce the dimension inside each view. In line with other methods, such view-specific  dimension reduction has to be done by some external method, typically view-specific PCA. Using specialized methods for the estimation of covariances should also be of interest for ShICA-J, where it only relies on sample covariances. Finally, ShICA-ML uses a simple model of a super-Gaussian distribution, while modeling the non-gaussianities in more detail in ShICA-ML should improve the performance.
 
 \section{Conclusion}
-[Omitted long matching line]
+In this chapter, we introduced the ShICA model as a principled unifying solution to the problems of shared response modelling and GroupICA. ShICA is able to use both the diversity of Gaussian variances and non-Gaussianity for optimal estimation. We presented two algorithms to fit the model: ShICA-J, a fast algorithm that uses noise diversity, and ShICA-ML, a maximum likelihood approach that can separate Gaussian and non-Gaussian components. ShICA algorithms come with principled procedures for shared components estimation, as well as adaptation and estimation of noise levels in each view (subject) and component.
 In the next chapter, we evaluate ShICA using both real and synthetic data and
 compare with competitive approaches.

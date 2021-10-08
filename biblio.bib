@@ -958,10 +958,11 @@
 	number       = 5,
 	pages        = {620--629},
 	issn         = {0959-4388},
-[Omitted long matching line]
+	abstract     = {Many sources of fluctuation contribute to the functional magnetic resonance imaging ({fMRI}) signal, complicating attempts to infer those changes that are truly related to brain activation. Unlike methods of analysis of {fMRI} data that test the time course of each voxel against a hypothesized waveform, data-driven methods, such as independent component analysis and clustering, attempt to find common features within the data. This exploratory approach can be revealing when the brain activation is difficult to predict beforehand, such as with complex stimuli and internal shifts of activation that are not time-locked to an easily specified sensory or motor event. These methods can be further improved by incorporating prior knowledge regarding the temporal and spatial extent of brain activation.},
 	pmcid        = {PMC2925426},
 	pmid         = 14630228
 }
+
 @article{beckmann2004probabilistic,
 	title        = {Probabilistic independent component analysis for functional magnetic resonance imaging},
 	author       = {Beckmann, Christian F and Smith, Stephen M},
@@ -1411,12 +1412,6 @@
 	number       = 2,
 	pages        = {434--444}
 }
-@article{perry2020mvlearn,
-	title        = {mvlearn: Multiview Machine Learning in Python},
-	author       = {Perry, Ronan and Mischler, Gavin and Guo, Richard and Lee, Theo and Chang, Alexander and Koul, Arman and Franz, Cameron and Vogelstein, Joshua T},
-	year         = 2020,
-	journal      = {arXiv preprint arXiv:2005.11890}
-}
 @article{tong1991indeterminacy,
 	title        = {Indeterminacy and identifiability of blind identification},
 	author       = {Tong, Lang and Liu, R-W and Soon, Victor C and Huang, Y-F},
@@ -1626,7 +1621,7 @@
 	issn         = {0165-0270},
 	url          = {https://www.sciencedirect.com/science/article/pii/S0165027011000458},
 	keywords     = {fMRI, Functional connectivity, Canonical correlation analysis},
-[Omitted long matching line]
+	abstract     = {In this paper we describe a method for functional connectivity analysis of fMRI data between given brain regions-of-interest (ROIs). The method relies on nonnegativity constrained- and spatially regularized multiset canonical correlation analysis (CCA), and assigns weights to the fMRI signals of the ROIs so that their representative signals become simultaneously maximally correlated. The different pairwise correlations between the representative signals of the ROIs are combined using the maxvar approach for multiset CCA, which has been shown to be equivalent to the generalized eigenvector formulation of CCA. The eigenvector in the maxvar approach gives an indication of the relative importance of each ROI in obtaining a maximal overall correlation, and hence, can be interpreted as a functional connectivity pattern of the ROIs. The successive canonical correlations define subsequent functional connectivity patterns, in decreasing order of importance. We apply our method on synthetic data and real fMRI data and show its advantages compared to unconstrained CCA and to PCA. Furthermore, since the representative signals for the ROIs are optimized for maximal correlation they are also ideally suited for further effective connectivity analyses, to assess the information flows between the ROIs in the brain.}
 }
 @article{luo2015tensor,
 	title        = {Tensor canonical correlation analysis for multi-view dimension reduction},
@@ -1890,11 +1885,16 @@
 	pages        = {4040--4049}
 }
 @article{perry2020mvlearn,
-	title        = {mvlearn: Multiview machine learning in python},
-	author       = {Perry, Ronan and Mischler, Gavin and Guo, Richard and Lee, Theo and Chang, Alexander and Koul, Arman and Franz, Cameron and Vogelstein, Joshua T},
-	year         = 2020,
-	journal      = {arXiv preprint arXiv:2005.11890}
+  author  = {Ronan Perry and Gavin Mischler and Richard Guo and Theodore Lee and Alexander Chang and Arman Koul and Cameron Franz and Hugo Richard and Iain Carmichael and Pierre Ablin and Alexandre Gramfort and Joshua T. Vogelstein},
+  title   = {mvlearn: Multiview Machine Learning in Python},
+  journal = {Journal of Machine Learning Research},
+  year    = {2021},
+  volume  = {22},
+  number  = {109},
+  pages   = {1-7},
+  url     = {http://jmlr.org/papers/v22/20-1370.html}
 }
+
 @article{taylor2017cambridge,
 	title        = {The {Cambridge Centre for Ageing and Neuroscience} ({Cam-CAN}) data repository: structural and functional {MRI}, {MEG}, and cognitive data from a cross-sectional adult lifespan sample},
 	author       = {Taylor, Jason R and Williams, Nitin and Cusack, Rhodri and Auer, Tibor and Shafto, Meredith A and Dixon, Marie and Tyler, Lorraine K and Henson, Richard N and others},
@@ -2036,11 +2036,14 @@
 	publisher    = {Hindawi},
 	volume       = 2011
 }
-@article{kumar2020brainiak,
+@article{kumar2020brainiak2,
 	title        = {BrainIAK: The brain imaging analysis kit},
 	author       = {Kumar, Manoj and Anderson, Michael J and Antony, James W and Baldassano, Christopher and Brooks, Paula P and Cai, Ming Bo and Chen, Po-Hsuan Cameron and Ellis, Cameron T and Henselman-Petrusek, Gregory and Huberdeau, David and others},
-	year         = 2020
+  journal      = {Aperture},
+	year         = 2020,
+  url     = {https://osf.io/db2ev/}
 }
+
 @article{pascual2002standardized,
 	title        = {Standardized low-resolution brain electromagnetic tomography (sLORETA): technical details},
 	author       = {Pascual-Marqui, Roberto Domingo and others},

@@ -1,14 +1,11 @@
-In chapters~\ref{ch:mvica1},~\ref{ch:mvica2},~\ref{ch:shica} and
-\ref{ch:shica2}, we have used ICA-based methods to learn shared responses from different
-subjects performing the same task.
-In this chapter we present an ICA-based method to achieve data augmentation for fMRI data.
+In this chapter, we present an ICA-based method to achieve data augmentation for fMRI data.
 
   Advances in computational cognitive neuroimaging research are
   related to the availability of large amounts of labeled brain
 imaging data, since classifiers used to decode brain maps have large
 sample-complexity.
 %
-However such data are scarce.
+However, such data are scarce.
 %
 
 To tackle this problem, data generation is an attractive approach, as
@@ -45,7 +42,7 @@ Furthermore the training of CGANs is notoriously unstable and there are many hyp
 
 \section{Methods}
 
-\subsection{Spatial Dimension reduction.} 
+\subsection{Spatial Dimension reduction} 
 The outline of the proposed approach is presented in Fig.\ref{Fig0}.
 %
 While brain maps are high-dimensional, they span a smaller space than that of
@@ -56,7 +53,7 @@ high-resolution version of the Dictionaries of Functional Modes \emph{DiFuMo}
 atlas \cite{dadi_fine-grain_2020}, i.e. with $p=1024$ components.
 %
 The choice of dimension reduction technique generally has an impact on the
-results. However we consider this question to be out of the scope of the current study and leave this to future work.
+results. However, we consider this question to be out of the scope of the current study and leave this to future work.
 
 \subsection{A generative model for task data}
 Consider a task dataset $X^{task}$ in $\mathbb{R}^{p,n}$ where $n$ is the number of observations
@@ -71,7 +68,7 @@ Moreover, we consider a model that subsumes the distribution of any type of
 fMRI data (task or rest): a linear mixture of $k \leq p$ independent temporal signals.
 %
 We therefore use temporal ICA to learn a dimension reduction and unmixing matrix
-$W^{task} \in \mathbb{R}^{k, p}$ such that the $k$ components i.e the $k$ components of
+$W^{task} \in \mathbb{R}^{k, p}$ such that the $k$ components of
 $W^{task} \xb^{task}$ are as
 independent as possible.
 
@@ -81,13 +78,13 @@ independently sample them from the distribution of the components.
 This is easy because such distribution has supposedly independent marginals.
 We apply an invertible quantile transform $q^{task}$ to the components of $W^{task} \xb^{task}$ so that
 the distribution of $q^{task}(W^{task} \xb^{task})$ has standardized Gaussian
-marginals. Since it also has independent marginals it is given by $\mathcal{N}(\zero_k, I_k)$
+marginals. Since it also has independent marginals, it is given by $\mathcal{N}(\zero_k, I_k)$
 from which we can easily sample.
 
 However task datasets   have a small number of samples ($10 \sim 10^2$). As a
-result, there are too few samples to learn high quality unmixing matrices. In
+result, there are too few samples to learn a high quality unmixing matrix. In
 contrast, resting state datasets have a large number of samples ($10^4 \sim 10^5$).
-Therefore we replace the unmixing matrix learned on task data $W^{task}$ by the
+Therefore, we replace the unmixing matrix learned on task data $W^{task}$ by the
 unmixing matrix learned on resting state data $W^{rest}$.
 
 We form $\zb^{task} = W^{rest} \xb^{task}$ and learn its quantile
