@@ -3,7 +3,7 @@ efficiently compute shared responses from the full brain data of multiple
 subjects. In this chapter, we
 investigate the practical benefits of FastSRM on synthetic and real fMRI data.
 FastSRM reduces the fitting time
-and memory requirements are reduced considerably, making it possible to compute
+and memory requirements considerably, making it possible to compute
 shared responses using a laptop in a reasonable amount of time even on
 datasets that do not hold in RAM. The efficiency of FastSRM allows us to apply
 SRM on a large number of subjects. As an example, we apply FastSRM on 647
@@ -63,7 +63,7 @@ of iterations has a very strong impact on performance while it has a small impac
 when the optimal atlas is used. 
 Lastly, looking at the convergence curves, we see that even after $100$ iterations, algorithms did
 not fully converge. This means that in practice a much larger number of
-iterations is needed which would yield even a higher difference in fitting time
+iterations is needed which would yield an even higher difference in fitting time
 between methods using no atlas and methods using the optimal atlas.
 
 \begin{figure}
@@ -133,12 +133,12 @@ We use all 647 subjects of the CamCAN dataset and demonstrate the usefulness of 
 % 
 A key asset of FastSRM is that these spatial components can be visualized and therefore provide meaningful insights. 
 
-Note that while it is possible to do the same study using probabilistic SRM, the
+Note that while it is possible to do the same study using SRM, the
 table in figure~\ref{fig:predict_age} shows that the memory usage of
-probabilistic SRM is 10x more important than FastSRM, almost reaching the memory
+SRM is 10x more important than FastSRM, almost reaching the memory
 limits of our cluster and is about 200x slower. FastSRM could be
 easily used with a much higher number of subjects while keeping the computation
-time and memory requirements reasonable while this would be impossible with ProbSRM.
+time and memory requirements reasonable with SRM would be impossible.
 
 We now describe our age prediction pipeline.
 Functionally matched spatial components $A_i$ are obtained using FastSRM.
@@ -150,7 +150,8 @@ used to train one Ridge model per spatial components to predict age, the second 
 %
 We use 5 fold cross validation to split the train set (so that the number of samples used to train the Random Forest is the number of elements in the train set).
 %
-Then the train set is used to train one Ridge model per spatial component.
+After the Random Forest is trained, we re-train one Ridge model per component using the full
+train set.
 %
 On the test set each Ridge model makes a prediction and the predictions are aggregated using the Random Forest model.
 %
@@ -170,7 +171,7 @@ components specific to each individual making it more interpretable than other a
 \begin{figure}
 \centering
 \includegraphics[scale=0.35]{figures/srm/conceptual_figure72.png}
-\caption{\textbf{Experiment — Predict age from spatial components extracted using FastSRM}: We first learn the spatial components from fMRI data using SRM. We learn one Ridge model per spatial components to predict age across subjects. Then, these models are aggregated using a Random Forest (like in \cite{rahim2017joint}).} 
+\caption{\textbf{Experiment — Predict age from spatial components extracted using FastSRM}: We first learn the spatial components from fMRI data using FastSRM. We learn one Ridge model per spatial components to predict age across subjects. Then, these models are aggregated using a Random Forest (like in \cite{rahim2017joint}).} 
 \label{fig:experiment_age_prediction}
 \end{figure}
 

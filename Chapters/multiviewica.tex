@@ -38,9 +38,13 @@ $\xb_i\in\bbR^p$  such that:
     \xb_i = A_i(\sbb + \nb_i), \enspace i=1,\dots, m
 \end{equation}
 %\bt{Matrices as bold letters ?} \pa{I find it understandable to have nothing but matrices in uppercase}
-where $\sbb \in \bbR^p$ are the shared independent components, $\nb_i \in \bbR^p$ is individual noise, $A_i \in \bbR^{p\times p}$ are the individual mixing matrices, assumed to be full-rank.
+where $\sbb \in \bbR^p$ are the shared independent components, $\nb_i \in
+\bbR^p$ is individual noise and $A_i \in \bbR^{p\times p}$ are the individual mixing matrices, assumed to be full-rank.
+In practice we have access to $n$ observations of $\xb_i$ assumed independent
+and identically distributed that we stack into a
+matrix $X_i \in \RR^{p, n}$.
 %
-We assume that samples are observed i.i.d. For simplicity, we assume that the components share the same density $\delta$, so that the independence assumption is $p(\sbb) = \prod_{j=1}^p \delta(s_j)$. Finally, we assume that the noise is Gaussian decorrelated with variance $\sigma^2$, $\nb_i \sim \mathcal{N}(0, \sigma^2I_p)$, and that the noise is independent across subjects and independent from the components.
+For simplicity, we assume that the components share the same density $\delta$, so that the independence assumption is $p(\sbb) = \prod_{j=1}^p \delta(s_j)$. Finally, we assume that the noise is Gaussian decorrelated with variance $\sigma^2$, $\nb_i \sim \mathcal{N}(0, \sigma^2I_p)$, and that the noise is independent across subjects and independent from the components.
 The assumption of additive white noise on the components models individual deviations from the shared components $\sbb$.
 It is equivalent to having noise on the sensors with covariance $\sigma^2 A_i \left(A_i\right)^{\top}$, i.e. a scaled version of the data covariance without noise.
 
@@ -75,11 +79,11 @@ and we next get the joint density as:
   p_{\xb, \sbb}(\xb,\sbb)=p_{\sbb}(\sbb) \prod_{i=1}^m  |W_i| p_{\nb^i}(W_i\xb_i-\sbb)
 \end{equation}
 
-Integrating out $\sbb$ and taking the log gives the negative likelihood:
+Integrating out $\sbb$ and taking the log and expectation gives the expected negative likelihood:
 \begin{align} 
   \label{eq:likelihood}
- &\loss(W_1, \dots, W_m) =  \nonumber
-  \\& -\sum_{i=1}^m\log|W_i| -  \log\left(\int_{\sbb}\exp\left(-\frac1{2\sigma^2}\sum_{i=1}^m\|W_i\xb_i - \sbb\|^2\right)p(\sbb)d\sbb\right)
+  \loss(W_1, &\dots, W_m) = -\sum_{i=1}^m\log|W_i| \nonumber
+  \\&  -  \EE[\log\left(\int_{\sbb}\exp\left(-\frac1{2\sigma^2}\sum_{i=1}^m\|W_i\xb_i - \sbb\|^2\right)p(\sbb)d\sbb\right)]
 \end{align}
 up to additive constants.
 
@@ -87,7 +91,7 @@ The integral in~\ref{eq:likelihood} after factorization, is given by
 \begin{equation}
 \int_{\sbb} \prod_{j=1}^p \exp \left( -\frac{1}{2\sigma^2} \sum_{i=1}^m (W_{ij}^{\top}\xb_i-s_j)^2 \right) \delta(s_j) d\sbb
 \end{equation}
-where $W_{ij}$ is the $j$-th line of $W_i$. Denote $y_{ij}=W_{ij}^{\top}\xb_i$ and $\tilde{s_j}=\frac1m\sum_{i=1}^m y_{ij}$.  Fix $j$, and drop it to simplify notation. Then we need to solve the integral
+where $W_{ij}$ is the $j$-th line of $W_i$. Denote $y_{ij}=W_{ij}^{\top}\xb_i$ and $\tilde{s}_j=\frac1m\sum_{i=1}^m y_{ij}$.  Fix $j$, and drop it to simplify notation. Then we need to solve the integral
 \begin{align*}
    &\int_s \exp \left(-\frac{1}{2\sigma^2} \sum_{i=1}^m (y_i-s)^2 \right) \delta(s)ds\\
    &=\int_s \exp \left(-\frac{1}{2\sigma^2} [ m(\tilde{s}-s)^2 + \sum_{i=1}^m (y_i-\tilde{s})^2] \right) \delta(s)ds \\ 
@@ -97,12 +101,13 @@ where $W_{ij}$ is the $j$-th line of $W_i$. Denote $y_{ij}=W_{ij}^{\top}\xb_i$ a
 
 where we have made the change of variable $z=\tilde{s}-s$. The remaining integral simply means that $\delta$ is smoothed by a Gaussian kernel, which can be computed exactly if $\delta$ is a Gaussian mixture. We therefore define $f(s) = -\log \left(\int_z \exp \left(-\frac{m}{2\sigma^2} z^2 \right) \delta(s-z) dz\right)$.
 
-The negative log-likelihood becomes
+The expected negative log-likelihood becomes
 \begin{equation}
     \label{eq:cost_function}
-    \loss(W_1, \dots, W_m) = -\sum_{i=1}^m \log|W_i| + \frac1{2\sigma^2}\sum_{i=1}^m\|W_i\xb_i - \tilde{\sbb}\|^2 + f(\tilde{\sbb}).
+    \loss(W_1, \dots, W_m) = -\sum_{i=1}^m \log|W_i| + \frac1{2\sigma^2}\sum_{i=1}^m \EE[\|W_i\xb_i - \tilde{\sbb}\|^2] + \EE[f(\tilde{\sbb})]
 \end{equation}
-Multiview ICA is then performed by minimizing $\loss$, and the estimated shared components are $\tilde{\sbb}$.
+Multiview ICA is then performed by minimizing $\loss$, and the estimated shared
+components are $\tilde{S} = \frac{\sum_i W_i X_i}{m}$.
 The negative log-likelihood $\loss$ is quite simple, and importantly, can be computed easily given the parameters of the model and the data; it does not involve any intractable integral.
 %
 
@@ -124,12 +129,12 @@ We propose an alternate minimization scheme, where $\loss$ is alternatively dimi
 When all matrices $W_1, \dots, W_m$ are fixed but one, $W_i$, $\loss$ can be rewritten, up to an additive constant 
 \begin{align}
     \label{eq:indiv_loss}
-    &\loss_i(W_i) = \nonumber  \\&-\log|W_i| + \frac{1 - 1/m}{2\sigma^2}\|W_i\xb_i - \frac{m}{m-1}\tilde{\sbb}_{-i}\|^2 + f(\frac1m W_i \xb_i +\tilde{\sbb}_{-i}), 
+  \loss_i(&W_i) = -\log|W_i| \nonumber  \\&+ \frac{1 - 1/m}{2\sigma^2}\EE[\|W_i\xb_i - \frac{m}{m-1}\tilde{\sbb}_{-i}\|^2 + f(\frac1m W_i \xb_i +\tilde{\sbb}_{-i})] 
 \end{align}
 with $\tilde{\sbb}_{-i} = \frac1m \sum_{j \neq i}W_j \xb_j$.
 %
 This function has the same structure as the usual maximum-likelihood ICA cost
-function: it is written $\loss_i(W_i) = -\log|W_i| + g(W_i\xb_i)$, where $g(\yb)
+function: it is written $\loss_i(W_i) = -\log|W_i| + \EE[g(W_i\xb_i)]$, where $g(\yb)
 = \sum_{j=1}^pf(\frac{y_j}{m} + \tilde{\sbb}_{-i, j}) + \frac{1 -
   1/m}{2\sigma^2}(y_j - \frac{m}{m-1}\tilde{\sbb}_{-i, j})^2$ where
 $\tilde{\sbb}_{-i, j}$ is the $j$-th component of $\tilde{\sbb}_{-i}$.
@@ -143,12 +148,12 @@ Quasi-Newton methods are based on approximations of the Hessian of $\loss_i$.
 The relative gradient (resp. Hessian)~\cite{amari1996new, cardoso1996equivariant} of $\loss_i$ is defined as the matrix $G_i\in \bbR^{p \times p}$ (resp. tensor $\mathcal{H}_i \in \bbR^{p\times p\times p\times p}$) such that as the matrix $E\in\bbR^{p\times p}$ goes to $0$, we have $\loss_i((I_p + E)W_i) \simeq \loss_i(W_i) + \dotp{ G_i}{ W_i} + \frac12\dotp{ E}{ \mathcal{H}_iE}$. Standard manipulations yield:
 \begin{equation}
     \label{eq:gradient}
-    G_i = \frac1mf'(\tilde{\sbb})(\yb_i)^{\top} + \frac{1 - 1 /m}{\sigma^2}(\yb_i - \frac{m}{m-1}\tilde{\sbb}_{-i})(\yb_i)^{\top} - I_p 
+    G_i = \EE[\frac1mf'(\tilde{\sbb})(\yb_i)^{\top} + \frac{1 - 1 /m}{\sigma^2}(\yb_i - \frac{m}{m-1}\tilde{\sbb}_{-i})(\yb_i)^{\top}] - I_p 
 \end{equation}
 where $\yb_i= W_i\xb_i$.
 \begin{align}
     \label{eq:hessian}
-    (\mathcal{H}_i)_{abcd} &= \delta_{ad}\delta_{bc} + \delta_{ac}\left(\frac{1}{m^2}f''(\tilde{s}_a) + \frac{1 - 1/m}{\sigma^2}\right)y_{ib}y_{id} \\ &\text{for }a, b, c, d =1\dots p \nonumber
+    (\mathcal{H}_i)_{abcd} &= \delta_{ad}\delta_{bc} + \delta_{ac}\EE[\left(\frac{1}{m^2}f''(\tilde{s}_a) + \frac{1 - 1/m}{\sigma^2}\right)y_{ib}y_{id}] \\ &\text{for }a, b, c, d =1\dots p \nonumber
 \end{align}
 
 Newton's direction is then $-\left(\mathcal{H}_i\right)^{-1}G_i$. However, this Hessian is costly to compute (it has $\simeq p^3$ non-zero coefficients) and invert (it can be seen as a big $p ^2\times p^2$ matrix). Furthermore, to enforce that Newton's direction is a descent direction, the Hessian matrix should be regularized in order to eliminate its negative eigenvalues~\cite{nocedal2006numerical}, and $\mathcal{H}_i$ is not guaranteed to be positive definite.
@@ -160,7 +165,7 @@ Luckily, if we assume that the signals in $\yb_i$ are independent, several coeff
 \begin{align}
     \label{eq:hessian_approx}
     (H_i)_{abcd} &= \delta_{ad}\delta_{bc} + \delta_{ac}\delta_{bd}\Gamma^i_{ab} \\
-    &\text{with  }(\Gamma_i)_{ab} = \left(\frac{1}{m^2}f''(\tilde{s}_a) + \frac{1 - 1/m}{\sigma^2}\right)\left(y_{ib}\right)^2 \nonumber
+    &\text{with  }(\Gamma_i)_{ab} = \EE[\left(\frac{1}{m^2}f''(\tilde{s}_a) + \frac{1 - 1/m}{\sigma^2}\right)\left(y_{ib}\right)^2] \nonumber
 \end{align}
 This approximation is sparse: it only has $p(2p -1)$ non-zero coefficients.
 %
@@ -168,7 +173,7 @@ In order to better understand the structure of the approximation, we can compute
 %
 We find $\left(H_iM\right)_{ab} = (\Gamma_i)_{ab}M_{ab} + M_{ba}$: $H_iM_{ab}$ only depends on $M_{ab}$ and $M_{ba}$, indicating a simple block diagonal structure of $H_i$.
 %
-The tensor $H_i$ is therefore easily regularized and inverted:
+The operator $H_i$ is therefore easily regularized and inverted:
 $\left((H_i)^{-1}M\right)_{ab} = \frac{\Gamma^i_{ba}M_{ab} - M_{ba}}{\Gamma^i_{ab}\Gamma^i_{ba} - 1}$.
 %
 Finally, since this approximation is obtained by assuming that the $\yb_i$ are independent, the direction $-H_i^{-1}G_i$ is close to Newton's direction when the $\yb_i$ are close to independence, leading to fast convergence.
@@ -222,7 +227,7 @@ The proof is available in appendix~\ref{ref:robust}.
 %
 The sub-linear growth of $f'$ is a customary hypothesis in ICA which implies that $d$ has heavier-tails than a Gaussian, and in appendix~\ref{ref:robust} we provide other conditions for the result to hold.
 %
-In this setting, the shared components estimated by the algorithm are $\tilde{\sbb} = \Lambda (\sbb + \frac1m \sum_{i=1}^m \nb_i)$, which is a scaled version of the best estimate of the shared components under the Gaussian noise hypothesis.
+In this setting, the shared components estimated by the algorithm are $\tilde{S} = \Lambda (S + \frac1m \sum_{i=1}^m N_i)$, which is a scaled version of the best estimate of the shared components under the Gaussian noise hypothesis.
 
 This proposition shows that, up to scale, the true unmixing matrices are a stationary point for Algorithm~\ref{algo:mv_ica}: if the algorithm starts at this point it will not move.
 %
@@ -232,6 +237,7 @@ In the appendix~\ref{sec:stability}, we provide an analysis similar to~\cite{car
 %
 
 \section{Related Work}
+\label{sec:permica}
 In contrast to ConcatICA or CanICA (see section~\ref{sec:canicaandconcatica}),
 MultiView ICA maximizes a likelihood, which brings statistical guarantees like
 consistency or asymptotic efficiency. Furthermore MultiViewICA finds individual

@@ -10,6 +10,10 @@ the data $(\xb_i)_{i=1}^m$ as:
 with $\nb_i \sim \Ncal(0, \Sigma_i)$ where $\Sigma_i = \sigma^2 I_v$ in
 deterministic SRM and $\Sigma_i = \sigma_i^2 I_v$ in probabilistic SRM.
 
+In practice, we have access to $n$ observations of $\xb_i$ stacked in a matrix
+$X_i \in \RR^{v \times n}$. The corresponding
+observations of $\sbb$ called $S \in \RR^{k \times n}$ are unknown.
+
 When working with high dimensional data, SRM is particularly
 interesting as it provides a principled way to perform dimension reduction. Note that this
 contrasts with ICA-like methods that do not incorporate dimension reduction in their model.
@@ -28,8 +32,8 @@ with the full data.
 
 \section{The FastSRM algorithm}
 SRM algorithms use different set of parameters $\theta$ to represent the data.
-In deterministic SRM $\theta = (A_i)_{i=1}^m, \sbb$ where $(A_i)_{i=1}^m$ are the
-mixing matrices and $\sbb$ the shared response while in probabilistic SRM $\theta
+In deterministic SRM $\theta = (A_i)_{i=1}^m, S$ where $(A_i)_{i=1}^m$ are the
+mixing matrices and $S$ are the $n$ observations of the shared response $S$ while in probabilistic SRM $\theta
 = (A_i)_{i=1}^m, \Sigma_s, (\sigma_i)_{i=1}^m$ where $(A_i)_{i=1}^m$ are the
 mixing matrices, $(\sigma_i)_{i=1}^m$ the noise levels and $\Sigma_s$ the
 components variance.
@@ -49,10 +53,9 @@ The figure~\ref{fig:srm:conceptual} illustrates this process.
 
 Note that the parameters obtained with FastSRM $\theta'$ are different
 from the parameters obtained with the corresponding SRM algorithm $\theta$ (the unmixing matrices in $\theta'$ do not even have the same shape as the unmixing matrices in $\theta$).
-However, as we will see in the next section, there exists an explicit and exact
-correspondence between $\theta$ and $\theta'$ although in the case of
-probabilistic SRM, the algorithm applied on reduced data needs to be slightly modified in order to
-obtain these guarantees. 
+However, as we will see in the next section, there exists atlases such as the
+correspondence between $\theta$ and
+$\theta'$ can be made explicit.
 
 \begin{figure}
   \centering
@@ -65,7 +68,7 @@ obtain these guarantees.
 From a computational stand point, the dimension reduction provides
 a large reduction in memory usage. Indeed as the original data are seen only
 once, it is no longer necessary to keep the full dataset in memory (we can load
-data $\xb_i$ one after the other and similarly for the atlases $U_i$). Therefore
+data $X_i$ one after the other and similarly for the atlases $U_i$). Therefore
 the memory consumption is only in $\bigO(vn)$ (where $v$ is the number of voxels
 and $n$ is the number of samples) which is lower than SRM by a factor of $m$,
 the number of subjects. The number of subjects is typically between $10$ and
@@ -78,7 +81,7 @@ memory in the hardware.
 After preprocessing, the reduced representation $\zb_i$ is used instead of the
 original data $\xb_i$ yielding a time complexity of $\bigO(
 \mathrm{T_{preprocessing}} + \mathrm{n_{iter}} mpnr)$.
-Let us highlight that in practice, it often happens that an experiment is run
+Let us highlight that an experiment is often run
 multiple times such as when cross validated results are needed. In these cases,
 the pre-processing is performed only once and the apparent complexity becomes
 $\bigO(\mathrm{n_{iter}} mpnr)$ which is faster than SRM by
@@ -92,45 +95,48 @@ However, in general, working with reduced data induces a loss of information and
 therefore there is little hope to recover the parameters that would have been obtained from SRM from the parameters of FastSRM.
 However, in this section, we show that there exists an optimal atlas in the sense that SRM and FastSRM yield the same results.
 
-Let us consider $\xb_i = U_{\xb_i} \zb_i$ a PCA of $\xb_i$. As the number of
-samples $n$ is lower than the number of features $U_{\xb_i} \in \RR^{v \times n}$ and $\zb_i \in \RR^{n}$.  We also have $U_{\xb_i}^{\top}U_{\xb_i} = I$.
+Let us consider $\xb_i = U_{\xb_i} \zb_i$ a PCA of $\xb_i$ with the maximum
+number of components. As the number of
+samples $n$ is lower than the number of features, $U_{\xb_i} \in \RR^{v \times n}$ and $\zb_i \in \RR^{n}$.  We also have $U_{\xb_i}^{\top}U_{\xb_i} = I$.
 Therefore $U_{\xb_i}$ constitutes a possible choice of subject specific atlas.
 
-As the next property shows, $U_{\xb_i}$ constitutes an optimal atlas for deterministic FastSRM.
+As the next property shows, $U_{\xb_i}$ is an optimal atlas for deterministic FastSRM.
 \begin{proposition}[Optimal atlas for deterministic FastSRM]
-  Let $(A_i)_i, \sbb$ be the solution obtained by deterministic SRM on data
-  $\xb_i$ and $(A_i')_i, \sbb'$ the solution obtained by deterministic FastSRM on
-  data $\xb_i$ using atlas $U_{\xb_i}$ where $\xb_i = U_{\xb_i} \zb_i$ is a PCA
-  of $\xb_i$. Then $A_i = U_{\xb_i}A_i'$ and $\sbb = \sbb'$. 
+  Let $(A_i)_i, S$ be the solution obtained by deterministic SRM on data
+  $(X_i)_i$ and $(A_i')_i, S'$ the solution obtained by deterministic FastSRM on
+  data $(X_i)_i$ using atlases $(U_{X_i})_i$ where $X_i = U_{\xb_i} Z_i$ is a PCA
+  of $X_i$. Then $A_i = U_{X_i}A_i'$ and $S = S'$. 
 \label{prop:optimaldetsrm}
 \end{proposition}
 \begin{proof}
 Updates of the mixing matrices $A_i$ in deterministic SRM
 equation~\eqref{eq:detsrm:Aiupdate} can be written:
 \begin{align}
-  A_i &\leftarrow \Pcal(\xb_i \sbb^T)= U_{\xb_i}\Pcal(\zb_i \sbb^T)
+  A_i &\leftarrow \Pcal(\frac1{n}X_i S^{\top})= U_{X_i}\Pcal(\frac1{n}Z_i S^{\top})
   \label{eq:fastdetsrm:Aiupdate}
 \end{align}
 where $\Pcal$ is the projection on the Stiefel manifold: $\Pcal(M) = M
 (M^{\top}M)^{-\frac12}$.
 
 
-Therefore we can look for $A_i$ as $A_i = U_{\xb_i} \tilde{A_i}$. $\tilde{A_i}$ is
+Therefore we can look for $A_i$ as $A_i = U_{X_i} \tilde{A}_i$. $\tilde{A}_i$ is
 orthogonal. Indeed
 \begin{align}
   &A_i^{\top} A_i = I_p \\
-  & \implies \tilde{A_i}^{\top}U_{\xb_i}^{\top} U_{\xb_i} \tilde{A_i} = I_p \\
-  & \implies \tilde{A_i}^{\top} \tilde{A_i} = I_p
+  & \implies \tilde{A}_i^{\top}U_{X_i}^{\top} U_{X_i} \tilde{A}_i = I_p \\
+  & \implies \tilde{A}_i^{\top} \tilde{A}_i = I_p
 \end{align}
 
 Then, we use the fact that
 \begin{align}
-  \|\xb_i - A_i \sbb \|^2 = \| U_{\xb_i}\zb_i - U_{\xb_i}\tilde{A_i} \sbb\|^2 = \| \zb_i - \tilde{A_i} \sbb \|^2
+  \|X_i - A_i S \|^2 = \| U_{X_i}Z_i - U_{X_i}\tilde{A}_i S\|^2 = \| Z_i - \tilde{A}_i S \|^2
   \label{eq:equality:xy}
 \end{align}
+so that $A_i' = \tilde{A}_i$.
+
 Therefore, the solution of deterministic SRM on data $(\zb_i)_{i=1}^m$ and
 $(\xb_i)_{i=1}^m$ are linked by the change of parameters $A_i = U_{\xb_i}A_i'$ and
-$\sbb = \sbb'$ where $A_i' = \tilde{A_i}$. This concludes the proof.
+$S = S'$. This concludes the proof.
 \end{proof}
 
 In the case of probabilistic SRM we can obtain very similar results. However the
@@ -138,11 +144,11 @@ algorithm applied on reduced data need to be slightly modified.
 We call probSRM($\psi$) the probabilistic SRM algorithm modified such that
 updates
 \begin{align}
-\sigma_i^2 \leftarrow \frac1{v} (\| \xb_i - A_i \EE[\sbb|\xb]\|^2 + \| \diag(\VV[\sbb | \xb]) \|^2)
+\sigma_i^2 \leftarrow \frac1{v} (\EE[\| \xb_i - A_i \EE[\sbb|\xb]\|^2] + \| \diag(\VV[\sbb | \xb]) \|^2)
 \end{align}
 are replaced by updates
 \begin{align}
-  \sigma_i^2 \leftarrow \frac1{\psi} (\| \xb_i - A_i \EE[\sbb|\xb]\|^2 + \| \diag(\VV[\sbb | \xb]) \|^2)
+  \sigma_i^2 \leftarrow \frac1{\psi} (\EE[\| \xb_i - A_i \EE[\sbb|\xb]\|^2] + \| \diag(\VV[\sbb | \xb]) \|^2)
 \end{align}
 
 We have the following result:
@@ -154,34 +160,36 @@ We have the following result:
   \label{prop:optimalprobsrm}
 \end{proposition}
 \begin{proof}
-  Updates of the mixing matrices $A_i$ in probabilistic SRM equation~\eqref{eq:psrm:Aiupdate}. We get:
+  Updates of the mixing matrices $A_i$ in probabilistic SRM
+  equation~\eqref{eq:psrm:Aiupdate} can be written:
   \begin{align}
-    A_i &\leftarrow U_{\xb_i}\Pcal(\zb_i \EE[\sbb| \xb_i]^T)
+    A_i &\leftarrow U_{\xb_i}\Pcal(\EE[\zb_i \EE[\sbb| \xb_i]^T])
     \label{eq:fastprobsrm:Aiupdate}
   \end{align}
-  so we can look for $A_i$ as $A_i = U_{\xb_i} \tilde{A_i}$ and, as in the
-  deterministic case, $\tilde{A_i}$ is orthogonal.
+  so we can look for $A_i$ as $A_i = U_{\xb_i} \tilde{A}_i$ and, as in the
+  deterministic case, $\tilde{A}_i$ is orthogonal.
   Therefore equality~\eqref{eq:equality:xy} holds.
   
-  Then we consider the negative log-likelihood of probabilistic srm:
+  Then we consider the expected negative log-likelihood of probabilistic srm:
   \begin{align}
-    \loss &= \sum_i \frac12 v\log(\sigma_i^2) + \frac12 \log(|\Sigma_s|) + \int_{\sbb} \sum_i \frac1{2 \sigma_i^{2}}\|\xb_i - A_i \sbb \|^2 \\& \enspace + \frac12 \dotp{ \sbb }{ \Sigma_s^{-1} \sbb }  d\sbb \\
-          &= \sum_i \frac12 v \log(\sigma_i^2) + \frac12 \log(|\Sigma_s|) + \int_{\sbb} \sum_i \frac1{2 \sigma_i^{2}}\|\zb_i - \tilde{A_i} \sbb \|^2 \\& \enspace+ \frac12 \dotp{ \sbb }{ \Sigma_s^{-1} \sbb }  d\sbb
+    \loss &= \sum_i \frac12 v\log(\sigma_i^2) + \frac12 \log(|\Sigma_s|) + \EE[\int_{\sbb} \sum_i \frac1{2 \sigma_i^{2}} \|\xb_i - A_i \sbb \|^2 \nonumber \\& \enspace \enspace \enspace \enspace+ \frac12 \dotp{ \sbb }{ \Sigma_s^{-1} \sbb }  d\sbb] \\
+          &= \sum_i \frac12 v \log(\sigma_i^2) + \frac12 \log(|\Sigma_s|) + \EE[\int_{\sbb} \sum_i \frac1{2 \sigma_i^{2}}\|\zb_i - \tilde{A}_i \sbb \|^2 \nonumber \\& \enspace \enspace \enspace \enspace+ \frac12 \dotp{ \sbb }{ \Sigma_s^{-1} \sbb }  d\sbb]
   \end{align}
   where we use equality~\eqref{eq:equality:xy}.
   Optimizing the log-likelihood via expectation maximization yields the exact
   same updates as probabilistic srm on data $\zb_i$
   except that updates
   \begin{align}
-    \sigma_i^2 \leftarrow \frac1{t} (\| \zb_i - \tilde{A_i} \EE[\sbb|\zb]\|^2 + \| \diag(\VV[\sbb | \zb]) \|^2)
+    \sigma_i^2 \leftarrow \frac1{t} (\EE[\| \zb_i - \tilde{A}_i \EE[\sbb|\zb]\|^2] + \| \diag(\VV[\sbb | \zb]) \|^2)
   \end{align}
   are replaced by updates
   \begin{align}
-    \sigma_i^2 \leftarrow \frac1{v} (\| \zb_i - \tilde{A_i} \EE[\sbb|\zb]\|^2 + \| \diag(\VV[\sbb | \zb]) \|^2)
+    \sigma_i^2 \leftarrow \frac1{v} (\EE[\| \zb_i - \tilde{A}_i \EE[\sbb|\zb]\|^2] + \| \diag(\VV[\sbb | \zb]) \|^2)
   \end{align}
+  so that $\tilde{A}_i = A'_i$.
 
-  The updates in both algorithms are linked  by $A_i = U_{\xb_i}A_i'$ where
-  $A_i' = \tilde{A_i}$, $\sigma_i' =
+  Therefore, the updates in both algorithms are linked  by $A_i = U_{\xb_i}A_i'$,
+  $\sigma_i' =
   \sigma_i$ and $\Sigma_s'  = \Sigma_s$.
 
   This concludes the proof.
@@ -194,11 +202,11 @@ not the model for deterministic (respectively probabilistic) SRM holds.
 
 A complexity analysis shows that finding the optimal atlas becomes the limiting
 step of the pipeline. Even with fast implementations, the subject specific PCA
-is costly. However FastSRM only works on $\zb_i$ so we do not need to know the value of $U_{\xb_i}$ straight away.
+is costly. However FastSRM only works on $\zb_i$ so we do not need to know the value of $U_{\xb_i}$.
 In practice, we observe data $X_i \in \RR^{v \times n}$ and we want to get $Z_i
 \in \RR^{n \times n}$ such that $X_i = U_{\xb_i} Z_i$. This can be done by performing an
 SVD of $X_i^{\top} X_i$ yielding $X_i^{\top}X_i= V_i D_i V_i^{\top}$ and setting $Z_i = D_i^{\frac12} V_i^{\top}$.
-Although the product $X_i^{\top} X_i$ has complexity $\bigO(vt^2)$ there is
+Although computing the product $X_i^{\top} X_i$ has time complexity $\bigO(vt^2)$ there is
 exactly $vt^2$ multiplications and additions so it costs a lot less than the PCA
 on full data. When estimates of the mixing matrices are needed, they can be obtained by
 applying equation~\eqref{eq:fastdetsrm:Aiupdate} in the deterministic SRM case and
@@ -206,8 +214,9 @@ equation~\eqref{eq:fastprobsrm:Aiupdate} in the probabilistic SRM case which onl
 $\bigO(mvp^2)$.
 In practice the cost of the matrix products $X_i^{\top} X_i$ is often still the
 limiting step of the pipeline (this depends on the number of iterations) but as
-we show in the next chapter, this yields to great speed up compared to classical
-SRM implementations. Note than if memory allows it, these matrix products can easily be done using multiple cores in parallel.
+we show in the next chapter, it is much more efficient than performing SRM on
+the full data. Note than if memory allows it, these matrix products can be
+computed in parallel.
 
 % In the next section, we investigate approaches to reduce the preprocessing time.
 
@@ -255,15 +264,15 @@ SRM implementations. Note than if memory allows it, these matrix products can ea
 
 \section{Identifiablity of the shared response model}
 We first show why deterministic SRM and probabilistic SRM without any
-restriction on the covariance of the components can
+restrictions on the covariance of the components can
 only recover unmixing matrices up to an arbitrary rotation.
 
-Let us consider data $\xb_i$ generated from deterministic SRM (meaning
+Let us consider data $X_i$ generated from deterministic SRM (meaning
 deterministic SRM holds exactly for these data) with
-mixing matrices $A_i$, shared response $\sbb$ and noise covariance $\sigma$.
-Then deterministic SRM, with parameters $A'_i = A_i R$ and $\sbb' = R^{\top} \sbb$ where
+mixing matrices $A_i$ and shared response $S$.
+Then deterministic SRM with parameters $A'_i = A_i R$ and $S' = R^{\top}$,where
 $R \in \RR^{k \times k}$ is an orthogonal matrix, also
-generates $\xb_i$.
+generates $X_i$.
 This shows that deterministic SRM is not identifiable.
 
 Similarly, in the probabilistic SRM case, if data $\xb_i$ are generated from the
@@ -271,13 +280,13 @@ probabilistic SRM model with
 parameters $A_i$, $\Sigma_s$, $\sigma_i^2$ (where $\Sigma_s$ can be any
 symmetric positive definite
 matrix) then the probabilistic SRM model with parameters $A_iR$, $R^{\top} \Sigma_s R$, $\sigma_i^2$  where
-$R \in \RR^{k \times k}$ is an orthogonal matrix also generate $\xb_i$.
+$R \in \RR^{k \times k}$ is an orthogonal matrix also generates $\xb_i$.
 This shows that if no constrains are imposed on $\Sigma_s$,
 then probabilistic SRM is not identifiable.
 
 
-Then, we show that if $\Sigma_s$ is assumed to be diagonal, then probabilistic
-SRM is identifiable under weak assumptions :
+In Proposition~\ref{prop:fastsrm:identifiability}, we show that if $\Sigma_s$ is assumed to be diagonal, then, under weak assumptions, probabilistic
+SRM is identifiable.
 \begin{proposition}[Identifiability of probabilistic SRM]
   \label{prop:fastsrm:identifiability}
   Let $\xb_i$ be generated from a probabilistic SRM with parameters 
@@ -319,5 +328,9 @@ In addition, working with a diagonal covariance matrix allows to speed up
 slightly the computations (although this does not change the time complexity of
 the algorithm).
 
-In the next chapter, we investigate how FastSRM works in practice compared to
-available implementations.
+\section{Conclusion}
+In this chapter, we have presented FastSRM, an efficient implementation of SRM
+that uses optimal atlases to speed up computations and reduce memory requirements
+without loss of performance. We have also discussed the identifiability of SRM.
+In the next chapter, we measure the performance of FastSRM in practice and
+compare it to available implementations.

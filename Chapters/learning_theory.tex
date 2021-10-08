@@ -451,7 +451,8 @@ However, this is not the case. A striking example is given by the Stein paradox~
 As can be seen in Example~\ref{ex:stein}, there exists an estimator of the mean
 that achieves a strictly better mean squared error than the sample mean.
 However, we have shown that the sample mean (which is also the maximum
-likelihood estimator) is unbiased and efficient. 
+likelihood estimator) is unbiased and efficient. Stein's estimate shows that
+biased estimators can sometimes achieve lower mean squared error than unbiased ones.
 \begin{example}[Stein's estimate of the mean]
   \label{ex:stein}
   Let us consider a single observation $\xb$ generated from a multivariate Gaussian
@@ -474,14 +475,14 @@ likelihood estimator) is unbiased and efficient.
   By integration by part 
   \begin{align}
     \EE[\frac{(x_j - \mu_j)x_j}{\|\xb\|^2}] &= \EE[\partialfrac{x_j}{\frac{x_j}{\|\xb\|^2}}]  \\
-    &= \EE[\frac1{\|\xb\|^2} - \frac{2x_j}{\|\xb\|^4}]
+    &= \EE[\frac1{\|\xb\|^2} - \frac{2x_j^2}{\|\xb\|^4}]
   \end{align}
 
   so that 
   \begin{align}
     &\EE[(s(\xb) - \mub)^2] \\
-    &= \EE[(\xb - \mub)^2] -2 (v-2) \sum_{j=1}^v \EE[\frac1{\|\xb\|^2} - \frac{2x_j}{\|\xb\|^4}] + (v-2)^2 \EE[\frac1{\| \xb \|^2}] \\
-    &= \EE[(\xb - \mub)^2] -2 (v-2) \sum_{j=1}^v \EE[\frac1{\|\xb\|^2} - \frac{2x_j}{\|\xb\|^4}] + (v-2)^2 \EE[\frac1{\| \xb \|^2}] \\
+    &= \EE[(\xb - \mub)^2] -2 (v-2) \sum_{j=1}^v \EE[\frac1{\|\xb\|^2} - \frac{2x_j^2}{\|\xb\|^4}] + (v-2)^2 \EE[\frac1{\| \xb \|^2}] \\
+    &= \EE[(\xb - \mub)^2] -2 (v-2) \EE[\frac{v}{\|\xb\|^2} - \frac{2 \sum_{j=1}^v x_j^2}{\|\xb\|^4}] + (v-2)^2 \EE[\frac1{\| \xb \|^2}] \\
     &= \EE[(\xb - \mub)^2] -2 (v-2)^2 \EE[\frac1{\|\xb\|^2}] + (v-2)^2 \EE[\frac1{\| \xb \|^2}] \\
     &= v - (v-2)^2 \EE[\frac1{\|\xb\|^2}]
  \end{align}
@@ -540,7 +541,7 @@ gradient descent converges to the minimum.
 
 \begin{proposition}[Convergence of gradient descent]
   \label{prop:conv:gd}
-  Assume that $f$ is two times differentiable and $\mu$-strongly convex:
+  Assume that $f$ is twice differentiable and $\mu$-strongly convex:
   \begin{equation}
     \partialfrac{\thetab^2}{^2f(\thetab)} \succeq \mu I
   \end{equation}
@@ -563,7 +564,7 @@ gradient descent converges to the minimum.
                             &= \| \thetab_k - \thetab_* \|^2  - 2 \dotp{ \thetab_k - \thetab_* }{ \alpha \partialfrac{\thetab}{f(\thetab_k)} } + \|\alpha \partialfrac{\thetab}{f(\thetab_k)} \|^2  \label{eq:gd:itdiff}
  \end{align}
 
- From $\mu$-strong convexity, Lagrange inequality gives
+ From $\mu$-strong convexity and Lagrange inequality we get:
  \begin{align}
    &f(\thetab_*) \geq f(\thetab_k) + \dotp{ \partialfrac{\thetab_k}{f(\thetab_k)} }{ \thetab_* - \thetab_k } + \frac{\mu}{2} \|\thetab_* - \thetab_k \|^2
  \end{align}
@@ -632,15 +633,15 @@ exact line search is used.
 
 \begin{proposition}[Convergence of Newton's method]
   \label{eq:conv:newton}
-  Assume that $f$ is two times differentiable, $\mu$-strongly convex and $\ell$-smooth:
+  Assume that $f$ is twice differentiable, $\mu$-strongly convex and $\ell$-smooth:
   \begin{equation}
     \mu I \preceq \partialfrac{\thetab^2}{^2 f(\thetab)} \preceq \ell I
   \end{equation}
   where $I$ is the identity matrix.
   Assume that the Hessian is Lipschitz with constant $h$:
   \begin{equation}
-  \| \partialfrac{\thetab^2}{^2 f(\thetab)} - \partialfrac{\thetab^2}{^2 f(\yb)} \| \leq h \| \thetab
-  - \yb \|
+  \| \partialfrac{\thetab^2}{^2 f(\thetab)} - \partialfrac{\thetab^2}{^2 f(\thetab')} \| \leq h \| \thetab
+  - \thetab' \|
  \end{equation}
 
   From $\thetab_0 \in \RR^v$  the iterates
@@ -658,12 +659,12 @@ exact line search is used.
       In this phase $\|f(\thetab_{k}) - f(\thetab_*)\| \leq \frac{2 \mu^3}{h^2}
       (\frac12)^{2^{k -i +1}}$
  \end{itemize}
- Once the Newton phase is entered, it is never left.
+ Once the Newton phase is reached, it continues until convergence of the algorithm.
 \end{proposition}
  \begin{proof}
    In the damped phase we have  $\| \partialfrac{\thetab}{f(\thetab)} \| \geq
    \frac{\mu^2}{h}$.
-   From Lagrange inequality and denoting $\db_k = -(\partialfrac{\thetab^2}{^2 f(\thetab)})^{-1} \partialfrac{\thetab}{f(\thetab)}$ we have:
+   From Lagrange inequality and $\ell$-smoothness, denoting $\db_k = -(\partialfrac{\thetab^2}{^2 f(\thetab)})^{-1} \partialfrac{\thetab}{f(\thetab)}$ we have:
    \begin{align}
      f(\thetab_k + t \db_k) & \leq f(\thetab) + t \dotp{ \partialfrac{\thetab}{f(\thetab)} }{ \db_k }  +  \frac{t^2 \ell}{2} \|\db_k\|^2 \\
                         & \leq f(\thetab) + t \dotp{ \partialfrac{\thetab}{f(\thetab)} }{ \db_k }  -  \frac{t^2 \ell}{2 \mu} \dotp{ \partialfrac{\thetab}{f(\thetab)} }{ \db_k } \\
@@ -712,7 +713,7 @@ In the pure Newton phase, the convergence is quadratic. This is a very strong
 advantage of Newton methods.
 A second advantage of Newton method is its \emph{equivariance} as demonstrated
 in Proposition~\ref{prop:equivariance:qn}. Equivariance means that for any
-matrix $A$, working with
+invertible matrix $A$, working with
 parameters $A \thetab$ instead of parameters $\thetab$ has no impact on the result given
 by the algorithm.
 \begin{proposition}[Newton algorithms are equivariant]
@@ -743,7 +744,7 @@ In some cases, it is possible to construct an approximation of the inverse of
 the Hessian in a reasonable time. This can be done iteratively by building a
 sequence of matrices $B_k$ that approaches the inverse of the Hessian as $k$ grows.
 Methods that use an approximation of the inverse instead of the true inverse are
-called \emph{quasi-Newton} methods. 
+called \emph{quasi-Newton} methods~\cite{gill1972quasi}. 
 
 \subsection{EM and generalized EM}
 In the maximum likelihood framework, our goal is to find the parameters
@@ -767,7 +768,6 @@ We can relate the likelihood and the completed likelihood by:
   \nu_{\theta}(\xb) = \int_{\zb} \nu_{\theta}(\xb, \zb) d\zb
 \end{align}
 
-We call $\log(\nu_{\theta}(\xb, \zb))$ the \emph{complete log-likelihood}.
 The EM algorithm maximizes an expression
 that depends on the complete log-likelihood rather than the log-likelihood so it
 is useful when the former is much simpler to maximize than the later.
@@ -887,10 +887,10 @@ algorithm giving a set of parameters $\theta_{k+1}$ that verifies:
   Q(\theta_{k+1}) > Q(\theta_k) 
 \end{align}
 When the M-step is performed in such an approximated way, the EM algorithm
-is renamed \emph{generalized EM}.
+is renamed \emph{generalized EM}~\cite{dempster1977maximum}.
 Similarly, one could replace the exact \emph{E-step} by just improving the
 current density estimate with respect to the value function $q \rightarrow F(q,
-\theta)$.
+\theta)$~\cite{harmeling2010multiframe}.
 
 \section{Conclusion}
 In this chapter, we have introduced the maximum-likelihood estimator and have shown

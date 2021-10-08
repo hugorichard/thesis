@@ -12,7 +12,7 @@ In this chapter, we first present \emph{independent component analysis} (ICA), a
 unsupervised method for neuroimaging studies routinely applied on individual
 subject electroencephalography (EEG)~\cite{makeig1996independent},
 magnetoencephalography (MEG)~\cite{vigario1998independent} or functional MRI
-(fMRI)~\cite{mckeown1998independent} data, then we review \emph{multiview} unsupervised 
+(fMRI)~\cite{mckeown1998independent} data. Then, we review \emph{multiview} unsupervised 
 techniques that leverage the availability of data from multiple subjects
 performing the same experiments. 
 
@@ -31,20 +31,17 @@ In M/EEG processing, it is widely used to isolate acquisitions artifacts from ne
 
 Mainly for computational reasons, it is often assumed that the number of components
 $k$ is much lower than the dimensionality of the data $v$.
-However in ICA, the dimensionality of the data is equal to the
+However in ICA, the dimensionality of the data must be equal to the
 number of components.
-This is why the dimensionality of the data needs to be reduced before ICA can be applied.
-
-We therefore first
-present principal component analysis which is the standard method to perform
-dimension reduction in this context.
+We therefore first present principal component analysis, a standard method to perform
+dimension reduction, then present non-Gaussian ICA and non-stationary ICA.
 
 \subsection{Principal component analysis (PCA)}
-Let us assume our data are given by observations of a random vector $\xb \in \RR^{v}$. The data
+Let us assume our data are given by $n$ observations of a random vector $\xb \in
+\RR^{v}$ that we stack into a matrix $X \in \RR^{v \times n}$. The data
 are centered ($\EE[\xb] = 0$). Principal component analysis (PCA) yields an
-orthonormal familly of $p$ vectors $R \in \RR^{v \times p}$ meaning $R^{\top} R
-= I_p$. This familly is such that projecting our data onto it
-using $R R^{\top} \xb$ does not yield a large mean reconstruction error in Frobenius
+orthonormal familly of $p$ vectors $R \in \RR^{v \times p}, R^{\top} R
+= I_p$, such that the projected data $R R^{\top} \xb$ does not yield a large mean reconstruction error in Frobenius
 norm.
 The corresponding optimization problem is given by:
 \begin{align}
@@ -55,44 +52,45 @@ The corresponding optimization problem is given by:
   &= \argmax_{R, R^{\top}R = I} \trace(R^{\top} \VV[\xb] R)
 \end{align}
 Therefore the matrix $R$ is just given by the first $p$ eigenvectors of
-$\VV[\xb]$. In practice the observed data can be represented as a matrix $X \in \RR^{v \times n}$,
-from which one can compute an empirical estimate of the covariance by $\frac1{n}X X^{\top}$.
+$\VV[\xb]$. In practice, we can use the sample variance $\frac1{n}X X^{\top}$ to estimate $\VV[\xb]$.
 %
 However, such an estimate is not practical in high dimension: when $v$ is very
 large $XX^{\top}$ is a prohibitively large matrix.
 
-In such case, assuming $n$ is small, we rely instead of the singular value decomposition of $X$:
+In such case, assuming $n$ is small, we rely instead of the \emph{singular value
+  decomposition} (SVD) of $X$:
 \begin{align}
 X= U D V
 \end{align}
   where $U \in \RR^{v \times n}$ is an orthogonal matrix ($U^{\top} U
 = I_t$) of
 \emph{left-singular vectors}, $D \in \RR^{n}$ is a positive diagonal matrix of
-singular values and $V \in \RR^{n \times n}$ is an orthogonal matrix of
+\emph{singular values} and $V \in \RR^{n \times n}$ is an orthogonal matrix of
 \emph{right-singular vectors}. Such a decomposition can be computed in $\bigO(v
 n^2)$ operations which is not prohibitive when $n$ is small enough.
 %
-Every matrix has a singular value decomposition and this
-decomposition is unique up to reordering of the singular vectors (and
-corresponding permutations of the left/right singular vectors) and sign-flips of
-the left and right singular vectors provided that all singular values are unique.
+Every matrix has a singular value decomposition and, provided that all singular
+values are distinct, this decomposition is unique up to a permutation and sign
+indeterminacy.
+More precisely, if $UDV$ and $U'D'V'$ are two singular decomposition of $X$ and
+if $D$ has only distinct values, then $U'=U\Pi\Xi$, $D'=\Pi^{\top}D\Pi$ and $V'
+= \Xi \Pi^{\top} V$ where $\Pi$ is a permutation matrix and $\Xi$ a diagonal
+matrix with diagonal values in $\{-1, 1\}$.
 
 Let $X = UDV$ be a singular value decomposition of $X$, we have $XX^{\top}= U
 D^2 U^{\top}$ and therefore the left-singular vectors $U_p$ corresponding to the
 largest $p$ singular values of $X$ yield  the $p$ largest eigenvectors of
-$XX^{\top}$. Therefore $R=U_p$, the left-singular vectors corresponding
-to the largest $p$ eigenvectors.
+$XX^{\top}$. Therefore $R$ is given by the left-singular vectors corresponding
+to the largest $p$ singular values: $R=U_p$.
 
 Sometimes the PCA includes whitening $R = U_p D_p^{-1}$ where $D_p$ contains the
  $p$ largest singular values of $X$ so that the components of $R^{\top} \xb$ are
 uncorrelated (but $R$ is no longer orthonormal). In this thesis what we call PCA
 does not include signal whitening.
 
-After the data are reduced such that the dimensionality of the data $v$ is equal to
-the number of components $p$, we can perform independent component analysis (ICA).
-ICA can exploit a number of different properties of the signal. Most ICA
-algorithms use non-Gaussianity of the data to extract relevant components so we
-focus next on non-Gaussian ICA.
+After the data are reduced, we can perform independent component analysis (ICA).
+ICA can exploit a number of different properties of the signal. We focus in the
+next section on non-Gaussian ICA.
 
 \subsection{Non Gaussian ICA}
 ICA sees the data $\xb \in \RR^p$ as a linear mixtures of components $\sbb \in \RR^p$.
@@ -107,43 +105,45 @@ and on~\cite{cardoso1997infomax}.
 
 \subsubsection{Identifiability}
 A matrix $P$ that can be written $P =
-\Xi \Pi$ where $\Xi$ is a diagonal matrix and $\Pi$ is a permutation matrix
-is called a \emph{scale and permutation matrix}.
+\Xi \Pi$, where $\Xi$ is a diagonal matrix and $\Pi$ is a permutation matrix, is
+called a \emph{scale and permutation matrix}. If furthermore $\Xi$ only has
+diagonal
+values in $\{-1, 1\}$, then $P$ is a \emph{sign and permutation matrix}.
 
 It is easily seen that if $\sbb$ is a vector with independent components, of
 which at most one is Gaussian and whose densities are not reduced to a
-point-like mass., so is $P \sbb$ where $P$ is a scale and permutation matrix.
-Therefore if $\xb = A \sbb$, take $A' = AP^{\top}$ and $\sbb'=P\sbb$ and we have
+point-like mass, so is $P \sbb$ where $P$ is a scale and permutation matrix.
+Therefore, if $\xb = A \sbb$, take $A' = AP^{\top}$ and $\sbb'=P\sbb$ and we have
 $\xb = A' \sbb'$.
 In other words, there exists a permutation and scaling indeterminacy.
 
-Therefore, we can assume without loss of generality that $\sbb$ has unit variance ($\VV[\sbb] = I$).
-If we whiten the data by applying a matrix $H$ such that $\VV[H \xb] = I_p$ we have $H \xb = \tilde{A} \sbb$ where $\tilde{A} = HA$. $\VV[H \xb] = I_p$ implies $\tilde{A}^{\top} \tilde{A} = I$ so without loss of generality we can assume that $\xb$ has unit variance and that $A$ is orthogonal. 
+To fix the scaling indeterminacy, we assume that $\sbb$ has unit variance ($\VV[\sbb] = I$).
+In addition, we assume that the data are whitened ($\VV[\xb] =
+I$). Note that the whitening assumption does not imply any loss of generality. If a matrix $H$
+is used to whiten the data, the mixing matrix of the unwhitened data is given by $H^{-1} A$ where $A$ is
+the unmixing matrix obtained on the whitened data.
+With these assumptions, $A$ is orthogonal.
+Indeed, $\VV[\xb] = A^{\top} A = I$. 
 
-We now show that the previously described scale and permutation
-indeterminacies are the only one.
-Let us assume that there exists two mixing matrices $A_1$ and $A_2$ such that
-$\xb = A_1 \sbb_1$ and $\xb = A_2 \sbb_2$ with $A_1$ and $A_2$ orthogonal. Then $\sbb_1 = O \sbb_2$ where $O = A_1^{\top} A_2$.
+Are there any other indeterminacies ? Assume that there exists two mixing matrices $A_1$ and $A_2$ such that
+$\xb = A_1 \sbb_1$ and $\xb = A_2 \sbb_2$ with $A_1$ and $A_2$ orthogonal. Then
+$\sbb_1 = O \sbb_2$ where $O=A_2 A_1^{\top}$ is an orthogonal matrix. 
 The following theorem in~\cite{comon1994independent}
-shows that $O$ can only be a scale and permutation matrix.
+shows that $O$ is necessary a sign and permutation matrix.
 \begin{theorem}
   Let $\sbb_2$  be a  vector  with  independent 
   components, of   which  at  most  one  is  Gaussian,  and whose  densities
   are  not  reduced  to  a  point-like  mass. Let $O$ be an orthogonal matrix
   and $\sbb$ such that $\sbb = O \sbb_2$.
-  Then, $\sbb$ has independent component if and only if $O$ is a scale and
+  Then, $\sbb$ has independent component if and only if $O$ is a sign and
   permutation matrix.
 \end{theorem}
 
-As a result, if we assume that at most one component is Gaussian, ICA is identifiable up to a scale and permutation indeterminacy.
+As a result, if we assume that at most one component is Gaussian and that
+components densities are not reduced to a point-like mass, ICA is identifiable up to a scale and permutation indeterminacy.
 
 \subsubsection{Infomax: Maximum likelihood estimation}
-Infomax is introduced in~\cite{bell1995information} in the context of source
-separation as maximizing the entropy of $g(W \xb) = g_i(\wb_i \xb)$ where  $g_i$
-is differentiable, strictly increasing function with value in $]0, 1[$. As shown
-in~\cite{cois1997infomax}, this is equivalent to
-maximum likelihood where component $i$ is assumed to have $g_i$ as its
-cumulative distribution function.
+Infomax is introduced in~\cite{bell1995information} and although initially formulated as a maximum entropy problem, it has been shown in~\cite{cois1997infomax} to be equivalent to maximum likelihood.
 
 Assume for simplicity that the components have the same density $\delta$, denoting $f(x) =
 -\log(\delta(x))$ and $f(\xb) = \sum_{i=1}^m f(x_i)$ the expected negative log-likelihood is given by:
@@ -206,16 +206,14 @@ The updates are then given by:
   W \leftarrow (I - \alpha \tilde{H}^{-1} G) W
 \end{align}
 
-In practice, expectations are replaced by empirical expectations.
-
 The approximated Hessian $\tilde{H}$ is block diagonal.
 Indeed we have for any matrix $M$:
 \begin{align}
-  &\begin{bmatrix} (\tilde{H} M)_{ab} \\  (\tilde{H} M)_{ab} \end{bmatrix} = \begin{bmatrix} \Gamma_{ab} & 1 \\ 1 & \Gamma_{ba} \end{bmatrix} \begin{bmatrix} M_{ab} \\ M_{ba} \end{bmatrix} && \text{ if } a \neq b  \nonumber \\
+  &\begin{bmatrix} (\tilde{H} M)_{ab} \\  (\tilde{H} M)_{ba} \end{bmatrix} = \begin{bmatrix} \Gamma_{ab} & 1 \\ 1 & \Gamma_{ba} \end{bmatrix} \begin{bmatrix} M_{ab} \\ M_{ba} \end{bmatrix} && \text{ if } a \neq b  \nonumber \\
   &(\tilde{H} M)_{aa} =  (1 + \Gamma_{aa}) M_{aa}
  \label{eq:apphess:blocks}
 \end{align}
-So that each block correspond to a pair $(a, b)$ and is of size $2$ if $a \neq b$ and of size $1$ when $a=b$.
+So that each block corresponds to a pair $(a, b)$ and is of size $2$ if $a \neq b$ and of size $1$ when $a=b$.
 Therefore $\tilde{H}$ can be easily regularized and inverted.
 
 \subsubsection{Robustness to density mismatch}
@@ -236,7 +234,7 @@ negative log-likelihood coincides, up to a constant, with the KL divergence betw
 distribution of the data and the distribution of the data as hypothesized in the
 model:
 \begin{align}
-  &-l(\theta) \\
+  &\loss(W) \\
   &=  D_{KL}(p(\xb^*), p(W^{-1} \sbb)) \\
              &=  D_{KL}(p(W\xb^*), p(\sbb)) \label{eq:robustness:invariance}\\
              &=  D_{KL}(p(W \xb^*), \prod_i p_i(\wb_i\xb^*)) + D_{KL}(\prod_i p_i(\wb_i\xb^*), p(\sbb)) \\
@@ -282,7 +280,7 @@ samples but is assumed to be piece-wise constant $\Sigma_t = \Sigma_k$ for $t \i
 T_k$ where $(T_k)_k$ is a partition of $[1, 2, \dots, n]$ and $\Sigma_k$ is a
 positive diagonal matrix.
 
-The log-likelihood is given by:
+The negative empirical expected log-likelihood is given by:
 \begin{align}  
   \loss &= -\log(|W|)  + \frac1{n} \sum_k \big( \frac12 \sum_{i \in T_k}\|\Sigma_k^{-\frac12} W \xb^k_i \|^2 + \frac12 \log(|\Sigma_k|) \big)
 \end{align}
@@ -292,7 +290,7 @@ Denoting $C_k = \sum_{i \in T_k} \xb_i^k (\xb_i^k)^{\top}$ we have
 \begin{align}  
   \loss &= -\log(|W|)  + \frac1{n} \sum_k \big( \frac1{2} \trace(\Sigma_k^{-1} W C_k W^{\top}) + \frac12 \log(|\Sigma_k|) \big)
 \end{align}
-Minimizing $\loss$ with respect to $\sigma_k^2$ yields $\Sigma_k = \diag(W C_k
+Minimizing $\loss$ with respect to $\Sigma_k$ yields $\Sigma_k = \diag(W C_k
 W^{\top})$ and therefore up to a constant:
 \begin{align}  
   \loss &= -\log(|W|)  + \frac1{n} \sum_k \big(\frac12 \log(|\diag(W C_k W^{\top})|) \big)
@@ -455,12 +453,12 @@ where $V_{\alphab} = (\frac1{\sigma^2}A^{\top}A + \diag(\alphab)^{-1})^{-1}$, $\
 A^{\top} \xb$ and the proportionality constant contains terms that do not depend
 on $\sbb$ or $\alphab$.
 
-So that we get:
+From $p(\xb, \sbb, \alphab)$, we get:
 \begin{align}
   p(\sbb | \xb, \alphab) =  \Ncal(\sbb, \mu_{\alphab}, \Sigma_{\alphab})
 \end{align}
 
-Then we have that:
+Then, we have that:
 \begin{align}
   p(\alphab | \xb) &= \int_{\sbb} p(\alphab, \sbb | \xb) d\sbb \\
                     &\propto \int_{\sbb} p(\xb, \sbb ,\alphab) d\sbb \\ 
@@ -481,13 +479,12 @@ Then, we can obtain a formula in closed form for $p(\sbb | \xb)$ using
 The problem here is that the size of the set $\{\alphab, \alpha_j \in
 \mathcal{A} \}$ is $q^p$ where $q=|\mathcal{A}|$ is the cardinal of
 $\mathcal{A}$. This quantity quickly gets large when $p$ increases making
-$p(\sbb | \xb)$ intractable to compute using the formula in closed form.
+$p(\sbb | \xb)$ difficult to compute.
 
-Following~\cite{moulines1997maximum}, we have shown that a simplification of the
-model of~\cite{guo2008unified} already exhibits an intractable large sum. This
-shows that despite their advantages, maximum likelihood methods are often intractable.
-
-
+In this section, we have studied a simplified version of the
+model in~\cite{guo2008unified} and shown that it is difficult to fit. This is
+often the case with maximum likelihood approaches. Despite, their advantages they
+are often intractable.
 
 \subsection{Independent vector analysis}
 \label{sec:IVA}
@@ -500,11 +497,11 @@ Introducing $\xb \in \RR^{m \times p}$ such that $\xb  = [\xb_1, \dots, \xb_m]^{
 $\sbb \in \RR^{m \times p}$ such that $\sbb = [\sbb_1, \dots, \sbb_m]^{\top}$ and $\yb
 \in \RR^{m \times p}$ such that $\yb = [\yb_1, \dots, \yb_m]^{\top}$ where $\yb_i = W_i
 \xb_i$ with $W_i = A_i^{-1}$, the
-log-likelihood is given by:
+expected negative log-likelihood is given by:
 \begin{align*}
-  \loss &= - log(p(\xb)) \\
-        &= \sum_{i=1}^m -\log(|W_i|) -\log(p(\yb)) \\
-        &= \sum_{i=1}^m - \log(|W_i|) + \sum_{j=1}^p -\log(p_{\sbb_{[j]}}(\yb_{[j]}))
+  \loss &= - \EE[log(p(\xb))] \\
+        &= \sum_{i=1}^m -\log(|W_i|) -\EE[\log(p(\yb))] \\
+        &= \sum_{i=1}^m - \log(|W_i|) + \sum_{j=1}^p -\EE[\log(p_{\sbb_{[j]}}(\yb_{[j]}))]
 \end{align*}
 where we used the notation $\yb_{[j]} = (y_{ij})_{i=1}^m$.
 
@@ -514,7 +511,7 @@ gradient as in section~\ref{sec:opt:likelihood:relativegradient} and use update
 of the form $W_i \leftarrow (I - \alpha_i G_i) W_i$ where $\alpha_i$ is given by
 backtracking line search and $G_i$ is the relative gradient given by:
 \begin{align}
-  G_i = -I_p + \phi_i(\yb_i) \yb_i^{\top}
+  G_i = -I_p + \EE[\phi_i(\yb_i) \yb_i^{\top}]
 \end{align}
 where component $j$ of $\phi_i(\yb_i)$ is given by
 \begin{align}
@@ -544,9 +541,9 @@ where  $\Sigma_j^{-1}[il]$ is the coordinate $i, l$ of $\Sigma_j^{-1}$ and
 $y_{lj}$ is the $j$th coordinate of $\yb_i$.
 
 In IVA-G, an estimate of $\Sigma_j$ is needed at each iteration. This is
-computed using the empirical estimate of the covariance:
+computed using the sample covariance:
 \begin{align}
-\Sigma_j = \frac1{n} \sum_{t=1}^n \yb_{[j]} \yb_{[j]}^{\top}
+\Sigma_j = \frac1{n} Y_{[j]} Y_{[j]}^{\top}
 \end{align}
 
 Second order extensions and Hessian approximations can be used in IVA as well.
@@ -561,15 +558,15 @@ inter-subject variability~\cite{haxby2011common}.
 Let us assume we have access to the data of two subjects: $\xb_1, \xb_2$.
 Assuming these subjects are exposed to a time-locked stimuli (such as a movie), a possible alignment is given by the Procrustes transform:
 \begin{align}
-min_{P \in \RR^{p \times p}, PP^{\top} = I_p} \|P \xb_1 - \xb_2 \|_2
+min_{P \in \RR^{p \times p}, PP^{\top} = I_p} \EE[\|P \xb_1 - \xb_2 \|_2]
 \end{align}
 This can be solved efficiently by
 \begin{align}
-  P_{12} = \Pcal(\xb_2 \xb_1^{\top})
+  P = \Pcal(\EE[\xb_2 \xb_1^{\top}])
 \end{align}
 where $\Pcal$ is the projection on the orthogonal manifold: $\Pcal(M) = M
 (M^{\top}M)^{-\frac12}$. In practice $\Pcal(M)$ is computed by performing an SVD
-of $M$, $M = U_M D_M V_M^{\top} $ so that $\Pcal(M) = U_M V_M^{\top}$.
+of $M$, $M = U_M D_M V_M $ so that $\Pcal(M) = U_M V_M$.
 
 Hyperalignment is the combination of the Procrustes transform and an iterative
 procedure to produce a template from multiple alignments.
@@ -583,9 +580,8 @@ iterations until convergence.
 The intuition behind the iterative procedure is that averaging the aligned data
 will tend to move the template away from the initial target. However, they are
 no theoretical guarantees associated with this procedure and even no associated loss.
-
 We describe formally
-the method in algorithm~\ref{algo:hyperalignment}.
+the method in Algorithm~\ref{algo:hyperalignment}.
 
 \begin{algorithm}[H]
   \SetAlgoLined
@@ -632,14 +628,14 @@ model. The data $\xb_1 \dots \xb_m$ are modeled as random vectors following the 
   \label{eq:model:srm}
 \end{align}
 where $\xb_i \in \RR^v$ is the data of view $i$, $A_i \in \RR^{p \times v}$ is the
-mixing matrix of view $i$, $\nb_i$ is the noise of view $i$ and $\sbb$ are the
+mixing matrix of view $i$, $\nb_i$ is the noise of view $i$ and $\sbb \in \RR^p$ are the
 shared components referred to as the \emph{shared response} in fMRI applications.
 The mixing matrices
-$A_i$ are assumed to be orthogonal so that $A_i^{\top}A_i = I_p$. However in
+$A_i$ are assumed to be orthogonal so that $A_i^{\top}A_i = I_p$. However, in
 general the matrix $A_i A_i^{\top}$ is different from identity. The noise
-$\nb^i$ is assumed to be Gaussian with covariance $\Sigma_i$ and independent
+$\nb_i$ is assumed to be Gaussian with covariance $\Sigma_i$ and independent
 across views. We assume the number of features $v$ to be much larger than the
-number of components $p$: $v >> p$.
+number of components $p$: $v \gg p$.
 
 The conceptual figure~\ref{fig:srm:conceptual_figure} illustrates an 
 application of the shared response model to fMRI data. The mixing
@@ -657,36 +653,38 @@ In~\cite{chen2015reduced, anderson2016enabling}, two versions of the shared resp
 introduced which we now present.
 \subsubsection{Deterministic shared response model}
 \label{sec:deterministicsrm}
+Let us consider $n$ observations of $\xb_i$ and $\sbb$ that we stack into
+matrices $X_i \in \RR^{v, n}$ and $S \in \RR^{p, n}$.
 The deterministic shared response model sees both the mixing matrices $A_i$ and
-the shared response $\sbb$ as parameters to be
+the $n$ observations of the shared response $S$ as parameters to be
 estimated. The noise variance is fixed to a multiple of identity: $\forall i,
 \Sigma_i=\sigma^2 I_v$ where $\sigma$ is an hyper-parameter to choose.
 The model is optimized by maximizing the log-likelihood.
 The likelihood is given by: $p(\xb) = \prod_i \Ncal(\xb_i; A_i \sbb, \sigma^2 I)$ and
-therefore the negative log-likelihood is given up to a constant independent of
-$A_i$ and $\sbb$ by:
+therefore the empirical expected negative log-likelihood is given up to a constant independent of
+$A_i$ and $S$ by:
 \begin{align}
-  \loss = \sum_i \|A_i \sbb - \xb_i \|^2 = \| \sbb \|^2 -2 \dotp{ A_i \sbb}{ \xb_i } + \| \xb_i \|^2
+  \loss = \frac1{n} \sum_i \|A_i S - X_i \|^2 = \frac1{n} \big(\| S \|^2 -2 \dotp{ A_i S}{ X_i } + \| X_i \|^2 \big)
   \label{eq:detsrmloss}
 \end{align}
 The negative log-likelihood $\loss$ is optimized by performing alternate minimization on $(A_1 \dots A_m)$
-and $\sbb$. Note that the hyper-parameter $\sigma$ does not have an influence on
+and $S$. Note that the hyper-parameter $\sigma$ does not have an influence on
 the loss and can therefore be safely ignored.
 
-The gradient with respect to $\sbb$ is given by $ \sum_i A_i^{\top}(A_i \sbb -
-\xb_i) = \sum_i (\sbb -
-A_i^{\top} \xb_i)$
+The gradient with respect to $S$ is given by $\sum_i A_i^{\top}(A_i S -
+X_i) = \sum_i (S -
+A_i^{\top} X_i)$
 yielding the closed form updates:
 \begin{equation}
-  \sbb \leftarrow  \frac1m \sum_i (A_i^{\top} \xb_i)
+  S \leftarrow  \frac1m \sum_i (A_i^{\top} X_i)
   \label{eq:srm:supdate}
 \end{equation}
 
 From \eqref{eq:detsrmloss}, minimizing $\loss$ with respect to $A_i$ is
-equivalent to maximizing $\dotp{ A_i}{ \xb_i \sbb^{\top} }$ and therefore we
+equivalent to maximizing $\dotp{ A_i}{ X_i S^{\top} }$ and therefore we
 have:
 \begin{equation}
-  A_i \leftarrow  \Pcal(\xb_i \sbb^T)
+  A_i \leftarrow  \Pcal(\frac1{n}X_i S^{\top})
   \label{eq:detsrm:Aiupdate}
 \end{equation}
 where $\Pcal$ is the projection on the Stiefel manifold: $\Pcal(M) = M
@@ -695,11 +693,11 @@ where $\Pcal$ is the projection on the Stiefel manifold: $\Pcal(M) = M
 The complexity of Deterministic SRM is in $\bigO(\mathrm{n_{iter}} mpvn)$ where
 $n$ is the number of samples and $\mathrm{n_{iter}}$ the number of iterations.
 We monitor the convergence by looking at the $\ell_{\infty}$ norm of the
-gradient. We can monitor the gradient without any increase in complexity.
+gradient. Note that we can monitor the gradient without any increase in complexity.
 Indeed, after the updates with respect to each mixing matrix have been
-carried out, only the gradient with respect to $\sbb$ remains: $\sum_i
-(\sbb - A_i^{\top}\xb_i)$. The algorithm is stopped when the
-gradient is below a chosen tolerance.
+carried out, only the gradient with respect to $S$ remains: $\sum_i
+(S - A_i^{\top}\xb_i)$. The algorithm is stopped when the
+gradient falls below a chosen tolerance.
 
 \subsubsection{Probabilistic SRM}
 \label{sec:probabilisticsrm}
@@ -707,8 +705,7 @@ In Probabilistic SRM , $\Sigma_i=\sigma_i^2 I_v$ and the shared
 components are assumed to be Gaussian $\sbb \sim \Ncal(0, \Sigma_s)$.
 In~\cite{chen2015reduced}, $\Sigma_s$ is only assumed to be definite positive. However,
 as will be seen in the FastSRM chapter (chapter~\ref{ch:fastsrm1}), enforcing a diagonal $\Sigma_s$ ensures
-identifiability (provided the diagonal values are different). So we assume for
-now on, that $\Sigma_s$ is diagonal.
+identifiability (provided the diagonal values are different). So we assume that $\Sigma_s$ is diagonal.
 
 The model is optimized via the expectation maximization algorithm.
 Denoting $\VV[\sbb | \xb] = (\sum_i \frac1{\sigma_i^2} I +
@@ -724,15 +721,15 @@ where $c_1 = \frac1{(2 \pi \sigma_i^{2v})^{\frac12}}\frac1{(2 \pi |
 \frac1{\sigma_i^2}\|\xb_i\|^2 - \dotp{  \EE[\sbb }{ \xb], \VV[\sbb | \xb]^{-1} \EE[\sbb | \xb] }))$ are independent of $\sbb$.
 Therefore $\sbb| \xb \sim \Ncal(\EE[\sbb | \xb], \VV[\sbb, \xb])$
 
-The negative completed log-likelihood is given by
+The negative expected completed log-likelihood is given by
 \begin{align}
-	\loss = \sum_i \frac12 v \log(\sigma_i^2) + \frac1{2 \sigma_i^2} \| \xb_i - A_i \sbb \|^2
+	\loss = \sum_i \frac12 v \log(\sigma_i^2) + \frac1{2 \sigma_i^2} \EE[\| \xb_i - A_i \sbb \|^2]
 \end{align}
 updates are therefore given by:
 \begin{align}
-&\sigma_i^2 \leftarrow \frac1{v} (\| \xb_i - A_i \EE[\sbb|\xb]\|^2 + \| \diag(\VV[\sbb | \xb]) \|^2) \\
-  &A_i \leftarrow \Pcal(\xb_i \EE[\sbb|\xb]^{\top}) \label{eq:psrm:Aiupdate} \\
-  & \Sigma_s \leftarrow \VV[\sbb | \xb] + \EE[\sbb | \xb] \EE[\sbb | \xb]^{\top}
+&\sigma_i^2 \leftarrow \frac1{v} (\EE[\| \xb_i - A_i \EE[\sbb|\xb]\|^2] + \| \diag(\VV[\sbb | \xb]) \|^2) \\
+  &A_i \leftarrow \Pcal(\EE[\xb_i \EE[\sbb|\xb]^{\top}]) \label{eq:psrm:Aiupdate} \\
+  & \Sigma_s \leftarrow \VV[\sbb | \xb] + \EE[\EE[\sbb | \xb] \EE[\sbb | \xb]^{\top}]
 \end{align}
 
 It is useful to access the log-likelihood to check the implementation of the
@@ -742,11 +739,11 @@ the likelihood is given by:
   p(\xb) &= c_2(\xb) \int_{\sbb} \exp(-\frac12 \left( \dotp{  \sbb - \EE[\sbb }{ \xb], \VV[\sbb | \xb]^{-1} ( \sbb - \EE[\sbb | \xb])  } \right)) d\sbb \\
          &= c_2(\xb) (2 \pi |\VV[\sbb | \xb]|)^{\frac12}
 \end{align}
-replacing $c_2(\xb)$ by its expression and taking the log, the negative
+replacing $c_2(\xb)$ by its expression and taking the log, the expected negative
 log-likelihood is (up to constants) given by:
 \begin{align}
-  -\log(p(\xb)) = &\sum_i \frac{v}{2} \log(\sigma_i^2) + \frac12 \log(|\Sigma_s|) - \frac12 \log(|\VV[\sbb | \xb]|) \\ &+ \sum_i
-  \frac12 \frac1{\sigma_i^2}\|\xb_i\|^2 - \frac12 \dotp{  \EE[\sbb }{ \xb], \VV[\sbb | \xb]^{-1} \EE[\sbb | \xb] }
+  \EE[-\log(&p(\xb))] = \sum_i \frac{v}{2} \log(\sigma_i^2) + \frac12 \log(|\Sigma_s|) - \frac12 \log(|\VV[\sbb | \xb]|) \nonumber \\ &+ \sum_i
+  \frac12 \frac1{\sigma_i^2} \EE[\|\xb_i\|^2] - \frac12 \EE[\dotp{  \EE[\sbb }{ \xb], \VV[\sbb | \xb]^{-1} \EE[\sbb | \xb] }]
 \end{align}
 
 The complexity of Probabilistic SRM is $\bigO(\mathrm{n_{iter}} mpvn)$, the same as in
@@ -757,6 +754,13 @@ tolerance.
 The storage requirements of Deterministic or Probabilistic SRM are in
 $\bigO(mvn)$ which simply means that the dataset needs to hold in memory.
 
+\section{Conclusion}
+In this chapter, we have reviewed several methods to perform unsupervised
+analysis of neuroimaging data. We have introduced methods most suited to the analysis
+of the data of a single subject such as ICA and have explored some of the
+extensions to multiple subjects such as CanICA, ConcatICA, IVA or SRM.
+In the next chapter, we present our first contribution: an efficient
+implementation of SRM that we call FastSRM.
 % \section{Related Work}
 % \label{sec:rel_work}
 % %
@@ -772,11 +776,6 @@ $\bigO(mvn)$ which simply means that the dataset needs to hold in memory.
 % %
 % Other methods impose a common mixing matrix~\cite{cong2013validating, grin2010independent, calhoun2001fmri, Monti18UAI}. Like PCA, the Shared Response Model~\cite{chen2015reduced} (SRM) assumes orthogonality of the mixing matrices. While the model defines a simple likelihood and provides an efficient way to reduce dimension, the SRM model is not identifiable as shown in appendix~\ref{sec:app_identifiability}, and the orthogonal constraint may not be plausible.
 % %
-
-% \textbf{Matching components a posteriori} A different path to multi-subject ICA is to extract independent components with individual ICA in each subject and align them. We propose a simple baseline approach to do so called \emph{PermICA}.
-% Inspired by the heuristic of the hyperalignment method~\cite{haxby2011common} we choose a reference subject and first match the components of all other subjects to the components of the reference subject. The process is then repeated multiple times, using the average of previously aligned components as a reference. Finally, group components are given by the average of all aligned components. We use the Hungarian algorithm to align pairs of mixing matrices~\cite{tichavsky2004optimal}.
-% %
-% Alternative approaches involving clustering have also been developed~\cite{esposito2005independent,bigdely2013measure}.
 
 % \textbf{Deep Learning} Deep Learning methods, such as convolutional auto-encoders (CAE), can also be used to find the subject specific unmixing~\cite{chen2016convolutional}. While these nonlinear extensions of the aforementioned methods are interesting, these models are hard to train and interpret. In the experiments on fMRI data in appendix~\ref{appendix_reproduce}, we obtain better accuracy with MultiView ICA than that of CAE reported in~\cite{chen2016convolutional}.
 

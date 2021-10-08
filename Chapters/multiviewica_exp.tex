@@ -13,6 +13,7 @@ The code for MultiViewICA is available online at \url{https://github.com/hugoric
 %
 
 We compare the following methods to obtain $p$ components:
+
 \emph{PermICA} is described in section~\ref{sec:permica}.
 %
 \emph{SRM} is the FastSRM algorithm described in part~\ref{part:fastsrm}.
@@ -103,17 +104,19 @@ $R^2(\xb, \yb) = 1 - \frac1{n\Var(\yb)}\sum_{t=1}^n (x_t - y_t)^2$, where $\Var(
 %
 The $R^2$ score is always smaller than $1$, and equals $1$ when $\xb= \yb$.
 The experiment is repeated 25 times with random splits to obtain error bars.
-
-An illustration of our reconstruction experiment is available in Figure~\ref{fig:conceptual:reconstruction}.
+Figure~\ref{fig:conceptual:reconstruction} provides a visual summary of our
+experimental procedure.
 
 \begin{figure}
   \centering
   \includegraphics[scale=0.24]{figures/srm/conceptual_figure41.png}
-  \caption{\textbf{Experiment — Reconstruct data from a left-out subject} All runs but one are used to compute spatial components for every subject (left).
+  \caption{\textbf{Reconstructing the BOLD signal of missing subjects -
+      Experimental procedure} $80
+    \%$ of the runs are used to compute forward operators (spatial components) for every subject (left).
     % 
-    Then spatial components and data from the left-out run of all subjects but one are used to compute the shared response in the left-out run.
+    Then the forward operators and data from the left-out runs of $80\%$ of the subjects one are used to compute the shared response during the left-out runs.
     % 
-    At last, the shared response during the left-out run and  the spatial components of the test subject are used to predict the data of the test subject in the left-out run.
+    Lastly, the shared response during the left-out runs and  the forward operators of the test subjects are used to predict the data of the test subjects during the left-out runs.
     % 
     The performance of the model is measured by comparing the prediction and true data using the $R^2$ score.}
   \label{fig:conceptual:reconstruction}
@@ -123,9 +126,7 @@ An illustration of our reconstruction experiment is available in Figure~\ref{fig
 The $R^2$ score per voxel depends heavily on which voxels are considered. For example voxels in the
 visual cortex are better reconstructed in the \emph{sherlock} dataset than in
 the \emph{forrest} dataset.
-
 Performances are therefore given in terms of mean $R^2$ score inside a region of interest (ROI) in order to leave out regions where there is no useful information.
-
 In order to determine the ROIs, we focus on the R2 score per voxel between the BOLD signal reconstructed by ConcatICA and the actual bold signal. We run ConcatICA with $10, 20$ and $50$ components and select the voxels that obtained a positive R2 score for all sets of components.
 % 
 We discard voxels with an R2 score above 80\% as they visually correspond to artefacts and apply a binary opening using a unit cube as the structuring element. The chosen regions are plotted in figure~\ref{fig:roi}.
@@ -184,14 +185,14 @@ MultiView ICA yields a consistent and substantial improvement in accuracy compar
 In order to investigate the practical impact of the choice of hyper-parameter
 $\sigma$, we compute the accuracy of the MultiView ICA algorithm with different
 choice of $\sigma$.
-Results are reported in Fig.~\ref{fig:supp_noise_sensitivity}. 
+Results are reported in Figure~\ref{fig:supp_noise_sensitivity}. 
 \begin{figure}
   \centering
   \includegraphics[width=0.6\textwidth]{figures/mvica/noise_sensitivity.pdf}
-  \caption{\textbf{Effect of the parameter $\sigma$}: We compute the accuracy of the multiview-ICA pipeline on the time-segment matching experiment for various values of the $\sigma$ hyperparameter over a grid. The accuracy varies only marginally with $\sigma$.}
+  \caption{\textbf{Effect of the parameter $\sigma$}: We compute the accuracy of the MultiViewICA pipeline on the time-segment matching experiment for various values of the $\sigma$ hyperparameter over a grid. The accuracy varies only marginally with $\sigma$.}
   \label{fig:supp_noise_sensitivity}
 \end{figure}
-MultiviewICA performs consistently well for a wide range of noise parameter values, and only breaks at very high values. It supports the theoretical claim issued in Prop~\ref{prop:robust} that the noise parameter is of little importance.
+MultiviewICA performs consistently well for a wide range of noise parameter values, and only breaks at very high values. It supports the theoretical claim issued in Proposition~\ref{prop:robust} that the noise parameter is of little importance.
 
 In appendix~\ref{sec:spatial_maps}, we plot the average forward operator across subjects of MultiView ICA and ConcatICA with 5 components on the forrest, sherlock, raiders and clips datasets.
 
@@ -286,7 +287,7 @@ The MEG signal corresponding to these trials are then time-averaged to isolate t
 %
 MultiView ICA is then applied to extract $20$ shared components.
 %
-$9$ components were found to correspond to noise by visual inspection, and the $11$ remaining are displayed in figure~\ref{fig:meg}.
+$9$ components were found to correspond to noise by visual inspection, and the $11$ remaining are displayed in Figure~\ref{fig:meg}.
 %
 We observe that MultiView ICA recovers a very clean sequence of evoked potentials with sharp peaks
 for early components and slower responses for late components.
@@ -295,9 +296,9 @@ In order to visualize their localization, we perform component localization for 
 %
 Then, we register each component estimate to a common reference brain.
 %
-Finally, the component estimates are averaged, and thresholded maps are displayed in figure~\ref{fig:meg}.
+Finally, the component estimates are averaged, and thresholded maps are displayed in Figure~\ref{fig:meg}.
 %
-Individual maps corresponding to each component are displayed in appendix~\ref{sec:app_montages}.
+Individual maps corresponding to each component are displayed in Appendix~\ref{sec:app_montages}.
 The figure highlights both early auditory and visual cortices, also suggesting a propagation
 of the activity towards the ventral regions and higher level visual areas.
 
