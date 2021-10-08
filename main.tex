@@ -322,7 +322,7 @@ subjects. Optimal Transport and Ridge regression outperformed alternatives in th
 \fullcite{bazeille2019local}
 
 
-\subsection{Softwares}
+\subsection{Software}
 The implementation of the methods developed in this thesis is freely available on Github \url{https://github.com/hugorichard}. Some of the code we wrote has made its way to bigger packages. 
 
 \subsubsection{Mvlearn}
@@ -365,8 +365,8 @@ a novel unsupervised algorithm, MultiViewICA, that reveals latent sources observ
 sources are not Gaussian. In contrast to previous approaches, the proposed model leads to a closed-form likelihood, which we then optimize efficiently using a dedicated alternate quasi-Newton approach.
 Therefore, MultiViewICA enjoys the statistical guarantees of maximum-likelihood
 theory, while still being tractable. MultiViewICA outperforms other unsupervised
-methods used in fMRI and MEG in the context of shared response modeling. However,
-it assumes the same level of noise for all
+methods used to process fMRI and MEG data in the context of shared response modeling. However,
+it assumes the same level of noise in all
 subjects, which does not model properly between-subjects variability.
 
 In chapter~\ref{ch:shica} and chapter~\ref{ch:shica2}, we have extended MultiViewICA in orter to deal with source noise heteroscedasticity.
@@ -395,7 +395,7 @@ across subjects. We see at least two other neuroimaging settings in which our
 methods can be useful. The first
 one is the analysis of resting state data assuming that spatial topographies are
 shared across subjects. In this setting, the spatial topographies become the
-common components while the mixing operators denote a set of time-courses.
+common components while the mixing operators correspond to a set of time-courses.
 In practice, transposing the data is enough to enforce such assumptions.
 A second one is the analysis of MEG / EEG data assuming both a spatial and
 temporal mixing. This can be done in practice by stacking the features of
