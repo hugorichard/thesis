@@ -118,24 +118,25 @@
 
 \section{Introduction}
 
-\subsection{Controlled experiments}
+\subsection{Controlled experiments in cognitive brain imaging}
 When a subject is reading a sentence or when she is listening to a sentence, her
 brain activity is expected to differ. In order to measure where it differs and
 by which amount, one can perform a controlled experiment. The controlled
 experiment comes with a design matrix that describes the features driving her
 brain activation across time. 
-For instance, the design matrix can record when
-she is listening to a sentence or when she is reading a sentence. 
+%
+In the above case, the occurrences of the subject listening to a sentence or reading a sentence are encoded in a design matrix.
+%
 Then, a model is introduced to explain how
-the design matrix relates to her brain activity.
-A simple model can consider that her brain activity only differs when
-the task differs and therefore have one stereotypical representation of the
+the design matrix relates to brain activity.
+A simple model can consider that brain activity only differs when
+the task differs and therefore have a stereotypical representation of
 brain activity when she is reading a sentence and another one when she is
 listening to a sentence.
 While this model may simplify the reality
-(two repetitions of the same task would never yield the same brain activity), it
-is easy to interpret: the two stereotypical representations of each task can be
-easily compared and analyzed. 
+(two repetitions of the same task would never yield exactly the same pattern or amount of brain activity), it
+is easy to interpret: the two stereotypical representations of each task can easily be
+ compared and analyzed. 
 
 This procedure naturally extends to multiple subjects. Indeed, a model can be
 fit independently for each subject using the same design matrix.
