@@ -10,14 +10,87 @@
 \let\cleardoublepage\relax
 
 \chapter*{Abstract}
-TODO
+In neuroscience, a rising trend is to use naturalistic paradigms, such as movie
+watching or audio track listening, that are
+unconstrained from behavioral manipulations and thus, more ecological to
+real-world conditions.
+However, the stimulations are challenging to model in this context and therefore,
+the statistical analysis of the data using supervised regression-based
+approaches is difficult.
+This has motivated the use of unsupervised learning methods that do not make
+assumptions about what triggers brain activations in the presented stimuli.
 
-\vfill
+In this thesis, we first consider the case of the shared response model (SRM), where
+subjects are assumed to share a common response. While this algorithm is useful
+to perform dimension reduction, it is particularly costly on functional magnetic
+resonance imaging (fMRI) data where the
+dimension can be very large (on the order of 100~000). We considerably speed up the
+algorithm and reduce its memory usage.
+
+However SRM relies on assumptions that are not biologically plausible. In
+contrast, independent component analysis (ICA) is more realistic but not suited
+to multi-subject datasets. In this thesis, we present a well principled method
+called MultiViewICA that extends ICA to datasets containing multiple subjects: MultiViewICA.
+But while MultiViewICA is a maximum likelihood estimator but with a closed form likelihood
+that can be efficiently optimized, it assumes the same amount of noise for all
+subjects.
+We therefore introduce ShICA, a generalization of MultiViewICA that comes with a
+more general noise model. In contrast to almost all ICA-based model, ShICA can
+separate Gaussian and non-Gaussian sources and comes with a minimum mean square
+error estimate of the common sources that weights each subject according to its
+estimated noise level.
+In practice, MultiViewICA and ShICA yield on magnetoencephalography and
+functional magnetic resonance imaging a more reliable estimate
+of the shared response than competitors.
+
+Lastly, we use independent component analysis as a basis to perform data
+augmentation.  More precisely, we introduce CondICA, a data augmentation method
+that leverages the large amount of unlabeled fMRI data to build a generative
+model for labeled data using only a few labeled samples. CondICA yields an
+increase in decoding accuracy on eight large fMRI datasets.
+
+\pagebreak 
 
 \begin{otherlanguage}{french}
 \pdfbookmark[1]{Resume}{Resume}
 \chapter*{Résumé}
-TODO
+En neuroscience, les stimulis naturels comme le visionnage d'un film ou
+l'écoute de piste audio sont de plus en plus utilisés car ils sont exempts de
+toute manipulation comportementale et de ce fait plus proches du monde réel. 
+Toutefois, ces stimulis sont compliqués à modéliser et à analyser car l'utilisation de
+méthodes supervisées fondées sur des régressions est difficile.
+C'est ce qui motive l'utilisation de methodes non-supervisées qui ne font pas
+d'hypothèses sur ce qui déclenche les activations neuronales.
+
+Dans cette thèse, nous considérons d'abord le cas du modèle de réponse partagée (SRM), dans lequel
+les sujets sont supposés partager une réponse commune. Cet algorithme est utile pour
+réduire la dimension des données, mais il est coûteux pour les données
+d'imagerie fonctionnelle (IRMf) où la dimmension peut être immense (de l'ordre
+de 100~000).
+Nous présentons dans cette thèse une version bien plus rapide et beaucoup plus
+économe en mémoire.
+
+Mais le SRM fait des hypothèses irréalistes sur les données d'imageries. Des
+hypothèses plus réaliste sont utilisées dans l'analyse en composante
+indépendente (ICA) mais cette méthode est difficile à généraliser aux jeux de
+données qui contiennent plusieurs sujets. Nous proposons alors une extension de
+l'ICA  appelée MultiViewICA, fondée sur la principe de maximum de vraisemblance
+et qui convient à des jeux de données multi-sujets.
+MultiViewICA a une vraisemblance en forme fermée qui peut être maximisée
+efficacement. Toutefois, cette méthode suppose la même quantité de bruit pour tous les sujets.
+Nous présentons donc ShICA, une généralisation de MultiViewICA qui s'accompagne d'un modèle de bruit plus général.
+Contrairement à presque tous les modèles fondés sur l'ICA, ShICA peut
+séparer des sources gaussiennes et non gaussiennes et propose une estimation
+optimale des sources communes (au sens des moindres carrés), qui pondère chaque
+sujet en fonction de son niveau de bruit estimé.
+En pratique, MultiViewICA et ShICA permettent d'obtenir, en magnétoencéphalographie et en IRMf, une estimation plus fiable de la réponse commune que leurs concurrents.
+
+Enfin, nous utilisons l'ICA comme base pour
+faire de l'augmentation de données. Plus précisément, nous présentons CondICA,
+une méthode d'augmentation de données qui exploite la grande quantité de données
+d'IRMf non étiquetées pour construire un modèle génératif un utilisant seulement
+un petit nombre de données étiquetées.
+CondICA permet d'augmenter la précision du décodage sur huit grands jeux de données d'IRMf.
 \end{otherlanguage}
 
 \endgroup
