@@ -53,17 +53,22 @@ We have therefore shown that Assumption 2 implies the existence of a linear comb
 \label{lemma:nonzerocoord}
 Let us consider the following eigenvalue problem:
  \begin{align}
-  & \begin{bmatrix} I + \Sigma_1 & I & \dots & I \\
-    I & I + \Sigma_2 & \ddots & \vdots \\
-    \vdots &  \ddots & \ddots & I  \\
-    I & \dots & I  &I + \Sigma_m
-  \end{bmatrix} \zb = \lambda \begin{bmatrix}
-    I + \Sigma_1 & 0 & \dots  & 0 \\
-    0 & I + \Sigma_2 & \ddots & \vdots \\
-    \vdots & \ddots & \ddots & 0 \\
-    0& \dots  & 0 &  I + \Sigma_m  \\
-  \end{bmatrix} \zb
-  \label{reducedeig}
+  &  \Acal \zb = \lambda \Bcal \zb
+    \label{reducedeig}
+   \\
+   \nonumber
+   &\Acal = \begin{bmatrix} I + \Sigma_1 & I & \dots & I \\
+     I & I + \Sigma_2 & \ddots & \vdots \\
+     \vdots &  \ddots & \ddots & I  \\
+     I & \dots & I  &I + \Sigma_m
+   \end{bmatrix} \\
+   \nonumber
+   &\Bcal = \begin{bmatrix}
+     I + \Sigma_1 & 0 & \dots  & 0 \\
+     0 & I + \Sigma_2 & \ddots & \vdots \\
+     \vdots & \ddots & \ddots & 0 \\
+     0& \dots  & 0 &  I + \Sigma_m  \\
+   \end{bmatrix}
 \end{align}
 where $\forall i, \enspace 1 \leq i \leq m, \enspace  \Sigma_m \in \bbR^{p, p}$ are positive diagonal matrices and I is the identity matrix.
 If the first $p$ eigenvalues are distincts, the first $p$ eigenvectors $\zb^1, \dots, \zb^p, \zb^i \in \mathbb{R}^{mp}$ have different first non-zero coordinates.
@@ -78,18 +83,22 @@ Let $\zb^{(l)}$ be an eigenvector in group $l$ and let us call $\wb_l \in
 
 We have:
 \begin{align}
-\begin{bmatrix}
-  1 + \Sigma_{1l} & 1 & \dots & 1  \\
-  1 & 1 + \Sigma_{2l} & \ddots  &\vdots \\
-  \vdots & \ddots & \ddots & 1  \\
-  1 & \dots & 1 & 1 + \Sigma_{ml}  \\
-\end{bmatrix} \wb_l =  \begin{bmatrix}
-  1 + \Sigma_{1l} & 0 & \dots  & 0 \\
-  0 & 1 + \Sigma_{2l} & \ddots & \vdots \\
-  \vdots & \ddots & \ddots & 0 \\
-  0& \dots  & 0 &  1 + \Sigma_{ml}  \\
-\end{bmatrix} \wb_l \lambda_l
+  &\Acal_l
+\wb_l =  \Bcal_l \wb_l \lambda_l
 \label{eigsimp}
+  \\ \nonumber
+                  & \Acal_l = \begin{bmatrix}
+                    1 + \Sigma_{1l} & 1 & \dots & 1  \\
+                    1 & 1 + \Sigma_{2l} & \ddots  &\vdots \\
+                    \vdots & \ddots & \ddots & 1  \\
+                    1 & \dots & 1 & 1 + \Sigma_{ml}  \\
+                  \end{bmatrix}  \\
+  & \nonumber \Bcal_l = \begin{bmatrix}
+                    1 + \Sigma_{1l} & 0 & \dots  & 0 \\
+                    0 & 1 + \Sigma_{2l} & \ddots & \vdots \\
+                    \vdots & \ddots & \ddots & 0 \\
+                    0& \dots  & 0 &  1 + \Sigma_{ml} 
+                  \end{bmatrix} 
 \end{align}
 
 We now show that the biggest eigenvalue of~\eqref{eigsimp} is strictly above 1 while all
@@ -307,14 +316,14 @@ for $A'_1 = A_1(I_p + \Sigma_1)^{\frac12}U(I_p + \Sigma_1)^{-\frac12}$ where $U$
 \subsection{M-step}
 The function to minimize in the M-step is then given by:
 \begin{align}
-  \Jcal &= -\log p(\xb, \sbb) \\
-        &= \sum_{i=1}^m \log(|\Sigma_i|) + \\ &\enspace \enspace \enspace \frac12 \tr(\Sigma_i^{-1} \left[(\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb]\right]) \\ &\enspace \enspace \enspace + c
+  \Jcal &= \EE[-\log p(\xb, \sbb)] \\
+        &= \sum_{i=1}^m \log(|\Sigma_i|) + \\ &\enspace \enspace \enspace \frac12 \tr(\Sigma_i^{-1} \left[\EE[(\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}]+ \VV[\sbb | \xb]\right]) \\ &\enspace \enspace \enspace + c
 \end{align}
 where $c$ does not depend on $\Sigma_i$
 
 Therefore we get closed-form updates for $\Sigma_i$: 
 \begin{align}
-\Sigma_i \leftarrow  \diag((\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb])
+\Sigma_i \leftarrow  \diag(\EE[(\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}]+ \VV[\sbb | \xb])
 \end{align}
 Plugging in the closed-form formula for $\EE[\sbb|\xb]$ and $\VV[\sbb|\xb]$ we get updates that only depends on the covariances $\hat{C_{ij}} = \EE[\xb_i \xb_j^{\top}]$.
 \begin{align*}
@@ -356,15 +365,15 @@ Let us introduce a first lemma:
 \begin{proof}
   We have that
   \begin{align}
-    \frac1{v_i}(x_i - u)^2 &= \frac1{v_i}(x_i - u)^2 \\
-                           &=\frac1{v_i}(x_i - \bar{x} + \bar{x} - u)^2 \\
-                           &=\frac1{v_i}(x_i - \bar{x})^2 + \frac1{v_i}(\bar{x} - u)^2 \label{eq:lem:multigauss}
+    \sum_i \frac1{v_i}(x_i - u)^2 &= \sum_i\frac1{v_i}(x_i - u)^2 \\
+                                  &= \sum_i \frac1{v_i}(x_i - \bar{x} + \bar{x} - u)^2 \\
+                                  &= \sum_i \frac1{v_i}(x_i - \bar{x})^2 + \sum_i \frac1{v_i}(\bar{x} - u)^2 \label{eq:lem:multigauss}
   \end{align}
   and therefore
   \begin{align}
-    &\prod_i \frac1{\sqrt{2 \pi v_i}}\exp(-\frac1{2v_i}(x_i - \mu)^2) \\
-    &= \prod_j \frac1{\sqrt{2 \pi v_i}}\exp(-\frac12 (\frac1{v_i}(x_i - \bar{x})^2 + \frac1{v_i}(\bar{x} - u)^2)) \\ 
-    &= \prod_j \Ncal(x_i, \bar{x}, v_i) \exp(-\frac12( \sum_i \frac1{v_i})(\bar{x} - u)^2)) \\ 
+    &\prod_i (\frac1{\sqrt{2 \pi v_i}}\exp(-\frac1{2v_i}(x_i - \mu)^2)) \\
+    &= \prod_i \frac1{\sqrt{2 \pi v_i}}\exp(\sum_i -\frac12 (\frac1{v_i}(x_i - \bar{x})^2 + \frac1{v_i}(\bar{x} - u)^2)) \\ 
+    &= \prod_i \Ncal(x_i, \bar{x}, v_i) \exp(-\frac12( \sum_i \frac1{v_i})(\bar{x} - u)^2)) \\ 
   \end{align}
     so the desired result follow.
 \end{proof}
@@ -384,7 +393,7 @@ Hiding variable that do not depend on $\sbb$ we obtain
 
 Then we get
 \begin{align}
-  p(\xb, \sbb) &= \prod_j \sum_{\alpha \in \{0.5, 1.5\}} \Ncal(s_j; \bar{y}_j, \bar{\Sigma_{j}}) \Ncal(s_j; 0, \alpha)
+  p(\xb, \sbb) &\propto \prod_j \sum_{\alpha \in \{0.5, 1.5\}} \Ncal(s_j; \bar{y}_j, \bar{\Sigma_{j}}) \Ncal(s_j; 0, \alpha)
 \end{align}
 
 Let us now prove a second Lemma:
@@ -423,7 +432,7 @@ so that the desired result follow.
 By Lemma~\ref{lemma:multgauss}, we have:
 \begin{align}
   &p(\xb, \sbb) \\
-  &= \prod_j \sum_{\alpha \in \{0.5, 1.5\}} \Ncal(\bar{y}_{j}; 0 , \bar{\Sigma}_{j} + \alpha) \Ncal(s_j; \frac{\alpha \bar{y}_{j}}{\alpha + \bar{\Sigma_{j}}}, \frac{\bar{\Sigma_{j}}\alpha}{\alpha + \bar{\Sigma_{j}}})
+  &\propto \prod_j \sum_{\alpha \in \{0.5, 1.5\}} \Ncal(\bar{y}_{j}; 0 , \bar{\Sigma}_{j} + \alpha) \Ncal(s_j; \frac{\alpha \bar{y}_{j}}{\alpha + \bar{\Sigma_{j}}}, \frac{\bar{\Sigma_{j}}\alpha}{\alpha + \bar{\Sigma_{j}}})
 \end{align}
 
 and therefore we get:
@@ -442,14 +451,14 @@ So we obtain the desired result:
 \subsection{M-step}
 The function to minimize in the M-step is then given by:
 \begin{align}
-  \Jcal &= -\log p(\xb, \sbb) \\
-  &= \sum_{i=1}^m - \log(|W_i|) + \log(|\Sigma_i|) + \\& \enspace \enspace \frac12 \tr(\Sigma_i^{-1} \left[(\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb]\right]) + c
+  \Jcal &= \EE[-\log p(\xb, \sbb)] \\
+  &= \sum_{i=1}^m - \log(|W_i|) + \log(|\Sigma_i|) + \\& \enspace \enspace \frac12 \tr(\Sigma_i^{-1} \left[\EE[(\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}]+ \VV[\sbb | \xb]\right]) + c
 \end{align}
 where $c$ does not depend on $\Sigma_i$ or $W_i$
 
 Therefore we get closed-form updates for $\Sigma_i$: 
 \begin{align}
-\Sigma_i \leftarrow  \diag((\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}+ \VV[\sbb | \xb])
+\Sigma_i \leftarrow  \diag(\EE[(\yb_i - \EE[\sbb | \xb]) (\yb_i - \EE[\sbb | \xb])^{\top}]+ \VV[\sbb | \xb])
 \end{align}
 
 % and the approximated Hessian $\widehat{\mathcal{H}^{W_i}}$
@@ -470,24 +479,24 @@ by
 
  We get:
  \begin{align}
-   \mathcal{J}(W_i + \varepsilon W_i) &= \sum_{i=1}^m \bigg[ -\log(|W_i|) -\log(|I_k + \varepsilon|) \nonumber \\&- \log(\mathcal{N}(\yb_i + \varepsilon \yb_i; \sbb; \Sigma_i)) \bigg] + const \\
-                                      &= \mathcal{J}(W_i) - \tr(\varepsilon) + \frac12 \tr(\varepsilon^2) \nonumber \\& \enspace \enspace + \frac12 \bigg[\dotp{ \varepsilon \yb_i}{ (\Sigma_i)^{-1} (\yb_i - \sbb) } + \nonumber \\& \enspace \enspace \dotp{ (\yb_i - \sbb)}{ (\Sigma_i)^{-1} \varepsilon \yb_i } + \dotp{ \varepsilon \yb_i}{ (\Sigma_i)^{-1} \varepsilon \yb_i } \bigg] \nonumber \\ & \enspace + o(\|\varepsilon\|^2) \\
-                                      &= \mathcal{J}(W_i) - \sum_a \varepsilon_{a, a} + \frac12 \sum_{a, b} \varepsilon_{a,b} \varepsilon_{b, a} \nonumber \\& \enspace \enspace + \sum_{a, b} \varepsilon_{a, b} \left[(\Sigma_i)^{-1}(\yb_i - \sbb) (\yb_i)^{\top} \right]_{a, b} \nonumber \\& \enspace \enspace + \frac12 \sum_{a, b} \varepsilon_{a, b} \left[(\Sigma_i)^{-1} \varepsilon \yb_i (\yb_i)^{\top}\right]_{a, b} \nonumber \\ & \enspace + o(\|\varepsilon\|^2) \\
-                                      &= \mathcal{J}(W_i) - \sum_a \varepsilon_{a, a} + \frac12 \sum_{a, b} \varepsilon_{a,b} \varepsilon_{b, a} \nonumber \\& \enspace \enspace + \sum_{a, b} \varepsilon_{a, b} \left[(\Sigma_i)^{-1}(\yb_i - \sbb) (\yb_i)^{\top} \right]_{a, b} + \nonumber \\& \enspace \enspace \frac12 \sum_{a, b, d} \varepsilon_{a, b} (\Sigma_i)^{-1}_{a, a} \varepsilon_{a, d} \left[\yb_i (\yb_i)^{\top}\right]_{d, b} \nonumber \\ & \enspace + o(\|\varepsilon\|^2)
+   \mathcal{J}(W_i + \varepsilon W_i) &= \sum_{i=1}^m \bigg[ -\log(|W_i|) -\log(|I_k + \varepsilon|) \nonumber \\&- \EE[\log(\mathcal{N}(\yb_i + \varepsilon \yb_i; \sbb; \Sigma_i))] \bigg] + const \\
+                                      &= \mathcal{J}(W_i) - \tr(\varepsilon) + \frac12 \tr(\varepsilon^2) \nonumber \\& \enspace \enspace + \frac12 \bigg[\EE[\dotp{ \varepsilon \yb_i}{ (\Sigma_i)^{-1} (\yb_i - \sbb) }] + \nonumber \\& \enspace \enspace \EE[\dotp{ (\yb_i - \sbb)}{ (\Sigma_i)^{-1} \varepsilon \yb_i }] + \EE[\dotp{ \varepsilon \yb_i}{ (\Sigma_i)^{-1} \varepsilon \yb_i }] \bigg] \nonumber \\ & \enspace + o(\|\varepsilon\|^2) \\
+                                      &= \mathcal{J}(W_i) - \sum_a \varepsilon_{a, a} + \frac12 \sum_{a, b} \varepsilon_{a,b} \varepsilon_{b, a} \nonumber \\& \enspace \enspace + \sum_{a, b} \varepsilon_{a, b} \left[\EE[(\Sigma_i)^{-1}(\yb_i - \sbb) (\yb_i)^{\top}] \right]_{a, b} \nonumber \\& \enspace \enspace + \frac12 \sum_{a, b} \varepsilon_{a, b} \left[\EE[(\Sigma_i)^{-1} \varepsilon \yb_i (\yb_i)^{\top}]\right]_{a, b} \nonumber \\ & \enspace + o(\|\varepsilon\|^2) \\
+                                      &= \mathcal{J}(W_i) - \sum_a \varepsilon_{a, a} + \frac12 \sum_{a, b} \varepsilon_{a,b} \varepsilon_{b, a} \nonumber \\& \enspace \enspace + \sum_{a, b} \varepsilon_{a, b} \left[\EE[(\Sigma_i)^{-1}(\yb_i - \sbb) (\yb_i)^{\top}] \right]_{a, b} + \nonumber \\& \enspace \enspace \frac12 \sum_{a, b, d} \varepsilon_{a, b} (\Sigma_i)^{-1}_{a, a} \varepsilon_{a, d} \left[\EE[\yb_i (\yb_i)^{\top}]\right]_{d, b} \nonumber \\ & \enspace + o(\|\varepsilon\|^2)
  \end{align}
 
  So:
  \begin{equation}
- \mathcal{G}^{W_i}_{a, b} =  -\delta_{a,b} + \left[(\Sigma_i)^{-1} (\yb_i - \sbb)(\yb_i)^{\top}\right]_{a, b}
+ \mathcal{G}^{W_i}_{a, b} =  -\delta_{a,b} + \left[\EE[(\Sigma_i)^{-1} (\yb_i - \sbb)(\yb_i)^{\top}]\right]_{a, b}
  \end{equation}
  and
  \begin{equation}
- \mathcal{H}^{W_i}_{a, b, c, d} = \delta_{a, d}\delta_{b, c} + \delta_{a, c} \frac{y_{ib} y_{id}}{\Sigma_{ia}}
+ \mathcal{H}^{W_i}_{a, b, c, d} = \delta_{a, d}\delta_{b, c} + \delta_{a, c} \frac{\EE[y_{ib} y_{id}]}{\Sigma_{ia}}
  \end{equation}
  
  We approximate the Hessian by
  \begin{align}
- \widehat{\mathcal{H}^{W_i}_{a, b, c, d}} = \delta_{ad} \delta_{bc} + \delta_{ac} \delta_{bd}\frac{(y_{ib})^2}{\Sigma_{ia}}
+ \widehat{\mathcal{H}^{W_i}_{a, b, c, d}} = \delta_{ad} \delta_{bc} + \delta_{ac} \delta_{bd}\frac{\EE[(y_{ib})^2]}{\Sigma_{ia}}
 \end{align}
 where the Hessian approximation is exact when the unmixed data have truly independent components.
 

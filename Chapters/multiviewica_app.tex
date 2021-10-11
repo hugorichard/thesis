@@ -26,17 +26,17 @@ We recall $\xb_i= A_i (\sbb + \nb_i),$ so that $\yb_i = W_i\xb_i= \Lambda(\sbb +
 %
 The gradient of $\loss$ is given by equation~\eqref{eq:gradient}:
 \begin{align*}
-  \mathcal{G}^i &= \frac{1}{m}f'(\tilde{\sbb})(\sbb + \nb_i)^{\top}\Lambda \\ & \enspace \enspace+ \frac{1 - 1/m}{\sigma^2} \Lambda\left(\nb_i - \frac{1}{m-1}\sum_{j\neq i} \nb^j\right)(\sbb + \nb_i)^{\top}\Lambda - I_p \\
-  & = \frac{1}{m}f'(\Lambda(\sbb + \frac1m\sum_j\nb^j))(\sbb+\nb_i)^{\top} \Lambda + \frac{\sigma'^2(1 - 1/m)}{\sigma^2} \Lambda^2 - I_p
+  \mathcal{G}^i &= \frac{1}{m}\EE[f'(\tilde{\sbb})(\sbb + \nb_i)^{\top}]\Lambda \\ & \enspace \enspace+ \frac{1 - 1/m}{\sigma^2} \Lambda\EE[\left(\nb_i - \frac{1}{m-1}\sum_{j\neq i} \nb^j\right)(\sbb + \nb_i)^{\top}]\Lambda - I_p \\
+  & = \frac{1}{m}\EE[f'(\Lambda(\sbb + \frac1m\sum_j\nb^j))(\sbb+\nb_i)^{\top}] \Lambda + \frac{\sigma'^2(1 - 1/m)}{\sigma^2} \Lambda^2 - I_p
     \numberthis
 \end{align*}
 where we write $f'(\sbb) = \begin{bmatrix}f'(s_1) \\ \vdots \\ f'(s_p) \end{bmatrix}$.
-Therefore, $\mathcal{G}^i$ is diagonal and constant across subjects (because $f'(\Lambda(\sbb + \frac1m\sum_j\nb^j))(\nb_i)^{\top} = f'(\Lambda(\sbb + \frac1m\sum_j\nb^j))(\nb^{i'})^{\top}$).
+Therefore, $\mathcal{G}^i$ is diagonal and constant across subjects (because $\EE[f'(\Lambda(\sbb + \frac1m\sum_j\nb^j))(\nb_i)^{\top}] = \EE[f'(\Lambda(\sbb + \frac1m\sum_j\nb^j))(\nb^{i'})^{\top}]$).
 Let us therefore consider only its coefficient $(a, a)$, and let $\lambda = \Lambda_{aa}$:
 $$
 \mathcal{G}^i_{aa} =G(\lambda) = \phi(\lambda)\lambda + \frac{\sigma'^2(1 - 1/m)}{\sigma^2}\lambda^2 - 1,
 $$
-where $\phi(\lambda) = \frac{1}{m}f'(\lambda(s_a + \frac1m\sum_j n^j_a))(s_a+n_a^i)$. One the one hand, we have $G(0) = -1$. On the other hand, if we assume for instance that $f'$ has sub linear growth (i.e. $|f'(x)| \leq c|x|^{\alpha} +d$ for some $\alpha < 1$) or that $\phi$ is positive, we find that $G(+\infty) = +\infty$.
+where $\phi(\lambda) = \frac{1}{m}\EE[f'(\lambda(s_a + \frac1m\sum_j n^j_a))(s_a+n_a^i)]$. One the one hand, we have $G(0) = -1$. On the other hand, if we assume for instance that $f'$ has sub linear growth (i.e. $|f'(x)| \leq c|x|^{\alpha} +d$ for some $\alpha < 1$) or that $\phi$ is positive, we find that $G(+\infty) = +\infty$.
 Therefore, $G$ cancels, which concludes the proof.
 
 \subsection{Stability conditions}
@@ -50,26 +50,26 @@ Denoting $C = \frac{1 - 1/ m}{\sigma^2}$ and $\tilde{\nb} = \frac1m\sum_{i=1}^m 
 
 where
 \begin{align*}
-     &\Delta^i_1= \\&\frac1m f'\left(\Lambda(\sbb + \tilde{\nb}) + \frac1m \sum_{j=1}^m E^j\Lambda(\sbb +\nb^j)\right)(\sbb +\nb_i)^{\top}\Lambda(I_p + E^i)^{\top} \numberthis
+     &\Delta^i_1= \\&\EE[\frac1m f'\left(\Lambda(\sbb + \tilde{\nb}) + \frac1m \sum_{j=1}^m E^j\Lambda(\sbb +\nb^j)\right)(\sbb +\nb_i)^{\top}\Lambda(I_p + E^i)^{\top}] \numberthis
  \end{align*}
  and
  \begin{align*}
-   &\Delta^i_2= \left(\Lambda\nb_i - \frac{1}{m-1}\sum_{j\neq i} \Lambda\nbb^j + E^i\Lambda(\sbb + \nb_i) \right. \\& \left. - \frac{1}{m-1}\sum_{j\neq i} E^j \Lambda(\sbb + \nb^j)\right)(\sbb + \nb_i)^{\top}\Lambda(I_p + E^i)^{\top}
+   &\Delta^i_2= \EE[\left(\Lambda\nb_i - \frac{1}{m-1}\sum_{j\neq i} \Lambda\nbb^j + E^i\Lambda(\sbb + \nb_i) \right. \\& \left. - \frac{1}{m-1}\sum_{j\neq i} E^j \Lambda(\sbb + \nb^j)\right)(\sbb + \nb_i)^{\top}\Lambda(I_p + E^i)^{\top}]
    \numberthis
 \end{align*}
 
 The first term is expanded at the first order, denoting $S = \sum_{j=1}^m E^j$:
 
 \begin{align*}
-  \Delta_1^i &= \frac1m \Bigg( f''(\Lambda(\sbb + \tilde{\nb}))\odot \big(\frac1m \sum_{j=1}^m E^j\Lambda(\sbb +\nb^j)\big) \\& + f'(\Lambda(\sbb + \tilde{\nb})) \Bigg) (\sbb +\nb_i)^{\top}\Lambda(I_p + E^i)^{\top}\\
-    &=\frac1m f'(\Lambda(\sbb + \tilde{\nb}))(\sbb + \nb_i)^{\top}\Lambda(I_p + E^i)^{\top} \\&+ \frac1{m^2}S\odot  \left(f''(\Lambda(\sbb + \tilde{\nb}))(\sbb^2)^{\top}\Lambda^2 \right)\\
-    &+\frac{1}{m^2}E^i\odot\left(f''(\Lambda(\sbb + \tilde{\nb}))((\nb_i)^2)^{\top}\Lambda^2 \right)
+  \Delta_1^i &= \EE[\frac1m \Bigg( f''(\Lambda(\sbb + \tilde{\nb}))\odot \big(\frac1m \sum_{j=1}^m E^j\Lambda(\sbb +\nb^j)\big) \\& + f'(\Lambda(\sbb + \tilde{\nb})) \Bigg) (\sbb +\nb_i)^{\top}\Lambda(I_p + E^i)^{\top}]\\
+    &=\EE[\frac1m f'(\Lambda(\sbb + \tilde{\nb}))(\sbb + \nb_i)^{\top}\Lambda(I_p + E^i)^{\top} \\&+ \frac1{m^2}S\odot  \left(f''(\Lambda(\sbb + \tilde{\nb}))(\sbb^2)^{\top}\Lambda^2 \right)\\
+    &+\frac{1}{m^2}E^i\odot\left(f''(\Lambda(\sbb + \tilde{\nb}))((\nb_i)^2)^{\top}\Lambda^2 \right)]
       \numberthis
 \end{align*}
 The symbol $\odot$ denotes the element-wise multiplication, $f'(\sbb) = \begin{bmatrix}f'(s_1) \\ \vdots \\ f'(s_p) \end{bmatrix}$ and $f''(\sbb) = \begin{bmatrix}f''(s_1) \\ \vdots \\ f''(s_p) \end{bmatrix}$.
 Similarly, the second term gives at the first order: 
 \begin{align}
-    \Delta_2^i &= \sigma'^2\Lambda^2(I_p + E^i)^{\top} + (1 + \sigma'^2)E^i\Lambda^2 - \frac{1}{m-1} (S - E^i) \Lambda^2
+    \Delta_2^i &= \EE[\sigma'^2\Lambda^2(I_p + E^i)^{\top} + (1 + \sigma'^2)E^i\Lambda^2 - \frac{1}{m-1} (S - E^i) \Lambda^2]
 \end{align}
 
 Combining this, we find:
@@ -80,10 +80,10 @@ Combining this, we find:
 \end{align}
 where 
 $$
-\Gamma^E= \left(\frac1{m^2}f''(\Lambda(\sbb + \tilde{\nb}))((\nb_i)^2)^{\top} + (1-\frac1m)\frac{\sigma'^2}{\sigma^2} + \frac{1}{\sigma^2} \right)\Lambda^2
+\Gamma^E= \left(\frac1{m^2}\EE[f''(\Lambda(\sbb + \tilde{\nb}))((\nb_i)^2)^{\top}] + (1-\frac1m)\frac{\sigma'^2}{\sigma^2} + \frac{1}{\sigma^2} \right)\Lambda^2
 $$
 $$
-\Gamma^S =\left(\frac1{m^2}f''(\Lambda(\sbb + \tilde{\nb}))(\sbb^2)^{\top} -\frac{1}{m\sigma^2}  \right)\Lambda^2
+\Gamma^S =\left(\frac1{m^2}\EE[f''(\Lambda(\sbb + \tilde{\nb}))(\sbb^2)^{\top}] -\frac{1}{m\sigma^2}  \right)\Lambda^2
 $$
 
 are $p\times p$ matrices, independent of the subject.
@@ -217,33 +217,33 @@ The column "Modality/Components" describes the type of data for which each algor
 The components type can be either temporal if extracted components are time courses or spatial if they are spatial patterns. 
 %
 \begin{center}
-\begin{longtable}{ |p{.2\textwidth} | p{.21\textwidth} |p{.2\textwidth}| p{.24\textwidth}|}
+\begin{longtable}{ |p{.25\textwidth} | p{.17\textwidth} |p{.2\textwidth}| p{.24\textwidth}|}
 \hline
 \textbf{Method} & \textbf{Modality / Components} &\textbf{Dimension reduction} & \textbf{Description}  \\
 \hline
 SRM \cite{chen2015reduced} & 
-fMRI/Temporal
+fMRI / Temporal
 &
 SRM
 &
 The model is $\xb_i = A_i\sbb + \nb_i$, with \emph{Gaussian} components and \emph{orthogonal} mixing matrices $A_i$\\
 \hline
 GroupPCA~\cite{smith2014group} &
-fMRI/Spatial
+fMRI / Spatial
 &
 GroupPCA
 &
 A memory efficient implementation of PCA applied on temporally concatenated data.\\
 \hline
 GIFT~ \cite{calhoun2001method} & 
-fMRI/Spatial
+fMRI / Spatial
 &
 Individual PCA + Group PCA (on component-wise concatenated data)
 &
 Single-subject ICA is applied on the aggregated data\\
 \hline
 EEGIFT~ \cite{eichele2011eegift} & 
-EEG/Temporal
+EEG / Temporal
 &
 Individual PCA + Group PCA (on component-wise concatenated data)
 &
@@ -257,35 +257,35 @@ Any
 Single-subject ICA is applied on each subject's data, and the components are matched using the Hungarian algorithm\\
 \hline
 Clustering approach~\cite{esposito2005independent}&
-fMRI/Spatial
+fMRI / Spatial
 &
 Individual PCA
 &
 Single-subject ICA is applied on each subject's data, and the components are matched using a hierarchical clustering algorithm.\\
 \hline
 Measure projection analysis~\cite{bigdely2013measure}&
-EEG/Temporal
+EEG / Temporal
 &
 Individual PCA
 &
 Single-subject ICA is applied on each subject's data, and the components are matched using a hierarchical clustering algorithm.\\
 \hline
 TensorICA \cite{beckmann2005tensorial} &
-fMRI/Spatial
+fMRI / Spatial
 &
 Group PCA (on spatially concatenated data)
 &
 TensorICA incorporates ICA assumptions into the PARAFAC model. The mixing matrices $A_1 \cdots A_n$ are such that $A_i = A D_i$ where $A$ is common to all subjects and $D_i$ are subject specific diagonal matrices.\\  
 \hline
 Unifying Approach of \cite{guo2008unified} &
-fMRI/Spatial
+fMRI / Spatial
 &
 Group PCA (on spatially concatenated data) + GroupPCA (on component-wise concatenated data).
 &
 The model is $\xb_i = A_i\sbb + \nb_i$ with a Gaussian mixture model on independent components and a matrix normal prior on the noise. \\
 \hline
 SR-ICA \cite{zhang2016searchlight} &
-fMRI/Temporal
+fMRI / Temporal
 &
 SR-ICA
 &
@@ -293,14 +293,14 @@ SR-ICA incorporates ICA assumptions into the shared response model.  \\
 \hline
 CAE-SRM \cite{chen2016convolutional}
 &
-fMRI/Temporal
+fMRI / Temporal
 &
 CAE-SRM
 &
 A convolutional auto-encoder is used to perform the unmixing. \\  
 \hline
 CanICA \cite{varoquaux2009canica} &
-fMRI/Spatial
+fMRI / Spatial
 &
 Individual PCA + multi set CCA (on component-wise concatenated data)
 &
@@ -308,7 +308,7 @@ CanICA applies single-subject ICA on data reduced with PCA and CCA.
  \\  
 \hline
 Spatial ConcatICA~\cite{svensen2002ica} &
-fMRI/Spatial
+fMRI / Spatial
 &
 Group PCA (on spatially concatenated data)
 &
@@ -316,7 +316,7 @@ ICA is applied on spatially concatenated data. The mixing is constrained to be t
  \\  
  \hline
 Temporal ConcatICA~\cite{cong2013validating} &
-EEG/Temporal
+EEG / Temporal
 &
 Group PCA (on temporally concatenated data)
 &
@@ -331,7 +331,7 @@ Any
 The model is  $\xb_i = A\sbb_i + \nb_i$. The mixing is constrained to be the same across all subjects. \\
 %\hline
 %Arbitrary correlation factor analysis of~\cite{Monti18UAI} &
-%fMRI/Temporal &
+%fMRI / Temporal &
 %Any &
 %The probabilistic model of~\cite{Monti18UAI} assumes the mixing matrix is orthogonal, positive and shared across subjects but not necessarily square. It learns subjects specific co-variance matrices.  \\
 \hline
