@@ -11,13 +11,18 @@
 
 \chapter*{Abstract}
 This thesis in computer science and mathematics is applied to the field of
-neuroscience, and more particularly to research on brain activity.
+neuroscience, and more particularly to the mapping of brain activity based on imaging electrophysiology.
+%
 In this field, a rising trend is to experiment with naturalistic stimuli such as movie watching or audio track listening,
 rather than tightly controlled but outrageously simple stimuli.
-However, the analysis of these "naturalistic" stimuli and their effects requires a huge amount of very expensive images.
-Without mathematical aids, the distinction between the factors at work is
-unattainable.
-However, the stimulations are challenging to model in this context, and therefore, the statistical analysis of the data using supervised regression-based approaches is difficult.
+However, the analysis of these "naturalistic" stimuli and their effects requires a huge amount of images that remain hard and costly to acquire.
+%
+Without mathematical modeling, the
+identification of neural signal from the measurements is very hard if not impossible.
+%distinction between the factors at work is unattainable.
+%
+However, the stimulations that elicit neural activity are challenging to model in this context, and therefore, the statistical analysis of the data using regression-based approaches is difficult.
+µ
 This has motivated the use of unsupervised learning methods that do not make assumptions about what triggers brain activations in the presented stimuli.
 
 In this thesis, we first consider the case of the shared response model (SRM), where
@@ -48,26 +53,50 @@ analysis of resting state data assuming a shared spatial organization instead of
 \begin{otherlanguage}{french}
 \pdfbookmark[1]{Resume}{Resume}
 \chapter*{Résumé}
-Cette thèse d'informatique et de mathématiques s'applique au domaine des neurosciences, et plus particulièrement aux recherches sur l'activité cérébrale.
+Cette thèse d'informatique et de mathématiques s'applique au domaine des neurosciences, et plus particulièrement aux recherches sur la modélisation de l'activité cérébrale humaine par électrophysiologie et imagerie.
+%
 Dans ce champ, la tendance est actuellement d’expérimenter avec des stimuli naturels, comme le visionnage d’un film ou l’écoute d’une piste audio, et non plus avec des stimuli étroitement contrôlés mais outrageusement simples.
-L’analyse de ces stimuli « naturels » et de leurs effets demande toutefois de disposer d’une immense quantité d’images, par ailleurs très coûteuses. Sans outils mathématique, discriminer les facteurs agissants est hors de portée. Toutefois, ces stimuli sont compliqués à modéliser et à analyser, car l'utilisation de méthodes supervisées fondées sur des régressions est difficile. C'est ce qui motive l'utilisation de méthodes non-supervisées qui ne font pas d'hypothèses sur ce qui déclenche les activations neuronales.
+%
+L’analyse de ces stimuli « naturels » et de leurs effets demande toutefois de disposer d’une immense quantité d’images, par ailleurs très coûteuses. Sans outils mathématique, identifier l'activité neuronale à partir des données est quasi impossible.
+%
+Toutefois, ces stimuli sont compliqués à modéliser et à analyser, car l'utilisation de méthodes fondées sur des régressions est limitée par la difficulté de modéliser les stimuli.
+%
+C'est ce qui motive l'utilisation de méthodes non-supervisées qui ne font pas d'hypothèses sur ce qui déclenche les activations neuronales.
 
-Dans cette thèse, nous considérons d'abord le cas du modèle de réponse partagée (MRP), dans lequel les sujets sont supposés partager une réponse commune. Ce modèle est utile pour réduire la dimension des données, mais son entraînement est coûteux pour les données d'imagerie fonctionnelle (IRMf) où la dimension peut être immense. Nous présentons une version bien plus rapide et beaucoup plus économe en mémoire. Mais le MRP fait des hypothèses irréalistes sur les données d'imageries.
+Dans cette thèse, nous considérons d'abord le cas du modèle de réponse partagée (MRP), dans lequel les sujets sont supposés partager une réponse commune. Ce modèle est utile pour réduire la dimension des données, mais son entraînement est coûteux pour les données d'imagerie fonctionnelle (IRMf) dont la dimension peut être immense.
+%
+Nous présentons une version bien plus rapide et beaucoup plus économe en mémoire. Mais le MRP fait des hypothèses irréalistes sur les données d'imageries.
 
-Des hypothèses plus réalistes sont utilisées dans l'analyse en composante indépendante (ACI) mais cette méthode est difficile à généraliser aux jeux de données qui contiennent plusieurs sujets. Nous proposons alors une extension de l'ACI appelée ACI multi-vue, fondée sur le principe de maximum de vraisemblance
-et qui convient à des jeux de données multi-sujets. L’ACI multi-vue a une vraisemblance en forme fermée qui peut être maximisée efficacement. Toutefois, cette méthode suppose la même quantité de bruit pour tous les sujets.
+Des hypothèses plus réalistes sont utilisées dans l'analyse en composante indépendante (ACI) mais cette méthode est difficile à généraliser aux jeux de données qui contiennent plusieurs sujets.
+%
+Nous proposons alors une extension de l'ACI appelée ACI multi-vue, fondée sur le principe de maximum de vraisemblance
+et qui convient à des jeux de données multi-sujets.
+%
+L’ACI multi-vue a une vraisemblance en forme fermée qui peut être maximisée efficacement. Toutefois, cette méthode suppose la même quantité de bruit pour tous les sujets.
 
-Nous présentons donc l’ACI partagée, une généralisation de l’ACI multi-vue qui s'accompagne d'un modèle de bruit plus général. Contrairement à presque tous les modèles fondés sur l'ACI, l’ACI partagée peut séparer des sources gaussiennes et non gaussiennes et propose une estimation optimale des sources communes (au sens des moindres carrés), qui pondère chaque sujet en fonction de son niveau de bruit estimé. En pratique, l’ACI partagée et l’ACI multi-vue permettent d'obtenir, en magnéto-encéphalographie et en IRMf, une estimation plus fiable de la réponse commune que leurs concurrents.
+Nous présentons donc l’ACI partagée, une généralisation de l’ACI multi-vue qui s'accompagne d'un modèle de bruit plus général.
+%
+Contrairement à presque tous les modèles fondés sur l'ACI, l’ACI partagée peut séparer des sources gaussiennes et non gaussiennes et propose une estimation optimale des sources communes (au sens des moindres carrés), qui pondère chaque sujet en fonction de son niveau de bruit estimé.
+%
+En pratique, l’ACI partagée et l’ACI multi-vue permettent d'obtenir, en magnéto-encéphalographie et en IRMf, une estimation plus fiable de la réponse commune que leurs concurrents.
 
-Enfin, nous utilisons l'ACI comme base pour faire de l'augmentation de données. Plus précisément, nous présentons l’ACI conditionnelle, une méthode d'augmentation de données qui exploite la grande quantité de données d'IRMf non étiquetées pour construire un modèle génératif en utilisant seulement un petit nombre de données étiquetées. L’ACI conditionnelle permet d'augmenter de façon appréciable la précision du décodage sur huit grands jeux de données d'IRMf.
+Enfin, nous utilisons l'ACI comme base pour faire de l'augmentation de données.
+%
+Plus précisément, nous présentons l’ACI conditionnelle, une méthode d'augmentation de données qui exploite la grande quantité de données d'IRMf non étiquetées pour construire un modèle génératif en utilisant seulement un petit nombre de données étiquetées.
+%
+L’ACI conditionnelle permet d'augmenter de façon appréciable la précision du décodage sur huit grands jeux de données d'IRMf.
 
-Nos principaux apports nous semblent consister dans l’accélération de l’entraînement du MRP ainsi que dans l’introduction de deux modèles plus réalistes pour l’analyse de l’activité cérébrale de sujets exposés à des stimuli naturels : l’ACI multi-vue et l’ACI partagée. Enfin, nos résultats montrant que l’ACI peut être utilisée pour faire de l’augmentation de donnée sont prometteurs.
+Nos principaux apports nous semblent consister dans l’accélération de l’entraînement du MRP ainsi que dans l’introduction de deux modèles plus réalistes pour l’analyse de l’activité cérébrale de sujets exposés à des stimuli naturels : l’ACI multi-vue et l’ACI partagée.
+%
+Enfin, nos résultats montrant que l’ACI peut être utilisée pour faire de l’augmentation de donnée sont prometteurs.
 
 Nous présentons pour finir quelques pistes qui pourraient guider des travaux
 ultérieurs. D’un point de vue pratique, des modifications mineures de nos
 méthodes pourraient permettre l’analyse des données d’imageries obtenues sur des
 sujets au repos en faisant l’hypothèse d’une organisation spatiale partagée à la
-place d’une réponse partagée. D’un point de vue théorique, les travaux futurs
+place d’une réponse partagée.
+%
+D’un point de vue théorique, les travaux futurs
 pourraient se concentrer sur la compréhension de la façon dont la réduction de
 dimension et l'identification de la réponse partagée peuvent être réalisées
 conjointement.
