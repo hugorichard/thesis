@@ -203,6 +203,7 @@ The approximation is exact when the true unmixing matrix is found since $\EE[s_b
 
 The updates are then given by:
 \begin{align}
+  \label{eq:infomaxupdates}
   W \leftarrow (I - \alpha \tilde{H}^{-1} G) W
 \end{align}
 
@@ -264,6 +265,7 @@ As already mentioned, $\tilde{H}$ is block diagonal with blocks described by equ
 The condition for stability is that the Hessian is positive definite. Therefore
 all the blocks need to be positive definite so we get the conditions:
 \begin{align}
+  \label{eq:stabilitycriterion}
   & \forall a, \enspace 1 + \Gamma_{aa} > 0 && \text{ for blocks of size } 1 \\
   & \forall a \neq b, \enspace \Gamma_{ab}\Gamma_{ba} > 1 && \text{ for blocks of size } 2
 \end{align}
@@ -272,7 +274,7 @@ When the conditions are satisfied, the quasi-Newton algorithms will recover the
 true unmixing matrices if initialized close to a solution. However, we have no
 theoretical guarantees of convergence because of the non-convexity of the problem.
 
-\subsection{A variation : non-stationary ICA and joint diagonalization}
+\subsection{Non-stationary ICA and joint diagonalization}
 Up to now we have assumed that samples were independent an identically distributed. In non-stationary ICA, samples are no longer identically distributed as the distribution can vary over time.
 This section follows the work in~\cite{pham2001blind}.
 The components are assumed to be Gaussian with a variance that varies between
@@ -280,12 +282,13 @@ samples but is assumed to be piece-wise constant $\Sigma_t = \Sigma_k$ for $t \i
 T_k$ where $(T_k)_k$ is a partition of $[1, 2, \dots, n]$ and $\Sigma_k$ is a
 positive diagonal matrix.
 
+\blue{Denote $X[i]$ to be sample $i$ of the observed data $X$.}
 The negative empirical expected log-likelihood is given by:
 \begin{align}  
-  \loss &= -\log(|W|)  + \frac1{n} \sum_k \big( \frac12 \sum_{i \in T_k}\|\Sigma_k^{-\frac12} W \xb^k_i \|^2 + \frac12 \log(|\Sigma_k|) \big)
+  \loss &= -\log(|W|)  + \frac1{n} \sum_k \big( \frac12 \sum_{i \in T_k}\|\Sigma_k^{-\frac12} W X[i] \|^2 + \frac12 \log(|\Sigma_k|) \big)
 \end{align}
 
-Denoting $C_k = \sum_{i \in T_k} \xb_i^k (\xb_i^k)^{\top}$ we have 
+Denoting $C_k = \sum_{i \in T_k} X[i] X[i]^{\top}$ we have 
 
 \begin{align}  
   \loss &= -\log(|W|)  + \frac1{n} \sum_k \big( \frac1{2} \trace(\Sigma_k^{-1} W C_k W^{\top}) + \frac12 \log(|\Sigma_k|) \big)
@@ -297,7 +300,7 @@ W^{\top})$ and therefore up to a constant:
 \end{align}
 which up to a constant can be rewritten:
 \begin{align}  
-  \loss &=\frac1{2n} \sum_k \big(\frac{\log(|\diag(W C_k W^{\top})|)}{\log(|W C_k W^{\top}|)} \big)
+  \loss &=\frac1{2n} \sum_k \big(\frac{\log(|\diag(W C_k W^{\top})|)}{\log(|W C_k W^{\top}|)} \big) \label{jointdiagcritica}
 \end{align}
 
 $\loss$ is a joint diagonalization criterion. The optimal $W$ can be found via a
@@ -305,6 +308,50 @@ quasi-Newton method very similar to the one we used for non-Gaussian
 ICA~\cite{ablin2018beyond}. However, the updates only depend on the covariance
 matrices $C_k$ and no longer on the number of samples making this approach very
 fast when the number of samples is large.
+
+\blue{
+\subsection{Other approaches and extensions}
+
+\paragraph{Non-white ICA} While non-stationary ICA relaxes the assumption that samples are identically
+distributed, non-white ICA relaxes the assumption that samples are independent.
+Following the work in~\cite{pham2001blindb}, the entropy of a stationary Gaussian process $\yb(t)$ is given by:
+\begin{align}
+h(\yb(t)) = \frac1{\4 \pi} \int_{-\pi}^{\pi} \log(\det(4 \pi^2 e F(\lambda))) d\lambda
+\end{align}
+where $F$ is the spectral density matrix of the process.
+Then the authors define the Gaussian mutual information between stationary processes $y_1(t), \dots,
+y_k(t)$ by:
+\begin{align}
+  I_g(\y_1, \dots, y_k) = \frac1{4 \pi} \int_{-\pi}^{\pi}  \log(\det( \diag(F(\lambda)))) - \log(\det( F(\lambda))) d\lambda
+\end{align}
+which is a joint diagonalization criterion similar to~\eqref{jointdiagcritica}.
+
+
+\paragraph{Extended Infomax: More flexible densities} In Infomax, the densities are fixed once and
+for all. However, it can be useful to make them more flexible.
+Note that the updates in
+equation~\eqref{eq:infomaxupdates} and the stability criterion in
+equation~\eqref{eq:stabilitycriterion} only depend on the score function
+$f'(\yb) = \partialfrac{\yb}{f(\yb)}$.
+Choosing $f'(x) = x + \mathrm{tanh}(x)$ would only separate super-Gaussian sources while
+choosing $f'(x) = x - \mathrm{tanh}(x)$ would only separate sub-Gaussian sources.
+In ~\cite{lee1999independent}, the authors therefore propose an extended Infomax
+algorithm, where the score function can change based on observed statistics so that the
+stability criterion is fulfilled in any case.
+
+\paragraph{ICA via mutual information minimization} In the limit of large
+samples, we have seen in equation~\eqref{eq:robustness:end} that maximum
+likelihood minimizes the sum of two terms: the mutual information and a second
+term that quantifies the mismatch between the assumed distribution of the
+components and the marginals of unmixed data. It might be desirable to only
+minimize the mutual information and forget the second term. Since the mutual
+information depends on the entropy, different works such as~\cite{hyvarinen1998analysis}~\cite{li2009novel}~\cite{li2010blind} or~\cite{li2010independent}
+studied how the entropy can be estimated accurately and efficiently.
+
+}
+
+
+
 
 \section{Analysis of MultiView data}
 In this section, we present multiview unsupervised techniques suited to
@@ -331,6 +378,13 @@ Canonical correlation analysis is initially designed to find a linear
 combination that maximizes the correlation between two datasets.
 The extension to more than two datasets is ambiguous, and many
 different generalized CCA methods have been proposed. \cite{kettenring1971canonical} introduces 6 objective functions that reduce to CCA when $m=2$ and \cite{nielsen2002multiset} considered 4 different possible constraints leading to 24 different formulations of Multiset CCA.
+
+\blue{
+  In \cite{kettenring1971canonical}, the different formulations of multiset CCA
+  are not derived from a probabilistic model. However, later works
+  (see~\cite{li2009joint} or \cite{adali2014diversity}) have shown that some
+  formulations of multiset CCA can be related to probabilistic models.
+}
 
 In this section, we present the formulation refered to
 in~\cite{nielsen2002multiset} as ``SUMCORR with constraint 4'' which is one of the
@@ -397,7 +451,28 @@ dimensionality reduction is performed on data of each subject  separately; then
 the reduced data are merged into a common representation; finally, an ICA
 algorithm is applied for shared components extraction.
 
-CanICA and ConcatICA are popular methods for fMRI~\cite{calhoun2009review} and EEG~\cite{eichele2011eegift} group studies. These methods directly recover only group level, shared components; when individual components are needed, additional steps are required (back-projection \cite{calhoun2001method} or dual-regression \cite{beckmann2009group}).
+CanICA and ConcatICA are popular methods for fMRI~\cite{calhoun2009review} and
+EEG~\cite{eichele2011eegift} group studies. These methods directly recover only
+group level, shared components; when individual components are needed, \blue{ a back-reconstruction step is required (such as GICA1~\cite{calhoun2001method} GICA2, GICA3~\cite{erhardt2011comparison} or dual-regression \cite{beckmann2009group})}.
+
+\blue{In our experiments, when we fit CanICA or ConcatICA, we use Infomax and the
+  picard solver~\cite{ablin2018faster} with the tanh non-linearity. To obtain
+  $k$ components, we first apply a subject specific PCA with $k$ components and
+  then aggregate the data using either a Group PCA (in ConcatICA) or a multiset CCA (in
+  CanICA) with $k$ components.
+  When individual sources are needed, we use dual-regression.
+  As already noted, many different procedure to perform single subject ICA exists (such as Infomax, EBM~\cite{li2010blind}, ERBM~\cite{li2010independent}), the number of components in the first PCA can be chosen in many different ways and so can the back-reconstruction method.
+  This leads to a number of different CanICA / ConcatICA algorithms. Many of
+  these different versions of CanICA / ConcatICA are implemented in the GIFT toolbox
+  \url{https://trendscenter.org/software/gift/}.
+  We highlight that GIFT uses a slightly different terminology as us: dual-regression is referred to as
+  spatial-temporal regression and ConcatICA is simply referred to as GroupICA. In this work, GroupICA describes instead the problem of recovering common sources from multiple subjects.
+
+  In the rest of the thesis, we often make the point that CanICA and ConcatICA
+  are not maximum likelihood estimators. This is because the group PCA /
+  multiset CCA  used to fuse the data of different subjects does not come from a
+  maximum likelihood approach.
+}
 % 
 
 \subsubsection{Likelihood based method}

@@ -6,13 +6,21 @@ response. Yet, the magnitude of the response may differ across subjects \cite{pe
 This drawback is shared by most GroupICA methods that often rely on single
 subject ICA to recover the shared response. In addition, such methods are typically unable to separate Gaussian components.
 
+\blue{
 In contrast, the framework of Independent vector analysis
 (IVA)~\cite{lee2008independent, anderson2011joint} allows subject specific
 variability in the unmixed data. 
-However, current implementations such as IVA-L~\cite{lee2008independent},
+Current implementations such as IVA-L~\cite{lee2008independent},
 IVA-G~\cite{anderson2011joint}, IVA-L-SOS~\cite{bhinge2019extraction}, IVA-GGD~\cite{anderson2014independent} or
-IVA with Kotz distribution~\cite{anderson2013independent} only estimate
-view-specific components, and do not model or extract a shared response.
+IVA with Kotz distribution~\cite{anderson2013independent} estimate
+view-specific components but shared components are not modeled explicitly.
+Studying the components post IVA can give great insights about which
+components are shared and by which subjects (see~\cite{long2020independent}) and
+individual responses that are closed enough could be merged to produce a shared response.
+However, the flexibility in modeling different components from each subject
+comes at the cost of not having a well principled way of aggregating the
+components into a common shared response.
+}
 
 % They are thus not well-suited for modelling the dependencies between views in
 % functional brain imaging, as we will argue in detail below.
@@ -112,7 +120,7 @@ Consider the
 matrix $C \in \bbR^{pm \times pm}$ containing $m \times m$ blocks of size $p
 \times p$
 such that the block $i,j$ is given by $C_{ij}$. Consider the matrix $D$ identical to $C$ excepts that the non-diagonal blocks are filled with zeros. 
-Generalized CCA consists in the following generalized eigenvalue problem:
+Multiset CCA \blue{(using the SUMCORR cost function under some constraint as described in section~\ref{sec:mcca})} consists in the following generalized eigenvalue problem:
 \begin{equation}
 \label{eq:eigv}
     C \ub = \lambda D\ub,\enspace \lambda > 0,\enspace \ub\in\bbR^{pm} \enspace .
@@ -121,19 +129,7 @@ Generalized CCA consists in the following generalized eigenvalue problem:
 Consider the matrix $U = [\ub^1, \dots, \ub^p] \in \mathbb{R}^{mp \times p}$ formed by concatenating the $p$ leading eigenvectors of the previous problem ranked in decreasing eigenvalue order. Then, consider $U$ to be formed of $m$ blocks of size $p \times p$ stacked vertically and define $(W_i)^{\top}$ to be the $i$-th block. These $m$ matrices are the output of Multiset CCA. We also denote $\lambda_1 \geq \dots \geq \lambda_p$ the $p$ leading eigenvalues of the problem.
   %\aapo{[Very difficultto understand! First define the matrix by u's, and then say that you take blocks out of it to define the W.]}
 
-An application of the results of \cite{li2009joint} shows that Multiset CCA recovers the mixing matrices of ShICA under some assumptions.
-%
-\begin{proposition}[Sufficient condition for solving ShICA via Multiset CCA~\cite{li2009joint}]
-Let $r_{ijk} = (1 + \Sigma_{ik})^{-\frac12} (1 + \Sigma_{jk})^{-\frac12}$.
-%\bt{Hm. What is $\Sigma_{ik}$ ?}
-Assume that $(r_{ijk})_k$ is non-increasing. Assume that the maximum eigenvalue $\nu_k$ of matrix $R^{(k)}$ of general element $(r_{ijk})_{ij}$ is such that  $\nu_k = \lambda_k$ 
-%\bt{$\nu_k$ is not defined}
-.
-Assume that $\lambda_1 \dots \lambda_p$ are distinct.
-Then, there exists scale matrices $\Gamma_i$ such that $W_i = 
-\Gamma_i A_i^{-1}$ for all $i$.
-\end{proposition}
-This proposition gives a sufficient condition for solving ShICA with Multiset CCA. It needs a particular structure for the noise covariances as well as specific ordering for the eigenvalues. The next theorem shows that we only need $\lambda_1 \dots \lambda_p$ to be distinct for Multiset CCA to solve ShICA:
+The next theorem shows that we only need $\lambda_1 \dots \lambda_p$ to be distinct for Multiset CCA to solve ShICA:
 \begin{assumption}[Unique eigenvectors]
   \label{ass:uniqueeig}
 $\lambda_1 \dots \lambda_p$ are distinct.
@@ -163,8 +159,17 @@ $\lambda_1 \dots \lambda_p$ are distinct.
 This theorem means that solving the generalized eigenvalue problem~\eqref{eq:eigv} allows to recover the mixing matrices up to a scaling and permutation: this form of generalized CCA recovers the parameters of the statistical model.
 Note that Assumption~\ref{ass:uniqueeig} is also a necessary condition. Indeed, if two eigenvalues are identical, the eigenvalue problem is not uniquely determined.
 
+\blue{
+Note that the link between Multiset CCA and probabilistic models has been
+studied in other contexts~\cite{li2009joint} or~\cite{adali2014diversity}
+although the authors do not use the same formulation of MultisetCCA as ours. We highlight here, that
+the different versions of Multiset CCA are not equivalent and may very well produce different
+results.
+}
+
 %\aapo{[Aapo: due to lack of space the rest of this subsection could be moved to suppl material.]}
-We have two different Assumptions, \ref{ass:diversity} and \ref{ass:uniqueeig}, the first of which guarantees theoretical identifiability as per Theorem~\ref{thm:identif} and the second guarantees consistent estimation by Multiset CCA as per Theorem~\ref{th:eig}. Next we will discuss their connections, and show some limitations of the Multiset CCA approach. To begin with, we have the following result about the eigenvalues of the problem~\eqref{eq:eigv} and the $\Sigma_{ij}$.
+\blue{
+We have two different Assumptions, \ref{ass:diversity} and \ref{ass:uniqueeig}, the first of which guarantees theoretical identifiability as per Theorem~\ref{thm:identif} and the second guarantees consistent estimation by Multiset CCA as per Theorem~\ref{th:eig}. Next we will discuss their connections, and show some limitations of the Multiset CCA approach.} To begin with, we have the following result about the eigenvalues of the problem~\eqref{eq:eigv} and the $\Sigma_{ij}$.
 % \pierre{best not to use a pointer to the appendix in the text, just state the following result}
 \begin{proposition}
   \label{prop:eigvals_from_noise}
@@ -369,14 +374,22 @@ ShICA-J uses the Multiset CCA presented in section~\ref{sec:mcca} which is one o
 generalizations can be obtained by imposing sparsity on the mixing matrices such as in~\cite{archambeau2008sparse, klami2014group, witten2009extensions} or non-negativity~\cite{DELEUS2011143}.
 Lastly, the work in~\cite{li2009joint} exhibits a set of sufficient (but not necessary) conditions under which a well defined model can be learnt by the formulation of Multiset CCA used in ShICA-J. The set of conditions we exhibit in this work are necessary and sufficient. We further emphasize that basic Multiset CCA provides a poor estimator, as explained in section~\ref{sec:samplingnoise}.
 
+\blue{
 Let us highlight that ShICA can be seen as a particular instance of IVA where
 subject specific components $s_{ij}$ are such that $s_{ij} = s_j + n_{ij}$.
 However, current implementations such as IVA-L~\cite{lee2008independent},
 IVA-G~\cite{anderson2011joint}, IVA-L-SOS~\cite{bhinge2019extraction}, IVA-GGD~\cite{anderson2014independent} or
-IVA with Kotz distribution~\cite{anderson2013independent} only estimate
-view-specific components, and do not model or extract a shared response.
+IVA with Kotz distribution~\cite{anderson2013independent} estimate
+view-specific components but shared components are not modeled explicitly.
+Studying the components post IVA can give great insights about which
+components are shared and by which subjects (see~\cite{long2020independent}) and
+individual responses that are closed enough could be merged to produce a shared response.
+However, the flexibility in modeling different components from each subject
+comes at the cost of not having a well principled way of aggregating the
+components into a common shared response.
 In contrast, ShICA specifically enables extraction of shared components from the
 subject specific components via its minimum mean squared error estimate.
+}
 
 The IVA theory provides global identifiability conditions in the Gaussian case (IVA-G)~\cite{via2011joint} and local identifiability conditions in the general case~\cite{anderson2014independent} from which local identifiability conditions of ShICA could be derived. However, in this work, we provide global identifiability conditions for ShICA.
 Lastly, IVA can be performed using joint diagonalization of cross covariances~\cite{li2011joint, congedo2012orthogonal} although multiple matrices have to be learnt and cross-covariances are not necessarily symmetric positive definite, which makes the algorithm slower and less principled.

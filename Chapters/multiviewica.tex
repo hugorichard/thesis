@@ -268,8 +268,8 @@ A different path to multi-subject ICA is to extract independent components with 
 Inspired by the heuristic of the hyperalignment method~\cite{haxby2011common} we choose a reference subject and first match the components of all other subjects to the components of the reference subject. The process is then repeated multiple times, using the average of previously aligned components as a reference. Finally, group components are given by the average of all aligned components. We use the Hungarian algorithm to align pairs of mixing matrices~\cite{tichavsky2004optimal}.
 Alternative approaches involving clustering have also been developed~\cite{esposito2005independent,bigdely2013measure}.
 
-Lastly, IVA based methods (see section~\ref{sec:IVA}) do not specifically model
-the shared response which is the quantity of interest in this work.
+Lastly, IVA based methods (see section~\ref{sec:IVA})
+estimate view-specific components but shared components are not modeled explicitly.
 
 \section{Conclusion}
 In this chapter, we have proposed a novel unsupervised algorithm that reveals latent components observed through different views. Using an independence assumption, 
