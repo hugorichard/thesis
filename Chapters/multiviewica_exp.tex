@@ -26,18 +26,17 @@ We compare the following methods to obtain $p$ components:
 We define the chance level as the performance of an algorithm that computes unmixing matrices and projections to lower dimensional space by sampling random numbers from a standard normal distribution. 
 % 
 
-The \blue{subject specific} dimension reduction in MultiView ICA, PermICA,
-\blue{ConcatICA and CanICA} is performed with SRM in
+The subject specific dimension reduction in MultiView ICA, PermICA,
+ConcatICA and CanICA is performed with SRM in
 fMRI experiments and subject-specific PCA in MEG experiments.
 
-\blue{The shape of the input data ($v$, $t$, $m$) depend on the dataset used and the experiment
+The shape of the input data ($v$, $t$, $m$) depend on the dataset used and the experiment
   performed. A description of the datasets used is available in section~\ref{srm:datasets:fmri}
   for fMRI data and in section~\ref{sec:meg:datasets} for MEG data. The values for $p$ (the
   number of components) is given in the descriptions of the experiments. 
   Note that in the special case of the experiments on the sherlock fMRI dataset, the
   experimental pipeline is available on github \url{https://github.com/hugorichard/multiviewica/tree/master/real_data_experiments} (including downloading and
   preprocessing of the data).
-  }
 
 Since the cost function $\mathcal{L}$ is non-convex, having a good initialization can make a difference in the final result. We propose a two stage approach.
 We begin by applying PermICA on the datasets, which gives us a first set of unimixing matrices $W_1, \dots, W_m$.

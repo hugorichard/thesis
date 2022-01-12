@@ -9,50 +9,50 @@
 \let\cleardoublepage\relax
 \let\cleardoublepage\relax
 
-\chapter*{Abstract}
-This thesis in computer science and mathematics is applied to the field of
-neuroscience, and more particularly to the mapping of brain activity based on imaging electrophysiology.
-%
-In this field, a rising trend is to experiment with naturalistic stimuli such as movie watching or audio track listening,
-rather than tightly controlled but outrageously simple stimuli.
-However, the analysis of these "naturalistic" stimuli and their effects requires a huge amount of images that remain hard and costly to acquire.
-%
-Without mathematical modeling, the
-identification of neural signal from the measurements is very hard if not impossible.
-%distinction between the factors at work is unattainable.
-%
-However, the stimulations that elicit neural activity are challenging to model in this context, and therefore, the statistical analysis of the data using regression-based approaches is difficult.
-%
-This has motivated the use of unsupervised learning methods that do not make assumptions about what triggers brain activations in the presented stimuli.
+% \chapter*{Abstract}
+% This thesis in computer science and mathematics is applied to the field of
+% neuroscience, and more particularly to the mapping of brain activity based on imaging electrophysiology.
+% %
+% In this field, a rising trend is to experiment with naturalistic stimuli such as movie watching or audio track listening,
+% rather than tightly controlled but outrageously simple stimuli.
+% However, the analysis of these "naturalistic" stimuli and their effects requires a huge amount of images that remain hard and costly to acquire.
+% %
+% Without mathematical modeling, the
+% identification of neural signal from the measurements is very hard if not impossible.
+% %distinction between the factors at work is unattainable.
+% %
+% However, the stimulations that elicit neural activity are challenging to model in this context, and therefore, the statistical analysis of the data using regression-based approaches is difficult.
+% %
+% This has motivated the use of unsupervised learning methods that do not make assumptions about what triggers brain activations in the presented stimuli.
 
-In this thesis, we first consider the case of the shared response model (SRM), where
-subjects are assumed to share a common response. While this algorithm is useful
-to perform dimension reduction, it is particularly costly on functional magnetic
-resonance imaging (fMRI) data where the
-dimension can be very large. We considerably speed up the
-algorithm and reduce its memory usage. However, SRM relies on assumptions that
-are not biologically plausible.
+% In this thesis, we first consider the case of the shared response model (SRM), where
+% subjects are assumed to share a common response. While this algorithm is useful
+% to perform dimension reduction, it is particularly costly on functional magnetic
+% resonance imaging (fMRI) data where the
+% dimension can be very large. We considerably speed up the
+% algorithm and reduce its memory usage. However, SRM relies on assumptions that
+% are not biologically plausible.
 
-In contrast, independent component analysis (ICA) is more realistic but not suited to multi-subject datasets. In this thesis, we present a well-principled method called MultiViewICA that extends ICA to datasets containing multiple subjects.
-MultiViewICA is a maximum likelihood estimator. It comes with a closed-form
-likelihood that can be efficiently optimized. However, it assumes the same amount of noise for all subjects.
+% In contrast, independent component analysis (ICA) is more realistic but not suited to multi-subject datasets. In this thesis, we present a well-principled method called MultiViewICA that extends ICA to datasets containing multiple subjects.
+% MultiViewICA is a maximum likelihood estimator. It comes with a closed-form
+% likelihood that can be efficiently optimized. However, it assumes the same amount of noise for all subjects.
 
-We therefore introduce ShICA, a generalization of MultiViewICA that comes with a more general noise model. In contrast to almost all ICA-based models, ShICA can separate Gaussian and non-Gaussian sources and comes with a minimum mean square error estimate of the common sources that weights each subject according to its estimated noise level.
-In practice, MultiViewICA and ShICA yield on magnetoencephalography and functional magnetic resonance imaging a more reliable estimate
-of the shared response than competitors.
+% We therefore introduce ShICA, a generalization of MultiViewICA that comes with a more general noise model. In contrast to almost all ICA-based models, ShICA can separate Gaussian and non-Gaussian sources and comes with a minimum mean square error estimate of the common sources that weights each subject according to its estimated noise level.
+% In practice, MultiViewICA and ShICA yield on magnetoencephalography and functional magnetic resonance imaging a more reliable estimate
+% of the shared response than competitors.
 
-Lastly, we use independent component analysis as a basis to perform data augmentation.  More precisely, we introduce CondICA, a data augmentation method that leverages a large amount of unlabeled fMRI data to build a generative model for labeled data using only a few labeled samples. CondICA yields an increase in decoding accuracy on eight large fMRI datasets.
+% Lastly, we use independent component analysis as a basis to perform data augmentation.  More precisely, we introduce CondICA, a data augmentation method that leverages a large amount of unlabeled fMRI data to build a generative model for labeled data using only a few labeled samples. CondICA yields an increase in decoding accuracy on eight large fMRI datasets.
 
-Our main contributions consist in the reduction of SRM's training time as well as in the introduction of two more realistic models for the analysis of brain activity of subjects exposed to naturalistic stimuli: MultiViewICA and ShICA. Lastly, our results showing that ICA can be used for data augmentation are promising.
+% Our main contributions consist in the reduction of SRM's training time as well as in the introduction of two more realistic models for the analysis of brain activity of subjects exposed to naturalistic stimuli: MultiViewICA and ShICA. Lastly, our results showing that ICA can be used for data augmentation are promising.
 
-In conclusion, we present some directions that could guide future work. From a
-practical point of view, minor modifications of our methods could allow the
-analysis of resting state data assuming a shared spatial organization instead of a shared response. From a theoretical perspective, future work could focus on understanding how dimension reduction and shared response identification can be achieved jointly.
-\pagebreak 
+% In conclusion, we present some directions that could guide future work. From a
+% practical point of view, minor modifications of our methods could allow the
+% analysis of resting state data assuming a shared spatial organization instead of a shared response. From a theoretical perspective, future work could focus on understanding how dimension reduction and shared response identification can be achieved jointly.
+% \pagebreak 
 
 \begin{otherlanguage}{french}
 \pdfbookmark[1]{Resume}{Resume}
-\chapter*{Résumé}
+\chapter*{Synthèse}
 Cette thèse d'informatique et de mathématiques s'applique au domaine des neurosciences, et plus particulièrement aux recherches sur la modélisation de l'activité cérébrale humaine par électrophysiologie et imagerie.
 %
 Dans ce champ, la tendance est actuellement d’expérimenter avec des stimuli naturels, comme le visionnage d’un film ou l’écoute d’une piste audio, et non plus avec des stimuli étroitement contrôlés mais outrageusement simples.
@@ -91,10 +91,13 @@ Nos principaux apports nous semblent consister dans l’accélération de l’en
 Enfin, nos résultats sont prometteurs concernant l’utilisation de l’ACI pour faire de l’augmentation de données.
 
 Nous présentons pour finir quelques pistes qui pourraient guider des travaux
-ultérieurs. D’un point de vue pratique, des modifications mineures de nos
+ultérieurs.
+%
+D’un point de vue pratique, des modifications de nos
 méthodes pourraient permettre l’analyse des données d’imagerie obtenues sur des
 sujets au repos en faisant l’hypothèse d’une organisation spatiale partagée à la
-place d’une réponse partagée.
+place d’une réponse partagée. Une autre extension possible serait de prendre en
+compte le décalage temporel entre sujets que l'on observe en magnéto-encéphalographie.
 %
 D’un point de vue théorique, les travaux futurs
 pourraient se concentrer sur la compréhension de la façon dont la réduction de
